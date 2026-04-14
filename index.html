@@ -24,9 +24,12 @@ html,body{height:100%;overflow:hidden}
 body{font-family:var(--f);background:var(--bg3);color:var(--t);font-size:14px;line-height:1.5}
 .app{display:flex;height:100vh}
 .sidebar{width:210px;flex-shrink:0;background:var(--bg);border-right:1px solid var(--bd);display:flex;flex-direction:column}
+.app.member-mode .sidebar{display:none}
 .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative;overflow:hidden}
 .topbar{height:52px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--bd);z-index:2}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
+.topbar-back{display:none}
+.app.member-mode .topbar-back{display:inline-flex}
 #scroll-content{flex:1;overflow-y:auto;padding:20px}
 .page{display:none}
 .page.active{display:block}
@@ -35,9 +38,6 @@ body{font-family:var(--f);background:var(--bg3);color:var(--t);font-size:14px;li
 .logo{padding:16px 14px 12px;border-bottom:1px solid var(--bd)}
 .logo-mark{font-size:17px;font-weight:700;letter-spacing:-.5px}
 .logo-sub{font-size:11px;color:var(--t3);margin-top:1px}
-.mode-toggle{display:flex;margin:10px 8px 4px;background:var(--bg2);border-radius:var(--r);padding:3px;gap:2px}
-.mode-btn{flex:1;padding:5px 0;text-align:center;font-size:11px;font-weight:500;border-radius:6px;cursor:pointer;color:var(--t2);border:none;background:transparent;transition:all .15s}
-.mode-btn.on{background:var(--bg);color:var(--t);box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .nav-wrap{flex:1;overflow-y:auto;padding:4px 0}
 .nav-item{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--t2);margin:1px 6px;transition:all .1s}
 .nav-item:hover{background:var(--bg2);color:var(--t)}
@@ -208,6 +208,42 @@ textarea.input{resize:vertical}
 .si-step.done{color:var(--green-t)}
 .si-line{flex:1;height:1px;background:var(--bd);min-width:10px}
 .urgency{background:var(--red-bg);border:1px solid #F09595;border-radius:var(--r);padding:10px 13px;font-size:12px;color:var(--red-t);margin-bottom:14px;line-height:1.5}
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.toolbar .input{max-width:240px}
+.toolbar .spacer{margin-left:auto}
+.empty{padding:24px 16px;text-align:center;color:var(--t3);font-size:12px}
+.toast-wrap{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:40;pointer-events:none}
+.toast{min-width:220px;max-width:320px;background:var(--t);color:#fff;padding:11px 13px;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.18);font-size:12px;line-height:1.5;opacity:0;transform:translateY(8px);transition:all .18s}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{background:var(--green-t)}
+.toast.warn{background:var(--amber-t)}
+.toast.error{background:var(--red-t)}
+.chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding:12px 0 4px}
+.bar{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px}
+.bar-fill{width:100%;max-width:40px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--blue),#7db2e8);min-height:10px}
+.bar-label{font-size:11px;color:var(--t3)}
+.bar-val{font-size:11px;font-weight:600;color:var(--t2)}
+.remote-ui{position:fixed;right:18px;top:70px;width:260px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.14);padding:14px;z-index:35}
+.remote-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.remote-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);flex:1}
+.remote-sub{font-size:11px;color:var(--t3);line-height:1.5;margin-bottom:10px}
+.remote-group{padding-top:10px;margin-top:10px;border-top:1px solid var(--bd)}
+.remote-actions{display:flex;gap:8px;margin-top:12px}
+.remote-ui.collapsed{width:auto;padding:10px 12px}
+.remote-ui.collapsed .remote-body{display:none}
+
+@media (max-width: 960px){
+  html,body{overflow:auto}
+  .app{display:block;height:auto;min-height:100vh}
+  .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--bd)}
+  .main{min-height:calc(100vh - 160px)}
+  .metrics.g4,.metrics.g3,.metrics.g2,.fr,.plan-grid,.detail-body{grid-template-columns:1fr;display:grid}
+  .inc-split{flex-direction:column}
+  .inc-list{width:100%;border-right:none;border-bottom:1px solid var(--bd);max-height:280px}
+  .detail-side{width:auto}
+  #page-incidents{position:relative;top:0;bottom:auto}
+  .remote-ui{position:static;width:auto;margin:14px}
+}
 </style>
 </head>
 <body>
@@ -216,10 +252,6 @@ textarea.input{resize:vertical}
     <div class="logo">
       <div class="logo-mark">PAMO</div>
       <div class="logo-sub" id="mode-label">管理後台</div>
-    </div>
-    <div class="mode-toggle">
-      <button class="mode-btn" id="btn-m" onclick="switchMode('member')">前台</button>
-      <button class="mode-btn on" id="btn-a" onclick="switchMode('admin')">後台</button>
     </div>
     <div class="nav-wrap" id="nav"></div>
     <div class="sidebar-foot">
@@ -235,6 +267,7 @@ textarea.input{resize:vertical}
 
   <div class="main">
     <div class="topbar">
+      <button class="btn btn-s topbar-back" onclick="memberBack()">← 返回</button>
       <div class="topbar-title" id="pg-title">儀表板</div>
     </div>
 
@@ -243,51 +276,67 @@ textarea.input{resize:vertical}
 
       <!-- ADMIN: 儀表板 -->
       <div class="page active" id="page-dashboard">
-        <div class="metrics g4">
-          <div class="metric"><div class="m-label">總會員數</div><div class="m-val">1,284</div><div class="m-sub">本月 +47</div></div>
-          <div class="metric"><div class="m-label">有效訂閱</div><div class="m-val">892</div><div class="m-sub">69.5%</div></div>
-          <div class="metric"><div class="m-label">本月收入</div><div class="m-val">NT$68,420</div><div class="m-sub">↑12%</div></div>
-          <div class="metric"><div class="m-label">待處理案件</div><div class="m-val" style="color:var(--amber)">7</div><div class="m-sub" style="color:var(--red)">3 件逾期</div></div>
+        <div class="toolbar">
+          <input class="input" id="dash-from" type="date" onchange="renderDashboard()"/>
+          <input class="input" id="dash-to" type="date" onchange="renderDashboard()"/>
+          <button class="btn btn-s" onclick="setDashboardRange(7)">近 7 天</button>
+          <button class="btn btn-s" onclick="setDashboardRange(30)">近 30 天</button>
+          <button class="btn btn-s" onclick="setDashboardRange(90)">近 90 天</button>
+        </div>
+        <div class="metrics g4" id="dashboard-metrics">
         </div>
         <div class="metrics g2">
           <div class="card">
             <div class="card-title">最新事故申請</div>
-            <div class="tl">
-              <div class="tl-item"><div class="tl-dot b"></div><div class="tl-t">林○○ 提交事故表單 — 車輛碰撞</div><div class="tl-time">10 分鐘前</div></div>
-              <div class="tl-item"><div class="tl-dot g"></div><div class="tl-t">王○○ 和解書已簽署完成</div><div class="tl-time">2 小時前</div></div>
-              <div class="tl-item"><div class="tl-dot a"></div><div class="tl-t">張○○ 等待客服回電</div><div class="tl-time">昨天 14:32</div></div>
-              <div class="tl-item"><div class="tl-dot g"></div><div class="tl-t">李○○ 案件已結案</div><div class="tl-time">昨天 09:15</div></div>
-            </div>
+            <div class="tl" id="dashboard-timeline"></div>
           </div>
           <div class="card">
             <div class="card-title">交易概覽（本月）</div>
             <table><tr><th>方案</th><th>筆數</th><th>金額</th></tr>
-              <tr><td>年費 $899</td><td>38</td><td>NT$34,162</td></tr>
-              <tr><td>單次 $1,800</td><td>19</td><td>NT$34,200</td></tr>
-              <tr><td>試用序號</td><td>12</td><td>—</td></tr>
+              <tbody id="dashboard-transactions"></tbody>
             </table>
+          </div>
+        </div>
+        <div class="metrics g2">
+          <div class="card">
+            <div class="card-title">會員整體趨勢</div>
+            <div id="dashboard-trend-summary" style="font-size:12px;color:var(--t2);margin-bottom:10px"></div>
+            <div class="chart" id="member-trend-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">續約分析</div>
+            <div class="metrics g2" style="margin-bottom:10px">
+              <div class="metric"><div class="m-label">續約成功</div><div class="m-val" id="renew-success-count">0</div><div class="m-sub" id="renew-success-sub">0%</div></div>
+              <div class="metric"><div class="m-label">續約失敗</div><div class="m-val" id="renew-failed-count">0</div><div class="m-sub" id="renew-failed-sub">0%</div></div>
+            </div>
+            <div id="renew-highlight" style="font-size:12px;color:var(--t2);line-height:1.6"></div>
           </div>
         </div>
       </div>
 
       <!-- ADMIN: 會員管理 -->
       <div class="page" id="page-members">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-          <input class="input" style="max-width:240px" placeholder="搜尋姓名、電話、信箱…"/>
-          <button class="btn btn-s">篩選</button><button class="btn btn-s">匯出 CSV</button>
-          <button class="btn btn-p btn-s" style="margin-left:auto">+ 新增會員</button>
+        <div class="toolbar">
+          <input class="input" id="member-search" placeholder="搜尋姓名、電話、信箱…" oninput="renderMembers()"/>
+          <button class="btn btn-s" onclick="cycleMemberFilter()">篩選：<span id="member-filter-label">全部</span></button>
+          <button class="btn btn-s" onclick="exportMembers()">匯出 CSV</button>
+          <button class="btn btn-p btn-s spacer" onclick="showToast('已開啟新增會員流程原型')">+ 新增會員</button>
         </div>
-        <div class="tabs">
-          <div class="tab on">全部 (1,284)</div><div class="tab">訂閱中 (892)</div>
-          <div class="tab">已過期 (321)</div><div class="tab">黑名單 (71)</div>
+        <div class="tabs" id="member-tabs">
+          <div class="tab on" onclick="setMemberFilter('all',this)">全部</div>
+          <div class="tab" onclick="setMemberFilter('訂閱中',this)">訂閱中</div>
+          <div class="tab" onclick="setMemberFilter('待啟動',this)">待啟動</div>
+          <div class="tab" onclick="setMemberFilter('已過期',this)">已過期</div>
+          <div class="tab" onclick="setMemberFilter('黑名單',this)">黑名單</div>
+          <div class="tab" onclick="setMemberFilter('續約成功',this)">續約成功</div>
+          <div class="tab" onclick="setMemberFilter('續約失敗',this)">續約失敗</div>
         </div>
         <div class="card" style="padding:0">
           <table>
-            <tr><th>會員</th><th>電話</th><th>方案</th><th>點數</th><th>狀態</th><th>加入</th><th></th></tr>
-            <tr><td><div class="row"><div class="av av-s" style="background:var(--blue-bg);color:var(--blue-t)">陳</div><div><div style="font-weight:500">陳小明</div><div style="font-size:10px;color:var(--t3)">ming@email.com</div></div></div></td><td>0912-345-678</td><td>年費</td><td>320</td><td><span class="badge bg">訂閱中</span></td><td>2023-06-12</td><td><button class="btn btn-s">查看</button></td></tr>
-            <tr><td><div class="row"><div class="av av-s" style="background:var(--amber-bg);color:var(--amber-t)">林</div><div><div style="font-weight:500">林小安</div><div style="font-size:10px;color:var(--t3)">an@email.com</div></div></div></td><td>0923-456-789</td><td>單次</td><td>0</td><td><span class="badge ba">待啟動</span></td><td>2024-01-03</td><td><button class="btn btn-s">查看</button></td></tr>
-            <tr><td><div class="row"><div class="av av-s" style="background:var(--green-bg);color:var(--green-t)">王</div><div><div style="font-weight:500">王大偉</div><div style="font-size:10px;color:var(--t3)">wei@email.com</div></div></div></td><td>0934-567-890</td><td>年費</td><td>150</td><td><span class="badge bgr">已過期</span></td><td>2022-11-20</td><td><button class="btn btn-s">查看</button></td></tr>
-            <tr><td><div class="row"><div class="av av-s" style="background:var(--red-bg);color:var(--red-t)">張</div><div><div style="font-weight:500">張小不</div><div style="font-size:10px;color:var(--t3)">bu@email.com</div></div></div></td><td>0945-678-901</td><td>—</td><td>0</td><td><span class="badge br">黑名單</span></td><td>2023-03-08</td><td><button class="btn btn-s">查看</button></td></tr>
+            <thead>
+              <tr><th onclick="setMemberSort('name')" style="cursor:pointer">會員</th><th onclick="setMemberSort('phone')" style="cursor:pointer">電話</th><th onclick="setMemberSort('plan')" style="cursor:pointer">方案</th><th onclick="setMemberSort('points')" style="cursor:pointer">點數</th><th onclick="setMemberSort('status')" style="cursor:pointer">狀態</th><th onclick="setMemberSort('joined')" style="cursor:pointer">加入</th><th></th></tr>
+            </thead>
+            <tbody id="member-table-body"></tbody>
           </table>
         </div>
       </div>
@@ -302,10 +351,7 @@ textarea.input{resize:vertical}
         <div class="card" style="padding:0">
           <table>
             <tr><th>交易編號</th><th>會員</th><th>金額</th><th>方式</th><th>日期</th><th>狀態</th></tr>
-            <tr><td style="font-family:var(--mono);font-size:11px">#T240402-001</td><td>陳小明</td><td>NT$899</td><td>信用卡</td><td>2024-04-02</td><td><span class="badge bg">成功</span></td></tr>
-            <tr><td style="font-family:var(--mono);font-size:11px">#T240401-008</td><td>林小安</td><td>NT$1,800</td><td>信用卡</td><td>2024-04-01</td><td><span class="badge bg">成功</span></td></tr>
-            <tr><td style="font-family:var(--mono);font-size:11px">#T240330-012</td><td>蔡○○</td><td>NT$899</td><td>超商代碼</td><td>2024-03-30</td><td><span class="badge ba">待付款</span></td></tr>
-            <tr><td style="font-family:var(--mono);font-size:11px">#T240328-003</td><td>黃○○</td><td>NT$899</td><td>信用卡</td><td>2024-03-28</td><td><span class="badge br">退款</span></td></tr>
+            <tbody id="transaction-table-body"></tbody>
           </table>
         </div>
       </div>
@@ -315,21 +361,19 @@ textarea.input{resize:vertical}
         <div class="metrics g2">
           <div class="card">
             <div class="card-title">優惠碼管理</div>
-            <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" value="20%"/></div></div>
-            <div class="fr"><div class="fg"><div class="fl">到期日</div><input class="input" type="date" value="2024-12-31"/></div><div class="fg"><div class="fl">上限</div><input class="input" value="100"/></div></div>
-            <button class="btn btn-p btn-s" style="margin-bottom:12px">新增</button>
+            <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" id="promo-code" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" id="promo-discount" value="20%"/></div></div>
+            <div class="fr"><div class="fg"><div class="fl">到期日</div><input class="input" id="promo-expiry" type="date" value="2026-12-31"/></div><div class="fg"><div class="fl">上限</div><input class="input" id="promo-limit" value="100"/></div></div>
+            <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="addPromo()">新增</button>
             <table style="font-size:12px"><tr><th>代碼</th><th>折扣</th><th>已用</th><th>到期</th></tr>
-              <tr><td>PAMO2024</td><td>20%</td><td>14</td><td>2024-12-31</td></tr>
-              <tr><td>NEWUSER</td><td>50%</td><td>8</td><td>2024-06-30</td></tr>
+              <tbody id="promo-table-body"></tbody>
             </table>
           </div>
           <div class="card">
             <div class="card-title">試用序號</div>
-            <div class="fr"><div class="fg"><div class="fl">有效天數</div><input class="input" value="30"/></div><div class="fg"><div class="fl">數量</div><input class="input" value="10"/></div></div>
-            <button class="btn btn-p btn-s" style="margin-bottom:12px">產生序號</button>
+            <div class="fr"><div class="fg"><div class="fl">有效天數</div><input class="input" id="trial-days" value="30"/></div><div class="fg"><div class="fl">數量</div><input class="input" id="trial-qty" value="10"/></div></div>
+            <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="generateTrials()">產生序號</button>
             <table style="font-size:12px"><tr><th>序號</th><th>狀態</th><th>使用者</th></tr>
-              <tr><td style="font-family:var(--mono)">TRIAL-A3X9</td><td><span class="badge bg">未使用</span></td><td>—</td></tr>
-              <tr><td style="font-family:var(--mono)">TRIAL-K2M7</td><td><span class="badge bgr">已使用</span></td><td>陳小明</td></tr>
+              <tbody id="trial-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -347,7 +391,7 @@ textarea.input{resize:vertical}
             <div class="fg"><div class="fl">手機號碼</div><input class="input" value="0912-345-678"/></div>
             <div class="fg"><div class="fl">密碼</div><input class="input" type="password" value="••••••••"/></div>
             <div style="display:flex;gap:8px;margin-top:4px;margin-bottom:14px">
-              <button class="btn btn-p" style="flex:1" onclick="swMember('m-home')">登入</button>
+              <button class="btn btn-p" style="flex:1" onclick="setMemberAuthState('logged_in_paid');swMember('m-home')">登入</button>
               <button class="btn" style="flex:1" onclick="swMember('m-register')">新用戶註冊</button>
             </div>
             <div class="divider"></div>
@@ -361,15 +405,7 @@ textarea.input{resize:vertical}
       <div class="page" id="page-m-nonmember">
         <div class="splash">
           <div class="urgency">發生事故了？選擇方案並完成付款，客服馬上聯繫您。</div>
-          <div class="si-bar">
-            <div class="si-dot on">1</div><div class="si-step on">選擇方案</div>
-            <div class="si-line"></div>
-            <div class="si-dot">2</div><div class="si-step">付款</div>
-            <div class="si-line"></div>
-            <div class="si-dot">3</div><div class="si-step">填寫事故資料</div>
-            <div class="si-line"></div>
-            <div class="si-dot">4</div><div class="si-step">等待回電</div>
-          </div>
+          <div class="si-bar" id="nonmember-step-bar"></div>
           <div class="plan-grid">
             <div class="plan sel" id="plan-single" onclick="selPlan('single')">
               <div class="plan-name">單次服務</div>
@@ -395,8 +431,7 @@ textarea.input{resize:vertical}
             </div>
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn" onclick="swMember('m-login')">← 返回</button>
-            <button class="btn btn-p" style="flex:1" onclick="goPayment()">繼續付款 →</button>
+            <button class="btn btn-p" style="flex:1" onclick="startApplicationFlow()">繼續申請 →</button>
           </div>
         </div>
       </div>
@@ -407,11 +442,11 @@ textarea.input{resize:vertical}
           <div class="si-bar">
             <div class="si-dot done">✓</div><div class="si-step done">選擇方案</div>
             <div class="si-line"></div>
-            <div class="si-dot on">2</div><div class="si-step on">付款</div>
+            <div class="si-dot on" id="pay-step-num">2</div><div class="si-step on" id="pay-step-label">付款</div>
             <div class="si-line"></div>
-            <div class="si-dot">3</div><div class="si-step">事故資料</div>
+            <div class="si-dot" id="pay-third-num">3</div><div class="si-step" id="pay-third-label">事故資料</div>
             <div class="si-line"></div>
-            <div class="si-dot">4</div><div class="si-step">等待回電</div>
+            <div class="si-dot" id="pay-fourth-num">4</div><div class="si-step" id="pay-fourth-label">等待回電</div>
           </div>
           <div class="card">
             <div class="card-title">付款資訊 <span id="pay-amount" style="font-size:16px;font-weight:700;color:var(--blue)">NT$1,800</span></div>
@@ -421,13 +456,13 @@ textarea.input{resize:vertical}
               <div class="tab" onclick="swPayTab(this,'linepay')">LINE Pay</div>
             </div>
             <div id="pay-credit">
-              <div class="fg"><div class="fl">持卡人姓名</div><input class="input" placeholder="與信用卡相符"/></div>
-              <div class="fg"><div class="fl">卡號</div><input class="input" placeholder="1234 5678 9012 3456"/></div>
+              <div class="fg"><div class="fl">持卡人姓名</div><input class="input" id="pay-holder" placeholder="與信用卡相符"/></div>
+              <div class="fg"><div class="fl">卡號</div><input class="input" id="pay-card" placeholder="1234 5678 9012 3456"/></div>
               <div class="fr">
-                <div class="fg"><div class="fl">有效期限</div><input class="input" placeholder="MM / YY"/></div>
-                <div class="fg"><div class="fl">安全碼</div><input class="input" placeholder="CVV"/></div>
+                <div class="fg"><div class="fl">有效期限</div><input class="input" id="pay-exp" placeholder="MM / YY"/></div>
+                <div class="fg"><div class="fl">安全碼</div><input class="input" id="pay-cvv" placeholder="CVV"/></div>
               </div>
-              <div class="fg"><div class="fl">優惠碼（選填）</div><input class="input" placeholder="輸入優惠碼"/></div>
+              <div class="fg"><div class="fl">優惠碼（選填）</div><input class="input" id="pay-promo" placeholder="輸入優惠碼" oninput="document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`"/></div>
             </div>
             <div id="pay-cvs" style="display:none">
               <div style="padding:13px;background:var(--bg2);border-radius:var(--r);font-size:13px;color:var(--t2);line-height:1.6">
@@ -440,8 +475,7 @@ textarea.input{resize:vertical}
               </div>
             </div>
             <div style="display:flex;gap:8px;margin-top:6px">
-              <button class="btn" onclick="swMember('m-nonmember')">← 返回</button>
-              <button class="btn btn-p" style="flex:1" onclick="swMember('m-incident-form')">確認付款 →</button>
+              <button class="btn btn-p" style="flex:1" onclick="submitPayment()">確認付款 →</button>
             </div>
           </div>
         </div>
@@ -453,30 +487,36 @@ textarea.input{resize:vertical}
           <div class="si-bar">
             <div class="si-dot done">✓</div><div class="si-step done">選擇方案</div>
             <div class="si-line"></div>
-            <div class="si-dot done">✓</div><div class="si-step done">付款</div>
+            <div class="si-dot done" id="incident-second-dot">✓</div><div class="si-step done" id="incident-second-label">付款</div>
             <div class="si-line"></div>
-            <div class="si-dot on">3</div><div class="si-step on">事故資料</div>
+            <div class="si-dot on" id="incident-third-dot">3</div><div class="si-step on" id="incident-third-label">事故資料</div>
             <div class="si-line"></div>
-            <div class="si-dot">4</div><div class="si-step">等待回電</div>
+            <div class="si-dot" id="incident-fourth-dot">4</div><div class="si-step" id="incident-fourth-label">等待回電</div>
           </div>
           <div class="card">
             <div class="card-title">事故資料</div>
             <div class="fr">
-              <div class="fg"><div class="fl">事故日期</div><input class="input" type="date"/></div>
-              <div class="fg"><div class="fl">事故類型</div><select class="input"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
+              <div class="fg"><div class="fl">事故日期</div><input class="input" id="incident-date" type="date"/></div>
+              <div class="fg"><div class="fl">事故類型</div><select class="input" id="incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
             </div>
-            <div class="fg"><div class="fl">事故地點</div><input class="input" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
-            <div class="fg"><div class="fl">事故說明</div><textarea class="input" rows="4" placeholder="描述事故經過、對方車牌（若有）…"></textarea></div>
+            <div class="fg"><div class="fl">事故地點</div><input class="input" id="incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
+            <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="incident-desc" rows="4" placeholder="描述事故經過、對方車牌（若有）…"></textarea></div>
             <div class="fr">
-              <div class="fg"><div class="fl">聯絡電話</div><input class="input" value="0912-345-678"/></div>
-              <div class="fg"><div class="fl">方便聯絡時段</div><input class="input" placeholder="例：平日 14–18 時"/></div>
+              <div class="fg"><div class="fl">對方姓名</div><input class="input" id="counterparty-name" placeholder="若已知請填寫"/></div>
+              <div class="fg"><div class="fl">對方電話</div><input class="input" id="counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
+            </div>
+            <div class="fr">
+              <div class="fg"><div class="fl">聯絡電話</div><input class="input" id="incident-phone" value="0912-345-678"/></div>
+              <div class="fg"><div class="fl">方便聯絡時段</div><input class="input" id="incident-slot" placeholder="例：平日 14–18 時"/></div>
+            </div>
+            <div id="conflict-box" style="display:none;padding:10px 12px;background:var(--red-bg);border-radius:var(--r);font-size:12px;color:var(--red-t);margin-bottom:14px;border:1px solid #F09595">
+              對方也是 PAMO 會員，屬於利益衝突案件，系統將停止付款並提示改由其他管道處理。
             </div>
             <div style="padding:10px 12px;background:var(--bg2);border-radius:var(--r);font-size:12px;color:var(--t2);margin-bottom:14px;border:1px solid var(--bd)">
               提交後客服將於 <strong>24 小時內</strong>致電，並寄確認信。緊急請致電 <strong>0800-XXX-XXX</strong>。
             </div>
             <div style="display:flex;gap:8px">
-              <button class="btn btn-p" onclick="swMember('m-waiting')">送出申請 →</button>
-              <button class="btn" onclick="swMember('m-payment')">← 返回</button>
+              <button class="btn btn-p" onclick="submitIncident()">送出申請 →</button>
             </div>
           </div>
         </div>
@@ -487,7 +527,7 @@ textarea.input{resize:vertical}
         <div class="splash" style="text-align:center">
           <div style="width:56px;height:56px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--green)">✓</div>
           <div style="font-size:18px;font-weight:600;margin-bottom:6px">申請已提交</div>
-          <div style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.7">客服將於 <strong>24 小時內</strong>致電 <strong>0912-345-678</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">#A2024-039</span></div>
+          <div id="waiting-summary" style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.7">客服將於 <strong>24 小時內</strong>致電 <strong>0912-345-678</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">#A2024-039</span></div>
           <div class="si-bar" style="justify-content:center;margin-bottom:22px">
             <div class="si-dot done">✓</div><div class="si-step done">已提交</div>
             <div class="si-line" style="max-width:36px"></div>
@@ -499,7 +539,6 @@ textarea.input{resize:vertical}
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
             <button class="btn" onclick="swMember('m-register')">建立帳號以追蹤進度</button>
-            <button class="btn btn-p" onclick="swMember('m-home')">前往會員首頁</button>
           </div>
         </div>
       </div>
@@ -514,7 +553,7 @@ textarea.input{resize:vertical}
             <div class="fr"><div class="fg"><div class="fl">密碼</div><input class="input" type="password" placeholder="至少 8 碼"/></div><div class="fg"><div class="fl">確認密碼</div><input class="input" type="password" placeholder="再輸入一次"/></div></div>
             <div class="fg"><div class="fl">車牌（選填）</div><input class="input" placeholder="ABC-1234"/></div>
             <div style="display:flex;gap:8px">
-              <button class="btn btn-p" style="flex:1" onclick="swMember('m-home')">建立帳號</button>
+              <button class="btn btn-p" style="flex:1" onclick="setMemberAuthState('logged_in_unpaid');swMember('m-home')">建立帳號</button>
               <button class="btn" onclick="swMember('m-login')">已有帳號</button>
             </div>
           </div>
@@ -524,18 +563,14 @@ textarea.input{resize:vertical}
       <!-- MEMBER: 首頁 -->
       <div class="page" id="page-m-home">
         <div class="hero">
-          <div class="hero-name">你好，陳小明</div>
-          <div class="hero-sub">年費會員 · 到期 2025-01-15</div>
-          <div class="hero-tags">
-            <span class="hero-tag">320 點</span>
-            <span class="hero-tag">3 件紀錄</span>
-            <span class="hero-tag">自動續費開啟</span>
-          </div>
+          <div class="hero-name" id="hero-name">你好，陳小明</div>
+          <div class="hero-sub" id="hero-sub">年費會員 · 到期 2025-01-15</div>
+          <div class="hero-tags" id="hero-tags"></div>
         </div>
         <div class="metrics g2">
           <div>
             <div class="sec-label">快速操作</div>
-            <div class="qa" onclick="swMember('m-incident-form')">
+            <div class="qa" onclick="swMember('m-nonmember')">
               <div class="qa-icon" style="background:var(--red-bg)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2L2 14h12L8 2z"/><path d="M8 6v3M8 11h.01"/></svg></div>
               <div><div class="qa-title">提交事故申請</div><div class="qa-sub">立即啟動協助流程</div></div>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
@@ -553,22 +588,7 @@ textarea.input{resize:vertical}
           </div>
           <div>
             <div class="sec-label">進行中案件</div>
-            <div class="card">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-                <div><div style="font-size:10px;color:var(--t3)">#A2024-038</div><div style="font-weight:500;font-size:13px;margin-top:1px">車輛碰撞 — 忠孝東路四段</div></div>
-                <span class="badge ba">待回電</span>
-              </div>
-              <div style="display:flex;gap:3px;align-items:center;font-size:11px;flex-wrap:wrap">
-                <span style="background:var(--green-bg);color:var(--green-t);padding:2px 7px;border-radius:4px;font-weight:600">✓ 已提交</span>
-                <span style="color:var(--bd2)">—</span>
-                <span style="background:var(--blue-bg);color:var(--blue-t);padding:2px 7px;border-radius:4px;font-weight:600">● 等待回電</span>
-                <span style="color:var(--bd2)">—</span>
-                <span style="color:var(--t3);padding:2px 7px">協商</span>
-                <span style="color:var(--bd2)">—</span>
-                <span style="color:var(--t3);padding:2px 7px">結案</span>
-              </div>
-              <div style="font-size:11px;color:var(--t3);margin-top:7px">客服將於今日 18:00 前致電</div>
-            </div>
+            <div id="member-cases"></div>
           </div>
         </div>
       </div>
@@ -578,21 +598,18 @@ textarea.input{resize:vertical}
         <div class="metrics g2">
           <div class="card">
             <div class="card-title">點數餘額</div>
-            <div style="font-size:38px;font-weight:700;margin:6px 0 2px">320</div>
+            <div style="font-size:38px;font-weight:700;margin:6px 0 2px" id="points-balance">320</div>
             <div style="font-size:12px;color:var(--t3);margin-bottom:16px">點 · 無期限</div>
             <div class="divider"></div>
             <div class="sec-label" style="margin-top:12px">轉贈點數</div>
-            <div class="fg"><div class="fl">收件人手機</div><input class="input" placeholder="0912-345-678"/></div>
-            <div class="fg"><div class="fl">轉贈數量</div><input class="input" type="number" placeholder="0" min="1"/></div>
-            <button class="btn btn-p btn-s">確認轉贈</button>
+            <div class="fg"><div class="fl">收件人手機</div><input class="input" id="gift-phone" placeholder="0912-345-678"/></div>
+            <div class="fg"><div class="fl">轉贈數量</div><input class="input" id="gift-amount" type="number" placeholder="0" min="1"/></div>
+            <button class="btn btn-p btn-s" onclick="giftPoints()">確認轉贈</button>
           </div>
           <div class="card">
             <div class="card-title">點數紀錄</div>
             <table style="font-size:12px"><tr><th>日期</th><th>說明</th><th style="text-align:right">點數</th></tr>
-              <tr><td>04/01</td><td>續費獎勵</td><td style="text-align:right;color:var(--green-t);font-weight:600">+50</td></tr>
-              <tr><td>03/15</td><td>事故申請回饋</td><td style="text-align:right;color:var(--green-t);font-weight:600">+100</td></tr>
-              <tr><td>02/20</td><td>轉贈給林○○</td><td style="text-align:right;color:var(--red-t);font-weight:600">−80</td></tr>
-              <tr><td>01/15</td><td>年費續約</td><td style="text-align:right;color:var(--green-t);font-weight:600">+250</td></tr>
+              <tbody id="points-table-body"></tbody>
             </table>
           </div>
         </div>
@@ -603,11 +620,11 @@ textarea.input{resize:vertical}
         <div class="card" style="max-width:480px">
           <div class="row" style="margin-bottom:18px">
             <div class="av av-l" style="background:var(--blue-bg);color:var(--blue-t)">陳</div>
-            <div><div style="font-size:15px;font-weight:600">陳小明</div><div style="font-size:11px;color:var(--t3)">ming@email.com · 年費會員</div></div>
+            <div><div style="font-size:15px;font-weight:600" id="profile-title">陳小明</div><div style="font-size:11px;color:var(--t3)" id="profile-sub">ming@email.com · 年費會員</div></div>
           </div>
-          <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" value="陳小明"/></div><div class="fg"><div class="fl">手機</div><input class="input" value="0912-345-678"/></div></div>
-          <div class="fg"><div class="fl">電子信箱</div><input class="input" value="ming@email.com"/></div>
-          <div class="fr"><div class="fg"><div class="fl">車牌</div><input class="input" value="ABC-1234"/></div><div class="fg"><div class="fl">車款</div><input class="input" value="Toyota Corolla"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" id="profile-name" value="陳小明"/></div><div class="fg"><div class="fl">手機</div><input class="input" id="profile-phone" value="0912-345-678"/></div></div>
+          <div class="fg"><div class="fl">電子信箱</div><input class="input" id="profile-email" value="ming@email.com"/></div>
+          <div class="fr"><div class="fg"><div class="fl">車牌</div><input class="input" id="profile-plate" value="ABC-1234"/></div><div class="fg"><div class="fl">車款</div><input class="input" id="profile-car" value="Toyota Corolla"/></div></div>
           <div class="divider"></div>
           <div class="sec-label">付款方式</div>
           <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px">
@@ -617,7 +634,7 @@ textarea.input{resize:vertical}
             <span class="badge bg" style="font-size:10px">主要</span>
           </div>
           <button class="btn btn-s" style="margin-bottom:14px">+ 新增信用卡</button>
-          <div style="display:flex;gap:8px"><button class="btn btn-p btn-s">儲存</button><button class="btn btn-s">變更密碼</button></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-p btn-s" onclick="saveProfile()">儲存</button><button class="btn btn-s" onclick="showToast('密碼變更流程待串接','warn')">變更密碼</button></div>
         </div>
       </div>
 
@@ -628,11 +645,11 @@ textarea.input{resize:vertical}
       <div class="inc-split">
         <div class="inc-list">
           <div style="padding:10px 12px;border-bottom:1px solid var(--bd)">
-            <input class="input" placeholder="搜尋案件、姓名…" style="font-size:12px;padding:5px 9px"/>
+            <input class="input" id="inc-search" placeholder="搜尋案件、姓名…" style="font-size:12px;padding:5px 9px" oninput="renderList()"/>
           </div>
-          <div style="padding:7px 10px;border-bottom:1px solid var(--bd);display:flex;gap:3px;flex-wrap:wrap">
-            <span class="chip on">全部</span><span class="chip">待處理</span>
-            <span class="chip">和解中</span><span class="chip">已結案</span>
+          <div style="padding:7px 10px;border-bottom:1px solid var(--bd);display:flex;gap:3px;flex-wrap:wrap" id="inc-filters">
+            <span class="chip on" onclick="setIncidentFilter('all',this)">全部</span><span class="chip" onclick="setIncidentFilter('待回電',this)">待回電</span>
+            <span class="chip" onclick="setIncidentFilter('和解中',this)">和解中</span><span class="chip" onclick="setIncidentFilter('已結案',this)">已結案</span>
           </div>
           <div class="inc-list-scroll" id="inc-list-items"></div>
         </div>
@@ -642,24 +659,63 @@ textarea.input{resize:vertical}
 
   </div>
 </div>
+<div class="toast-wrap" id="toast-wrap"></div>
+<div class="remote-ui" id="remote-ui">
+  <div class="remote-head">
+    <div class="remote-title">Demo 遙控 UI</div>
+    <button class="btn btn-s" id="remote-toggle" onclick="toggleRemoteUI()">收合</button>
+  </div>
+  <div class="remote-body">
+  <div class="remote-sub">用這裡直接切換系統狀態，不用操作實際畫面上的導覽。</div>
+  <div class="fg">
+    <div class="fl">顯示模式</div>
+    <select class="input" id="remote-mode" onchange="applyRemoteState()">
+      <option value="admin">後台</option>
+      <option value="member">前台</option>
+    </select>
+  </div>
+  <div class="remote-group" id="remote-admin-group">
+    <div class="fg">
+      <div class="fl">後台頁面</div>
+      <select class="input" id="remote-admin-page" onchange="applyRemoteState()"></select>
+    </div>
+  </div>
+  <div class="remote-group" id="remote-member-group">
+    <div class="fg">
+      <div class="fl">前台狀態</div>
+      <select class="input" id="remote-auth" onchange="applyRemoteState()">
+        <option value="logged_out">未登入</option>
+        <option value="logged_in_paid">已登入已付費</option>
+        <option value="logged_in_unpaid">已登入未付費</option>
+        <option value="nonmember">非會員申請中</option>
+      </select>
+    </div>
+    <div class="fg">
+      <div class="fl">前台頁面</div>
+      <select class="input" id="remote-member-page" onchange="applyRemoteState()"></select>
+    </div>
+  </div>
+  <div class="remote-actions">
+    <button class="btn btn-s" onclick="syncRemoteControls()">同步目前畫面</button>
+    <button class="btn btn-p btn-s" onclick="resetRemoteState()">重設 Demo</button>
+  </div>
+  </div>
+</div>
 
 <script>
 const INC=[
   {id:'#A2024-038',name:'林小安',phone:'0923-456-789',type:'車輛碰撞',loc:'忠孝東路四段 220 號前',date:'2024-04-02 09:14',status:'待回電',sc:'ba',
-   desc:'騎車途中遭對向車輛擦撞，對方車牌 ABC-1234，當事人已離開現場，右側車身受損。',
-   steps:[1,0,0,0],
+   desc:'騎車途中遭對向車輛擦撞，對方車牌 ABC-1234，當事人已離開現場，右側車身受損。',steps:[1,0,0,0],slot:'今日 18:00 前',
    notes:[{a:'系統',tp:'系統',tc:'bgr',t:'2024-04-02 09:14',b:'會員提交事故申請，類型：車輛碰撞'}]},
   {id:'#A2024-035',name:'黃大華',phone:'0934-111-222',type:'刮傷',loc:'信義區松壽路停車場 B2',date:'2024-03-28 14:30',status:'和解中',sc:'bb',
-   desc:'停車場遭刮傷，監視器有存檔可能，車輛左後方明顯刮痕。',
-   steps:[1,1,1,0],
+   desc:'停車場遭刮傷，監視器有存檔可能，車輛左後方明顯刮痕。',steps:[1,1,1,0],slot:'已完成首次聯繫',
    notes:[
     {a:'陳客服',tp:'通話',tc:'bb',t:'2024-03-28 15:10',b:'已通話確認細節。停車場業者說監視器保留 7 天，需 4/4 前申請調閱。通話時長 8 分 32 秒。'},
     {a:'陳客服',tp:'筆記',tc:'bp',t:'2024-03-29 10:05',b:'通知會員備妥停車收據，業者將協助調閱畫面。'},
     {a:'系統',tp:'系統',tc:'bgr',t:'2024-03-28 14:30',b:'會員提交事故申請，類型：刮傷'}
   ]},
   {id:'#A2024-031',name:'陳小明',phone:'0912-345-678',type:'車輛碰撞',loc:'民生西路 100 號前',date:'2024-03-10 11:00',status:'已結案',sc:'bg',
-   desc:'路口碰撞，雙方協議和解，和解金 NT$15,000，和解書已簽署。',
-   steps:[1,1,1,1],
+   desc:'路口碰撞，雙方協議和解，和解金 NT$15,000，和解書已簽署。',steps:[1,1,1,1],slot:'已結案',
    notes:[
     {a:'陳客服',tp:'筆記',tc:'bg',t:'2024-03-15 16:00',b:'和解書雙方簽署完成，案件結案。NT$15,000 由對方負擔。'},
     {a:'陳客服',tp:'通話',tc:'bb',t:'2024-03-13 14:22',b:'與雙方確認和解條件，安排簽署。通話時長 12 分 05 秒。'},
@@ -667,75 +723,224 @@ const INC=[
     {a:'系統',tp:'系統',tc:'bgr',t:'2024-03-10 11:00',b:'會員提交事故申請，類型：車輛碰撞'}
   ]},
   {id:'#A2024-029',name:'蔡○○',phone:'0956-789-012',type:'車輛竊盜',loc:'大安區復興南路二段',date:'2024-03-05 08:00',status:'逾期',sc:'br',
-   desc:'路邊停放機車遭竊，警察備案號 1130305001。',
-   steps:[1,1,0,0],
+   desc:'路邊停放機車遭竊，警察備案號 1130305001。',steps:[1,1,0,0],slot:'待會員回覆',
    notes:[
     {a:'陳客服',tp:'筆記',tc:'ba',t:'2024-03-07 15:00',b:'第三次嘗試聯繫，仍未接聽。已發 LINE，若 3/10 無回應將暫停處理。'},
     {a:'系統',tp:'系統',tc:'bgr',t:'2024-03-05 08:00',b:'會員提交事故申請，類型：車輛竊盜'}
   ]}
 ];
 
+const MEMBER_ROWS=[
+  {name:'陳小明',email:'ming@email.com',phone:'0912-345-678',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功'},
+  {name:'林小安',email:'an@email.com',phone:'0923-456-789',plan:'單次',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—'},
+  {name:'王大偉',email:'wei@email.com',phone:'0934-567-890',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗'},
+  {name:'張小不',email:'bu@email.com',phone:'0945-678-901',plan:'—',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—'}
+];
+
+const TXNS=[
+  {id:'#T240402-001',member:'陳小明',amount:'NT$899',method:'信用卡',date:'2024-04-02',status:'成功',sc:'bg'},
+  {id:'#T240401-008',member:'林小安',amount:'NT$1,800',method:'信用卡',date:'2024-04-01',status:'成功',sc:'bg'},
+  {id:'#T240330-012',member:'蔡○○',amount:'NT$899',method:'超商代碼',date:'2024-03-30',status:'待付款',sc:'ba'},
+  {id:'#T240328-003',member:'黃○○',amount:'NT$899',method:'信用卡',date:'2024-03-28',status:'退款',sc:'br'}
+];
+
+const PROMOS=[
+  {code:'PAMO2024',discount:'20%',used:14,expiry:'2026-12-31'},
+  {code:'NEWUSER',discount:'50%',used:8,expiry:'2026-06-30'}
+];
+
+const TRIALS=[
+  {code:'TRIAL-A3X9',status:'未使用',sc:'bg',user:'—'},
+  {code:'TRIAL-K2M7',status:'已使用',sc:'bgr',user:'陳小明'}
+];
+
+const POINTS=[
+  {date:'04/01',desc:'續費獎勵',value:50},
+  {date:'03/15',desc:'事故申請回饋',value:100},
+  {date:'02/20',desc:'轉贈給林○○',value:-80},
+  {date:'01/15',desc:'年費續約',value:250}
+];
+
 const STEP_LABELS=['申請提交','首次聯繫','協商處理','結案'];
-let selIdx=0,callOn=false,callSec=0,callTick=null,dTab='notes';
+const MEMBER_FILTERS=['all','訂閱中','待啟動','已過期','黑名單','續約成功','續約失敗'];
+let selIncidentId=INC[0].id;
+let callOn=false,callSec=0,callTick=null,dTab='notes';
+let curPlan='single',curPayTab='credit',memberFilter='all',incidentFilter='all';
+let memberSortKey='joined',memberSortDir='desc';
+let mode='admin',aPg='dashboard',mPg='m-login';
+let pendingIncidentDraft=null;
+let memberFlowSource='member';
+let memberAuthState='logged_out';
+let memberHistory=[];
+let remoteCollapsed=false;
+
+const memberProfile={
+  name:'陳小明',
+  email:'ming@email.com',
+  phone:'0912-345-678',
+  plate:'ABC-1234',
+  car:'Toyota Corolla',
+  plan:'年費會員',
+  expiry:'2025-01-15',
+  points:320,
+  autoRenew:true,
+  joined:'2023-06-12'
+};
 
 function p2(n){return String(n).padStart(2,'0')}
 function nowStr(){const d=new Date();return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())} ${p2(d.getHours())}:${p2(d.getMinutes())}`}
+function todayStr(){return nowStr().slice(0,10)}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function initials(name){return (name||'會').trim().slice(0,1)}
+function randomCode(prefix){return `${prefix}-${Math.random().toString(36).slice(2,6).toUpperCase()}`}
+function nextIncidentId(){return `#A${new Date().getFullYear()}-${String(INC.length+29).padStart(3,'0')}`}
+function nextTxnId(){return `#T${todayStr().replaceAll('-','').slice(2)}-${String(TXNS.length+1).padStart(3,'0')}`}
+function parseDate(str){return new Date(`${str}T00:00:00`)}
+function dateOnly(str){return (str||'').slice(0,10)}
+function latestDataDate(){
+  const dates=[...TXNS.map(tx=>dateOnly(tx.date)),...INC.map(inc=>dateOnly(inc.date)),todayStr()].filter(Boolean).sort();
+  return dates[dates.length-1];
+}
+function getStatusMeta(status){
+  return {
+    '待回電':{sc:'ba',steps:[1,0,0,0]},
+    '和解中':{sc:'bb',steps:[1,1,1,0]},
+    '已結案':{sc:'bg',steps:[1,1,1,1]},
+    '逾期':{sc:'br',steps:[1,1,0,0]}
+  }[status]||{sc:'bgr',steps:[1,0,0,0]};
+}
+function currentIncident(){return INC.find(inc=>inc.id===selIncidentId)||INC[0]}
+function needsPayment(){return ['logged_in_unpaid','nonmember'].includes(memberAuthState)}
+function currentAmount(){
+  let amount=curPlan==='annual'?899:1800;
+  const code=(document.getElementById('pay-promo')||{}).value?.trim().toUpperCase();
+  const promo=PROMOS.find(p=>p.code===code);
+  if(promo&&promo.discount.endsWith('%')) amount=Math.round(amount*(100-parseInt(promo.discount,10))/100);
+  return amount;
+}
+function memberDataset(){
+  const currentStatus=memberProfile.plan.includes('年費')?'訂閱中':'待啟動';
+  const currentSc=currentStatus==='訂閱中'?'bg':'ba';
+  return [
+    {...MEMBER_ROWS[0],name:memberProfile.name,email:memberProfile.email,phone:memberProfile.phone,plan:memberProfile.plan.includes('年費')?'年費':'單次',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功'},
+    ...MEMBER_ROWS.slice(1)
+  ];
+}
+function paidStatusLabel(){return memberAuthState==='logged_in_paid'?'已付費會員':memberAuthState==='logged_in_unpaid'?'未付費會員':''}
+function incidentConflict(phone){
+  if(!phone) return false;
+  return memberDataset().some(m=>m.phone===phone);
+}
+function showToast(msg,type='success'){
+  const wrap=document.getElementById('toast-wrap');
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>el.remove(),180);
+  },2200);
+}
+function renderSingleFlowSteps(){
+  const needPay=needsPayment();
+  document.getElementById('nonmember-step-bar').innerHTML=needPay
+    ?'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">付款</div><div class="si-line"></div><div class="si-dot">4</div><div class="si-step">等待回電</div>'
+    :'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">等待回電</div>';
+  document.getElementById('pay-step-num').textContent='3';
+  document.getElementById('pay-step-label').textContent='付款';
+  document.getElementById('pay-third-num').textContent='4';
+  document.getElementById('pay-third-label').textContent='等待回電';
+  document.getElementById('pay-fourth-num').style.display='none';
+  document.getElementById('pay-fourth-label').style.display='none';
+  document.getElementById('pay-fourth-num').textContent='4';
+  document.getElementById('pay-fourth-label').textContent='等待回電';
+  document.getElementById('incident-second-dot').textContent='2';
+  document.getElementById('incident-second-dot').className='si-dot on';
+  document.getElementById('incident-second-label').textContent='填寫事故資料';
+  document.getElementById('incident-second-label').className='si-step on';
+  document.getElementById('incident-third-dot').textContent=needPay?'3':'3';
+  document.getElementById('incident-third-label').textContent=needPay?'付款':'等待回電';
+  document.getElementById('incident-fourth-dot').style.display=needPay?'flex':'none';
+  document.getElementById('incident-fourth-label').style.display=needPay?'block':'none';
+  if(needPay){
+    document.getElementById('incident-third-dot').className='si-dot';
+    document.getElementById('incident-third-label').className='si-step';
+    document.getElementById('incident-fourth-dot').textContent='4';
+    document.getElementById('incident-fourth-label').textContent='等待回電';
+  } else {
+    document.getElementById('incident-third-dot').className='si-dot';
+    document.getElementById('incident-third-label').className='si-step';
+  }
+}
+function backFromIncident(){
+  swMember(needsPayment()&&pendingIncidentDraft?'m-nonmember':'m-home');
+}
+
+function visibleIncidents(){
+  const q=(document.getElementById('inc-search')||{}).value?.trim().toLowerCase()||'';
+  return INC.filter(inc=>{
+    const hit=incidentFilter==='all'||inc.status===incidentFilter;
+    const text=`${inc.id} ${inc.name} ${inc.type} ${inc.loc}`.toLowerCase();
+    return hit&&(!q||text.includes(q));
+  });
+}
 
 function renderList(){
-  document.getElementById('inc-list-items').innerHTML=INC.map((inc,i)=>`
-    <div class="inc-row${i===selIdx?' on':''}" onclick="selInc(${i})">
+  const rows=visibleIncidents();
+  if(!rows.some(inc=>inc.id===selIncidentId)) selIncidentId=rows[0]?.id||INC[0]?.id;
+  document.getElementById('inc-list-items').innerHTML=rows.length?rows.map(inc=>`
+    <div class="inc-row${inc.id===selIncidentId?' on':''}" onclick="selInc('${inc.id}')">
       <div class="inc-sum">
-        <div class="inc-id">${inc.id}</div>
-        <div class="inc-name">${inc.name}</div>
-        <div class="inc-desc">${inc.type} — ${inc.loc}</div>
+        <div class="inc-id">${esc(inc.id)}</div>
+        <div class="inc-name">${esc(inc.name)}</div>
+        <div class="inc-desc">${esc(inc.type)} — ${esc(inc.loc)}</div>
       </div>
       <div class="inc-meta">
-        <span class="badge ${inc.sc}">${inc.status}</span>
-        <div class="inc-time">${inc.date.slice(5,10)}</div>
+        <span class="badge ${inc.sc}">${esc(inc.status)}</span>
+        <div class="inc-time">${esc(inc.date.slice(5,10))}</div>
       </div>
-    </div>`).join('');
+    </div>`).join(''):'<div class="empty">目前沒有符合條件的案件</div>';
 }
 
 function renderDetail(){
-  const inc=INC[selIdx];
+  const inc=currentIncident();
+  if(!inc){
+    document.getElementById('inc-detail').innerHTML='<div class="empty">請先建立第一筆案件</div>';
+    return;
+  }
   const stepsHtml=STEP_LABELS.map((lbl,i)=>{
     const done=inc.steps[i]===1;
     const cur=!done&&(i===0||inc.steps[i-1]===1);
-    return `<div class="step">
-      <div class="step-dot ${done?'done':cur?'cur':''}">${done?'✓':i+1}</div>
-      <div class="step-lbl ${done?'done':cur?'cur':''}">${lbl}</div>
-    </div>`;
+    return `<div class="step"><div class="step-dot ${done?'done':cur?'cur':''}">${done?'✓':i+1}</div><div class="step-lbl ${done?'done':cur?'cur':''}">${lbl}</div></div>`;
   }).join('');
-
   const notesHtml=inc.notes.map(n=>`
     <div class="note-entry">
       <div class="note-meta">
-        <span class="note-author">${n.a}</span>
-        <span class="badge ${n.tc}" style="font-size:10px;padding:1px 6px">${n.tp}</span>
-        <span class="note-time">${n.t}</span>
+        <span class="note-author">${esc(n.a)}</span>
+        <span class="badge ${esc(n.tc)}" style="font-size:10px;padding:1px 6px">${esc(n.tp)}</span>
+        <span class="note-time">${esc(n.t)}</span>
       </div>
-      <div class="note-body">${n.b}</div>
+      <div class="note-body">${esc(n.b)}</div>
     </div>`).join('');
-
   const callBtns=callOn
-    ?`<button class="cbtn r" onclick="endCall()">掛斷</button><button class="cbtn">靜音</button><button class="cbtn">保留</button>`
-    :`<button class="cbtn g" onclick="startCall()">撥打</button><button class="cbtn">LINE</button><button class="cbtn">簡訊</button>`;
+    ?`<button class="cbtn r" onclick="endCall()">掛斷</button><button class="cbtn" onclick="showToast('已靜音通話')">靜音</button><button class="cbtn" onclick="showToast('已保留通話','warn')">保留</button>`
+    :`<button class="cbtn g" onclick="startCall()">撥打</button><button class="cbtn" onclick="showToast('已開啟 LINE 聯繫')">LINE</button><button class="cbtn" onclick="showToast('已建立簡訊範本')">簡訊</button>`;
 
   document.getElementById('inc-detail').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">
       <div>
-        <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px">${inc.id}</div>
-        <div style="font-size:15px;font-weight:600">${inc.type} — ${inc.name}</div>
-        <div style="font-size:11px;color:var(--t3);margin-top:2px">${inc.date} · ${inc.loc}</div>
+        <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px">${esc(inc.id)}</div>
+        <div style="font-size:15px;font-weight:600">${esc(inc.type)} — ${esc(inc.name)}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">${esc(inc.date)} · ${esc(inc.loc)}</div>
       </div>
-      <span class="badge ${inc.sc}" style="font-size:11px;padding:3px 10px;align-self:flex-start">${inc.status}</span>
+      <span class="badge ${esc(inc.sc)}" style="font-size:11px;padding:3px 10px;align-self:flex-start">${esc(inc.status)}</span>
     </div>
-
     <div class="card" style="padding:12px 15px;margin-bottom:14px">
       <div class="sec-label" style="margin-bottom:9px">申請進度</div>
       <div class="steps">${stepsHtml}</div>
     </div>
-
     <div class="detail-body">
       <div class="detail-main">
         <div class="tabs" id="dtabs">
@@ -757,19 +962,19 @@ function renderDetail(){
         <div class="tc ${dTab==='info'?'on':''}" id="tc-info">
           <div class="card">
             <div class="sec-label" style="margin-bottom:8px">事故說明</div>
-            <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">${inc.desc}</div>
+            <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">${esc(inc.desc)}</div>
             <div class="divider"></div>
             <table style="font-size:12px;margin-top:10px">
-              <tr><td style="color:var(--t3);padding:4px 0;width:72px">姓名</td><td>${inc.name}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">電話</td><td>${inc.phone}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">類型</td><td>${inc.type}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${inc.loc}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">申請</td><td>${inc.date}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0;width:72px">姓名</td><td>${esc(inc.name)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">電話</td><td>${esc(inc.phone)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">類型</td><td>${esc(inc.type)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${esc(inc.loc)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">聯絡時段</td><td>${esc(inc.slot||'未提供')}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">申請</td><td>${esc(inc.date)}</td></tr>
             </table>
           </div>
         </div>
       </div>
-
       <div class="detail-side">
         <div class="call-panel">
           <div class="call-head">
@@ -777,26 +982,32 @@ function renderDetail(){
             <div class="call-lbl">${callOn?'通話中':'撥打電話'}</div>
             ${callOn?`<span class="call-timer" id="call-timer">00:00</span>`:''}
           </div>
-          <div class="call-num">${inc.phone}</div>
+          <div class="call-num">${esc(inc.phone)}</div>
           <div class="call-btns">${callBtns}</div>
         </div>
         <div class="card" style="padding:13px 15px">
           <div class="sec-label" style="margin-bottom:8px">更新狀態</div>
           <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:11px">
-            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('待回電','ba')">設為 待回電</button>
-            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('和解中','bb')">設為 和解中</button>
-            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('已結案','bg')">設為 已結案</button>
+            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('待回電')">設為 待回電</button>
+            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('和解中')">設為 和解中</button>
+            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('已結案')">設為 已結案</button>
           </div>
           <div class="divider"></div>
-          <button class="btn btn-d btn-s" style="width:100%;justify-content:center">發送和解書</button>
+          <button class="btn btn-d btn-s" style="width:100%;justify-content:center" onclick="showToast('和解書已寄送至會員信箱')">發送和解書</button>
         </div>
       </div>
     </div>`;
-
   if(callOn)startTick();
 }
 
-function selInc(i){selIdx=i;dTab='notes';renderList();renderDetail();}
+function selInc(id){selIncidentId=id;dTab='notes';renderList();renderDetail();}
+function setIncidentFilter(status,el){
+  incidentFilter=status;
+  document.querySelectorAll('#inc-filters .chip').forEach(chip=>chip.classList.remove('on'));
+  if(el)el.classList.add('on');
+  renderList();
+  renderDetail();
+}
 function swDTab(t){
   dTab=t;
   document.querySelectorAll('#dtabs .tab').forEach((el,i)=>el.classList.toggle('on',['notes','info'][i]===t));
@@ -806,22 +1017,15 @@ function swDTab(t){
 function addNote(){
   const inp=document.getElementById('note-in');
   const tp=document.getElementById('note-type');
-  const body=inp.value.trim();if(!body)return;
+  const body=inp.value.trim();
+  if(!body){showToast('請先輸入筆記內容','warn');return;}
   const tcMap={筆記:'bp',通話:'bb','系統備註':'bgr'};
-  const tc=tcMap[tp.value]||'bgr';
-  INC[selIdx].notes.unshift({a:'陳客服',tp:tp.value,tc,t:nowStr(),b:body});
+  currentIncident().notes.unshift({a:'陳客服',tp:tp.value,tc:tcMap[tp.value]||'bgr',t:nowStr(),b:body});
   inp.value='';
-  document.getElementById('notes-list').insertAdjacentHTML('afterbegin',`
-    <div class="note-entry">
-      <div class="note-meta">
-        <span class="note-author">陳客服</span>
-        <span class="badge ${tc}" style="font-size:10px;padding:1px 6px">${tp.value}</span>
-        <span class="note-time">${nowStr()}</span>
-      </div>
-      <div class="note-body">${body}</div>
-    </div>`);
+  renderDetail();
+  showToast('案件紀錄已新增');
 }
-function startCall(){callOn=true;callSec=0;renderDetail();}
+function startCall(){callOn=true;callSec=0;renderDetail();showToast('已開始撥號');}
 function startTick(){
   clearInterval(callTick);
   callTick=setInterval(()=>{
@@ -834,29 +1038,312 @@ function endCall(){
   clearInterval(callTick);
   const dur=`通話時長 ${p2(Math.floor(callSec/60))} 分 ${p2(callSec%60)} 秒`;
   callOn=false;
-  INC[selIdx].notes.unshift({a:'系統',tp:'通話',tc:'bb',t:nowStr(),b:`通話結束。${dur}。請在上方補充通話內容。`});
+  currentIncident().notes.unshift({a:'系統',tp:'通話',tc:'bb',t:nowStr(),b:`通話結束。${dur}。請在上方補充通話內容。`});
   renderDetail();
 }
-function upStatus(st,sc){
-  INC[selIdx].status=st;INC[selIdx].sc=sc;
-  renderList();renderDetail();
+function upStatus(status){
+  const meta=getStatusMeta(status);
+  const inc=currentIncident();
+  inc.status=status;
+  inc.sc=meta.sc;
+  inc.steps=[...meta.steps];
+  renderList();
+  renderDetail();
+  renderMemberHome();
+  showToast(`案件已更新為「${status}」`);
 }
 
-/* ── Member helpers ── */
-let curPlan='single';
 function selPlan(p){
   curPlan=p;
   document.getElementById('plan-single').classList.toggle('sel',p==='single');
   document.getElementById('plan-annual').classList.toggle('sel',p==='annual');
+  renderSingleFlowSteps();
 }
-function goPayment(){
-  document.getElementById('pay-amount').textContent=curPlan==='annual'?'NT$899':'NT$1,800';
-  swMember('m-payment');
+function startApplicationFlow(){
+  document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
+  pendingIncidentDraft=null;
+  swMember('m-incident-form');
 }
 function swPayTab(el,t){
+  curPayTab=t;
   document.querySelectorAll('#page-m-payment .tabs .tab').forEach(x=>x.classList.remove('on'));
   el.classList.add('on');
   ['credit','cvs','linepay'].forEach(id=>document.getElementById('pay-'+id).style.display=id===t?'block':'none');
+}
+function submitPayment(){
+  const amount=currentAmount();
+  if(curPayTab==='credit'){
+    if(!document.getElementById('pay-holder').value.trim()||!document.getElementById('pay-card').value.trim()){
+      showToast('請完整填寫信用卡資訊','warn');
+      return;
+    }
+  }
+  const methodMap={credit:'信用卡',cvs:'超商代碼',linepay:'LINE Pay'};
+  TXNS.unshift({id:nextTxnId(),member:memberProfile.name,amount:`NT$${amount.toLocaleString('zh-TW')}`,method:methodMap[curPayTab],date:todayStr(),status:curPayTab==='cvs'?'待付款':'成功',sc:curPayTab==='cvs'?'ba':'bg'});
+  if(curPlan==='annual'){
+    memberProfile.plan='年費會員';
+    memberProfile.expiry='2027-04-14';
+    memberProfile.autoRenew=true;
+    memberProfile.points+=100;
+    POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:'購買年費會員',value:100});
+  }
+  renderTransactions();
+  renderMembers();
+  renderPoints();
+  renderMemberHome();
+  renderDashboard();
+  if(needsPayment()&&pendingIncidentDraft){
+    createIncidentFromDraft(pendingIncidentDraft);
+    pendingIncidentDraft=null;
+    showToast(curPayTab==='cvs'?'已建立繳費代碼，案件待客服確認':'付款成功，案件已送出');
+    swMember('m-waiting');
+  } else {
+    showToast(curPayTab==='cvs'?'已建立繳費代碼，等待付款':'付款成功，請繼續填寫事故資料');
+    swMember('m-incident-form');
+  }
+}
+function buildIncidentDraft(){
+  const date=document.getElementById('incident-date').value;
+  const type=document.getElementById('incident-type').value;
+  const loc=document.getElementById('incident-loc').value.trim();
+  const desc=document.getElementById('incident-desc').value.trim();
+  const phone=document.getElementById('incident-phone').value.trim();
+  const slot=document.getElementById('incident-slot').value.trim();
+  const counterpartyName=document.getElementById('counterparty-name').value.trim();
+  const counterpartyPhone=document.getElementById('counterparty-phone').value.trim();
+  if(!date||!loc||!desc||!phone){
+    showToast('請完整填寫事故日期、地點、說明與電話','warn');
+    return null;
+  }
+  return {date,type,loc,desc,phone,slot:slot||'24 小時內皆可',counterpartyName,counterpartyPhone};
+}
+function createIncidentFromDraft(draft){
+  const id=nextIncidentId();
+  const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+  const inc={id,name:memberProfile.name,phone:draft.phone,type:draft.type,loc:draft.loc,date:dateTime,status:'待回電',sc:'ba',desc:draft.desc,steps:[1,0,0,0],slot:draft.slot,
+    notes:[
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`會員提交事故申請，類型：${draft.type}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot||'未指定'}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
+    ]};
+  INC.unshift(inc);
+  selIncidentId=id;
+  document.getElementById('waiting-summary').innerHTML=`客服將於 <strong>24 小時內</strong>致電 <strong>${esc(draft.phone)}</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">${esc(id)}</span>`;
+  renderList();
+  renderDetail();
+  renderMemberHome();
+  renderMembers();
+  renderDashboard();
+}
+function submitIncident(){
+  const draft=buildIncidentDraft();
+  if(!draft) return;
+  const conflict=incidentConflict(draft.counterpartyPhone);
+  document.getElementById('conflict-box').style.display=conflict?'block':'none';
+  if(conflict){
+    showToast('偵測到雙方皆為會員，案件不可處理','error');
+    return;
+  }
+  if(needsPayment()){
+    pendingIncidentDraft=draft;
+    document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
+    showToast('案件資料已暫存，請完成付款');
+    swMember('m-payment');
+    return;
+  }
+  createIncidentFromDraft(draft);
+  showToast('事故申請已建立，後台案件同步更新');
+  swMember('m-waiting');
+}
+
+function renderMembers(){
+  const search=(document.getElementById('member-search')||{}).value?.trim().toLowerCase()||'';
+  document.getElementById('member-filter-label').textContent=memberFilter==='all'?'全部':memberFilter;
+  const rows=memberDataset().filter(row=>{
+    const hit=memberFilter==='all'||row.status===memberFilter||(memberFilter==='續約成功'&&row.renewal==='success')||(memberFilter==='續約失敗'&&row.renewal==='failed');
+    const text=`${row.name} ${row.phone} ${row.email}`.toLowerCase();
+    return hit&&(!search||text.includes(search));
+  }).sort((a,b)=>{
+    const av=a[memberSortKey] ?? '';
+    const bv=b[memberSortKey] ?? '';
+    const base=memberSortKey==='points'
+      ? Number(av)-Number(bv)
+      : String(av).localeCompare(String(bv),'zh-Hant');
+    return memberSortDir==='asc'?base:-base;
+  });
+  document.getElementById('member-table-body').innerHTML=rows.length?rows.map(row=>`
+    <tr>
+      <td><div class="row"><div class="av av-s" style="background:${row.tone||'var(--blue-bg)'};color:${row.toneText||'var(--blue-t)'}">${esc(initials(row.name))}</div><div><div style="font-weight:500">${esc(row.name)}</div><div style="font-size:10px;color:var(--t3)">${esc(row.email)}</div></div></div></td>
+      <td>${esc(row.phone)}</td><td>${esc(row.plan)}</td><td>${esc(row.points)}</td><td><span class="badge ${esc(row.sc||'bg')}">${esc(row.status)}</span> <span style="font-size:10px;color:var(--t3)">${esc(row.renewalLabel||'')}</span></td><td>${esc(row.joined)}</td><td><button class="btn btn-s" onclick="showToast('會員檢視面板待串接')">查看</button></td>
+    </tr>`).join(''):'<tr><td colspan="7" class="empty">沒有符合條件的會員</td></tr>';
+}
+function setMemberSort(key){
+  if(memberSortKey===key) memberSortDir=memberSortDir==='asc'?'desc':'asc';
+  else{memberSortKey=key;memberSortDir='asc';}
+  renderMembers();
+}
+function setMemberFilter(filter,el){
+  memberFilter=filter;
+  document.querySelectorAll('#member-tabs .tab').forEach(tab=>tab.classList.remove('on'));
+  if(el)el.classList.add('on');
+  renderMembers();
+}
+function cycleMemberFilter(){
+  const idx=(MEMBER_FILTERS.indexOf(memberFilter)+1)%MEMBER_FILTERS.length;
+  memberFilter=MEMBER_FILTERS[idx];
+  const tabs=document.querySelectorAll('#member-tabs .tab');
+  tabs.forEach((tab,i)=>tab.classList.toggle('on',i===idx));
+  renderMembers();
+}
+function exportMembers(){showToast('已匯出會員名單 CSV');}
+
+function renderTransactions(){
+  document.getElementById('transaction-table-body').innerHTML=TXNS.map(tx=>`
+    <tr><td style="font-family:var(--mono);font-size:11px">${esc(tx.id)}</td><td>${esc(tx.member)}</td><td>${esc(tx.amount)}</td><td>${esc(tx.method)}</td><td>${esc(tx.date)}</td><td><span class="badge ${esc(tx.sc)}">${esc(tx.status)}</span></td></tr>
+  `).join('');
+}
+
+function setDashboardRange(days){
+  const end=parseDate(latestDataDate());
+  const start=new Date(end);
+  start.setDate(start.getDate()-(days-1));
+  document.getElementById('dash-from').value=start.toISOString().slice(0,10);
+  document.getElementById('dash-to').value=end.toISOString().slice(0,10);
+  renderDashboard();
+}
+function renderDashboard(){
+  const from=document.getElementById('dash-from').value||todayStr();
+  const to=document.getElementById('dash-to').value||todayStr();
+  const fromDate=parseDate(from), toDate=parseDate(to);
+  const txInRange=TXNS.filter(tx=>{
+    const d=parseDate(dateOnly(tx.date));
+    return d>=fromDate&&d<=toDate;
+  });
+  const incInRange=INC.filter(inc=>{
+    const d=parseDate(dateOnly(inc.date));
+    return d>=fromDate&&d<=toDate;
+  });
+  const members=memberDataset();
+  const activeMembers=members.filter(m=>m.status==='訂閱中').length;
+  const revenue=txInRange.filter(tx=>tx.status==='成功').reduce((sum,tx)=>sum+Number(tx.amount.replace(/[^\d]/g,'')),0);
+  const overdue=INC.filter(inc=>inc.status==='逾期').length;
+  document.getElementById('dashboard-metrics').innerHTML=`
+    <div class="metric"><div class="m-label">總會員數</div><div class="m-val">${members.length}</div><div class="m-sub">${from} 至 ${to}</div></div>
+    <div class="metric"><div class="m-label">有效訂閱</div><div class="m-val">${activeMembers}</div><div class="m-sub">${Math.round(activeMembers/members.length*100)}% 活躍率</div></div>
+    <div class="metric"><div class="m-label">區間收入</div><div class="m-val">NT$${revenue.toLocaleString('zh-TW')}</div><div class="m-sub">${txInRange.length} 筆交易</div></div>
+    <div class="metric"><div class="m-label">待處理案件</div><div class="m-val" style="color:var(--amber)">${incInRange.filter(inc=>inc.status!=='已結案').length}</div><div class="m-sub" style="color:var(--red)">${overdue} 件逾期</div></div>`;
+  document.getElementById('dashboard-timeline').innerHTML=INC.slice(0,4).map(inc=>`
+    <div class="tl-item"><div class="tl-dot ${inc.sc==='bg'?'g':inc.sc==='bb'?'b':inc.sc==='br'?'r':'a'}"></div><div class="tl-t">${esc(inc.name)} ${esc(inc.status)} — ${esc(inc.type)}</div><div class="tl-time">${esc(inc.date)}</div></div>
+  `).join('');
+  const annual=txInRange.filter(tx=>tx.amount.includes('899')&&tx.status==='成功');
+  const single=txInRange.filter(tx=>tx.amount.includes('1,800')&&tx.status==='成功');
+  document.getElementById('dashboard-transactions').innerHTML=`
+    <tr><td>年費 $899</td><td>${annual.length}</td><td>NT$${annual.reduce((s,t)=>s+Number(t.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}</td></tr>
+    <tr><td>單次 $1,800</td><td>${single.length}</td><td>NT$${single.reduce((s,t)=>s+Number(t.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}</td></tr>
+    <tr><td>待付款</td><td>${txInRange.filter(tx=>tx.status==='待付款').length}</td><td>—</td></tr>`;
+  const trendMonths=['01','02','03','04','05','06'];
+  const trendValues=[12,18,16,22,24,29];
+  document.getElementById('member-trend-chart').innerHTML=trendMonths.map((m,i)=>`
+    <div class="bar"><div class="bar-val">+${trendValues[i]}</div><div class="bar-fill" style="height:${trendValues[i]*4}px"></div><div class="bar-label">${m}月</div></div>
+  `).join('');
+  document.getElementById('dashboard-trend-summary').textContent=`近半年會員平均每月淨增 ${Math.round(trendValues.reduce((a,b)=>a+b,0)/trendValues.length)} 人，最新月份續約成功率高於失敗率。`;
+  const renewSuccess=members.filter(m=>m.renewal==='success').length;
+  const renewFailed=members.filter(m=>m.renewal==='failed').length;
+  const totalRenew=Math.max(renewSuccess+renewFailed,1);
+  document.getElementById('renew-success-count').textContent=renewSuccess;
+  document.getElementById('renew-success-sub').textContent=`${Math.round(renewSuccess/totalRenew*100)}%`;
+  document.getElementById('renew-failed-count').textContent=renewFailed;
+  document.getElementById('renew-failed-sub').textContent=`${Math.round(renewFailed/totalRenew*100)}%`;
+  document.getElementById('renew-highlight').innerHTML=`建議優先追蹤 <strong>${renewFailed}</strong> 位續約失敗會員，並針對 <strong>${renewSuccess}</strong> 位成功續約會員設計回訪或推薦方案。`;
+}
+
+function renderSettings(){
+  document.getElementById('promo-table-body').innerHTML=PROMOS.map(p=>`<tr><td>${esc(p.code)}</td><td>${esc(p.discount)}</td><td>${esc(p.used)}</td><td>${esc(p.expiry)}</td></tr>`).join('');
+  document.getElementById('trial-table-body').innerHTML=TRIALS.map(t=>`<tr><td style="font-family:var(--mono)">${esc(t.code)}</td><td><span class="badge ${esc(t.sc)}">${esc(t.status)}</span></td><td>${esc(t.user)}</td></tr>`).join('');
+}
+function addPromo(){
+  const code=document.getElementById('promo-code').value.trim().toUpperCase();
+  const discount=document.getElementById('promo-discount').value.trim();
+  const expiry=document.getElementById('promo-expiry').value;
+  if(!code||!discount||!expiry){showToast('請完整填寫優惠碼資料','warn');return;}
+  PROMOS.unshift({code,discount,used:0,expiry});
+  renderSettings();
+  showToast(`優惠碼 ${code} 已新增`);
+}
+function generateTrials(){
+  const qty=Math.max(1,Math.min(20,parseInt(document.getElementById('trial-qty').value,10)||1));
+  for(let i=0;i<qty;i++) TRIALS.unshift({code:randomCode('TRIAL'),status:'未使用',sc:'bg',user:'—'});
+  renderSettings();
+  showToast(`已產生 ${qty} 組試用序號`);
+}
+
+function renderPoints(){
+  document.getElementById('points-balance').textContent=memberProfile.points;
+  document.getElementById('points-table-body').innerHTML=POINTS.map(item=>`
+    <tr><td>${esc(item.date)}</td><td>${esc(item.desc)}</td><td style="text-align:right;color:${item.value>=0?'var(--green-t)':'var(--red-t)'};font-weight:600">${item.value>=0?'+':''}${esc(item.value)}</td></tr>
+  `).join('');
+}
+function giftPoints(){
+  const phone=document.getElementById('gift-phone').value.trim();
+  const amount=parseInt(document.getElementById('gift-amount').value,10);
+  if(!phone||!amount){showToast('請填入收件手機與轉贈數量','warn');return;}
+  if(amount>memberProfile.points){showToast('點數不足','error');return;}
+  memberProfile.points-=amount;
+  POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:`轉贈給 ${phone}`,value:-amount});
+  renderPoints();
+  renderMemberHome();
+  showToast(`已轉贈 ${amount} 點`);
+}
+
+function renderMemberHome(){
+  document.getElementById('hero-name').textContent=`你好，${memberProfile.name}`;
+  document.getElementById('hero-sub').textContent=`${memberProfile.plan} · 到期 ${memberProfile.expiry}`;
+  document.getElementById('hero-tags').innerHTML=`
+    <span class="hero-tag">${memberProfile.points} 點</span>
+    <span class="hero-tag">${INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).length} 件紀錄</span>
+    <span class="hero-tag">${memberProfile.autoRenew?'自動續費開啟':'自動續費關閉'}</span>`;
+  const cases=INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).slice(0,3);
+  document.getElementById('member-cases').innerHTML=cases.length?cases.map(inc=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-size:10px;color:var(--t3)">${esc(inc.id)}</div><div style="font-weight:500;font-size:13px;margin-top:1px">${esc(inc.type)} — ${esc(inc.loc)}</div></div>
+        <span class="badge ${esc(inc.sc)}">${esc(inc.status)}</span>
+      </div>
+      <div style="display:flex;gap:3px;align-items:center;font-size:11px;flex-wrap:wrap">
+        ${STEP_LABELS.map((lbl,i)=>`<span style="${inc.steps[i]?'background:var(--green-bg);color:var(--green-t);font-weight:600':'color:var(--t3)'};padding:2px 7px;border-radius:4px">${inc.steps[i]?'✓ ':''}${lbl}</span>`).join('<span style="color:var(--bd2)">—</span>')}
+      </div>
+      <div style="font-size:11px;color:var(--t3);margin-top:7px">客服更新：${esc(inc.slot||'待聯繫')}</div>
+    </div>`).join(''):'<div class="card"><div class="empty">目前沒有案件，發生事故時可立即提交申請。</div></div>';
+}
+
+function saveProfile(){
+  const prevName=memberProfile.name;
+  const prevPhone=memberProfile.phone;
+  memberProfile.name=document.getElementById('profile-name').value.trim()||memberProfile.name;
+  memberProfile.phone=document.getElementById('profile-phone').value.trim()||memberProfile.phone;
+  memberProfile.email=document.getElementById('profile-email').value.trim()||memberProfile.email;
+  memberProfile.plate=document.getElementById('profile-plate').value.trim();
+  memberProfile.car=document.getElementById('profile-car').value.trim();
+  INC.forEach(inc=>{
+    if(inc.name===prevName) inc.name=memberProfile.name;
+    if(inc.phone===prevPhone) inc.phone=memberProfile.phone;
+  });
+  document.getElementById('profile-title').textContent=memberProfile.name;
+  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
+  renderMembers();
+  renderMemberHome();
+  renderList();
+  renderDetail();
+  showToast('個人資料已更新');
+}
+function syncProfileForm(){
+  document.getElementById('profile-name').value=memberProfile.name;
+  document.getElementById('profile-phone').value=memberProfile.phone;
+  document.getElementById('profile-email').value=memberProfile.email;
+  document.getElementById('profile-plate').value=memberProfile.plate;
+  document.getElementById('profile-car').value=memberProfile.car;
+  document.getElementById('profile-title').textContent=memberProfile.name;
+  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
 }
 
 /* ── Navigation ── */
@@ -880,8 +1367,182 @@ const PG_TITLE={
   'm-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
 };
+const REMOTE_MEMBER_PAGES={
+  logged_out:[
+    {id:'m-login',label:'登入 / 入口'},
+    {id:'m-register',label:'建立帳號'}
+  ],
+  logged_in_paid:[
+    {id:'m-home',label:'我的帳戶'},
+    {id:'m-nonmember',label:'選擇方案'},
+    {id:'m-incident-form',label:'事故資料'},
+    {id:'m-waiting',label:'申請完成'},
+    {id:'m-points',label:'點數'},
+    {id:'m-profile',label:'個人資料'}
+  ],
+  logged_in_unpaid:[
+    {id:'m-home',label:'我的帳戶'},
+    {id:'m-nonmember',label:'選擇方案'},
+    {id:'m-incident-form',label:'事故資料'},
+    {id:'m-payment',label:'付款'},
+    {id:'m-waiting',label:'申請完成'},
+    {id:'m-points',label:'點數'},
+    {id:'m-profile',label:'個人資料'}
+  ],
+  nonmember:[
+    {id:'m-nonmember',label:'非會員申請'},
+    {id:'m-incident-form',label:'事故資料'},
+    {id:'m-payment',label:'付款'},
+    {id:'m-waiting',label:'申請完成'}
+  ]
+};
+const MEMBER_BACK_MAP={
+  'm-login':'m-login',
+  'm-register':'m-login',
+  'm-nonmember':'m-login',
+  'm-payment':'m-nonmember',
+  'm-incident-form':'m-home',
+  'm-waiting':'m-home',
+  'm-home':'m-login',
+  'm-points':'m-home',
+  'm-profile':'m-home'
+};
+const MEMBER_ROOT_PAGES={
+  logged_out:['m-login'],
+  logged_in_paid:['m-home'],
+  logged_in_unpaid:['m-home'],
+  nonmember:['m-nonmember']
+};
 
-let mode='admin',aPg='dashboard',mPg='m-login';
+function populateRemoteOptions(){
+  document.getElementById('remote-admin-page').innerHTML=ANAV.map(p=>`<option value="${p.id}">${p.lbl}</option>`).join('');
+  renderRemoteMemberPages();
+}
+function inferRemoteAuth(){
+  if(memberFlowSource==='nonmember'||['m-nonmember','m-payment'].includes(mPg)) return 'nonmember';
+  if(['m-login','m-register'].includes(mPg)) return 'logged_out';
+  return memberAuthState;
+}
+function renderRemoteMemberPages(){
+  const auth=document.getElementById('remote-auth').value;
+  const select=document.getElementById('remote-member-page');
+  const current=select.value;
+  const pages=REMOTE_MEMBER_PAGES[auth];
+  select.innerHTML=pages.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  if(pages.some(p=>p.id===current)) select.value=current;
+  else select.value=pages[0].id;
+}
+function toggleRemoteUI(){
+  remoteCollapsed=!remoteCollapsed;
+  const box=document.getElementById('remote-ui');
+  const btn=document.getElementById('remote-toggle');
+  box.classList.toggle('collapsed',remoteCollapsed);
+  btn.textContent=remoteCollapsed?'展開':'收合';
+}
+function syncRemoteControls(){
+  document.getElementById('remote-mode').value=mode;
+  document.getElementById('remote-admin-page').value=aPg;
+  const auth=memberAuthState;
+  document.getElementById('remote-auth').value=auth;
+  renderRemoteMemberPages();
+  if(REMOTE_MEMBER_PAGES[auth].some(p=>p.id===mPg)) document.getElementById('remote-member-page').value=mPg;
+  toggleRemoteGroups();
+}
+function toggleRemoteGroups(){
+  const isAdmin=document.getElementById('remote-mode').value==='admin';
+  document.getElementById('remote-admin-group').style.display=isAdmin?'block':'none';
+  document.getElementById('remote-member-group').style.display=isAdmin?'none':'block';
+}
+function applyRemoteState(){
+  const nextMode=document.getElementById('remote-mode').value;
+  if(nextMode==='admin'){
+    switchMode('admin');
+    swAdmin(document.getElementById('remote-admin-page').value);
+  } else {
+    const auth=document.getElementById('remote-auth').value;
+    renderRemoteMemberPages();
+    setMemberAuthState(auth);
+    memberFlowSource=auth==='nonmember'?'nonmember':'member';
+    switchMode('member');
+    swMember(document.getElementById('remote-member-page').value);
+  }
+  toggleRemoteGroups();
+}
+function resetRemoteState(){
+  setMemberAuthState('logged_out');
+  memberFlowSource='member';
+  memberHistory=[];
+  pendingIncidentDraft=null;
+  switchMode('admin');
+  swAdmin('dashboard');
+  syncRemoteControls();
+  showToast('Demo 狀態已重設');
+}
+function shouldShowMemberBack(){
+  if(mode!=='member') return false;
+  return memberHistory.length>0;
+}
+function updateTopbarBack(){
+  const back=document.querySelector('.topbar-back');
+  back.style.display=shouldShowMemberBack()?'inline-flex':'none';
+}
+function memberBack(){
+  if(mode!=='member') return;
+  const prev=memberHistory.pop();
+  if(!prev) return;
+  swMember(prev,{pushHistory:false});
+}
+
+function getMemberNav(){
+  if(memberAuthState==='logged_out') return MNAV.filter(item=>['m-login'].includes(item.id));
+  if(memberAuthState==='nonmember') return MNAV.filter(item=>['m-login','m-nonmember'].includes(item.id));
+  return MNAV;
+}
+function applyMemberChrome(){
+  if(mode!=='member') return;
+  const nameEl=document.getElementById('user-name');
+  const roleEl=document.getElementById('user-role');
+  const avatar=document.querySelector('.sidebar-foot .av');
+  if(memberAuthState==='logged_out'){
+    nameEl.textContent='訪客模式';
+    roleEl.textContent='尚未登入';
+    avatar.textContent='訪';
+  } else if(memberAuthState==='nonmember'){
+    nameEl.textContent='非會員流程';
+    roleEl.textContent='單次服務申請中';
+    avatar.textContent='客';
+  } else if(memberAuthState==='logged_in_unpaid'){
+    nameEl.textContent='陳小明';
+    roleEl.textContent='會員未付費';
+    avatar.textContent='陳';
+  } else {
+    nameEl.textContent='陳小明';
+    roleEl.textContent='會員已付費';
+    avatar.textContent='陳';
+  }
+}
+function updateShellMode(){
+  document.querySelector('.app').classList.toggle('member-mode',mode==='member');
+}
+function setMemberAuthState(auth){
+  memberAuthState=auth;
+  if(auth==='logged_out'){
+    memberFlowSource='member';
+    if(!['m-login','m-register'].includes(mPg)){ mPg='m-login'; memberHistory=[]; }
+  }
+  if(auth==='nonmember'){
+    memberFlowSource='nonmember';
+    if(!['m-nonmember','m-incident-form','m-payment','m-waiting'].includes(mPg)){ mPg='m-nonmember'; memberHistory=[]; }
+  }
+  if(['logged_in_paid','logged_in_unpaid'].includes(auth)){
+    memberFlowSource='member';
+    if(['m-login','m-register','m-nonmember'].includes(mPg)){ mPg='m-home'; memberHistory=[]; }
+  }
+  if(mode==='member'){
+    applyMemberChrome();
+    updateTopbarBack();
+  }
+}
 
 function mkNav(nav,cur){
   document.getElementById('nav').innerHTML=nav.map(p=>`
@@ -910,26 +1571,69 @@ function swAdmin(id){
   document.getElementById('pg-title').textContent=PG_TITLE[id]||id;
   showPg(id);mkNav(ANAV,id);
   if(id==='incidents'){renderList();renderDetail();}
+  if(id==='members'){renderMembers();}
+  if(id==='transactions'){renderTransactions();}
+  if(id==='settings'){renderSettings();}
+  if(id==='dashboard'){renderDashboard();}
+  syncRemoteControls();
 }
-function swMember(id){
+function swMember(id,options={}){
+  const {pushHistory=true}=options;
+  const prev=mPg;
   mPg=id;
+  if(pushHistory&&prev&&prev!==id){
+    const roots=MEMBER_ROOT_PAGES[memberAuthState]||[];
+    if(!roots.includes(id)) memberHistory.push(prev);
+    if(roots.includes(id)) memberHistory=[];
+  }
+  if(['m-login','m-register'].includes(id)) setMemberAuthState('logged_out');
+  else if(['m-nonmember','m-payment'].includes(id) && memberAuthState==='nonmember') setMemberAuthState('nonmember');
+  else if(['m-home','m-points','m-profile'].includes(id) && !['logged_in_paid','logged_in_unpaid'].includes(memberAuthState)) setMemberAuthState('logged_in_paid');
+  else if(id==='m-waiting'&&memberFlowSource==='nonmember') setMemberAuthState('nonmember');
+  else if(id==='m-waiting'&&memberAuthState==='logged_out') setMemberAuthState('logged_in_unpaid');
+  const rootsAfter=MEMBER_ROOT_PAGES[memberAuthState]||[];
+  if(rootsAfter.includes(id)) memberHistory=[];
   document.getElementById('pg-title').textContent=PG_TITLE[id]||id;
-  showPg(id);mkNav(MNAV,id);
+  showPg(id);applyMemberChrome();
+  updateTopbarBack();
+  renderSingleFlowSteps();
+  if(id==='m-home'){renderMemberHome();}
+  if(id==='m-points'){renderPoints();}
+  if(id==='m-profile'){syncProfileForm();}
+  if(id==='m-payment'){document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;}
+  if(id==='m-incident-form'){
+    if(!document.getElementById('incident-date').value){document.getElementById('incident-date').value=todayStr();}
+    document.getElementById('conflict-box').style.display='none';
+  }
+  syncRemoteControls();
 }
 
 function switchMode(m){
   mode=m;
-  document.getElementById('btn-m').classList.toggle('on',m==='member');
-  document.getElementById('btn-a').classList.toggle('on',m==='admin');
+  updateShellMode();
   document.getElementById('mode-label').textContent=m==='admin'?'管理後台':'會員前台';
   document.getElementById('user-name').textContent=m==='admin'?'陳客服':'陳小明';
   document.getElementById('user-role').textContent=m==='admin'?'客服專員':'年費會員';
+  document.querySelector('.sidebar-foot .av').textContent=m==='admin'?'陳':'陳';
   if(m==='admin'){mkNav(ANAV,aPg);swAdmin(aPg);}
-  else{mkNav(MNAV,mPg);swMember(mPg);}
+  else{applyMemberChrome();swMember(mPg);}
+  syncRemoteControls();
 }
 
+renderMembers();
+renderTransactions();
+renderSettings();
+renderPoints();
+renderMemberHome();
+syncProfileForm();
+setDashboardRange(30);
+renderSingleFlowSteps();
+populateRemoteOptions();
+document.getElementById('incident-date').value=todayStr();
+updateShellMode();
 mkNav(ANAV,'dashboard');
 showPg('dashboard');
+syncRemoteControls();
 </script>
 </body>
 </html>
