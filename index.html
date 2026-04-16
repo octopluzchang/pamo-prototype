@@ -223,7 +223,7 @@ textarea.input{resize:vertical}
 .bar-fill{width:100%;max-width:40px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--blue),#7db2e8);min-height:10px}
 .bar-label{font-size:11px;color:var(--t3)}
 .bar-val{font-size:11px;font-weight:600;color:var(--t2)}
-.remote-ui{position:fixed;right:18px;top:70px;width:260px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.14);padding:14px;z-index:35}
+.remote-ui{position:fixed;right:18px;bottom:18px;width:260px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.14);padding:14px;z-index:35}
 .remote-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .remote-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);flex:1}
 .remote-sub{font-size:11px;color:var(--t3);line-height:1.5;margin-bottom:10px}
@@ -231,6 +231,10 @@ textarea.input{resize:vertical}
 .remote-actions{display:flex;gap:8px;margin-top:12px}
 .remote-ui.collapsed{width:auto;padding:10px 12px}
 .remote-ui.collapsed .remote-body{display:none}
+.readonly{background:var(--bg2)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;align-items:center;justify-content:center;z-index:45;padding:20px}
+.modal.show{display:flex}
+.modal-card{width:min(760px,100%);max-height:85vh;overflow:auto;background:var(--bg);border-radius:16px;border:1px solid var(--bd);box-shadow:0 18px 40px rgba(0,0,0,.18);padding:18px}
 
 @media (max-width: 960px){
   html,body{overflow:auto}
@@ -320,7 +324,7 @@ textarea.input{resize:vertical}
           <input class="input" id="member-search" placeholder="搜尋姓名、電話、信箱…" oninput="renderMembers()"/>
           <button class="btn btn-s" onclick="cycleMemberFilter()">篩選：<span id="member-filter-label">全部</span></button>
           <button class="btn btn-s" onclick="exportMembers()">匯出 CSV</button>
-          <button class="btn btn-p btn-s spacer" onclick="showToast('已開啟新增會員流程原型')">+ 新增會員</button>
+          <button class="btn btn-p btn-s spacer" onclick="openAddMemberModal()">+ 新增會員</button>
         </div>
         <div class="tabs" id="member-tabs">
           <div class="tab on" onclick="setMemberFilter('all',this)">全部</div>
@@ -334,7 +338,7 @@ textarea.input{resize:vertical}
         <div class="card" style="padding:0">
           <table>
             <thead>
-              <tr><th onclick="setMemberSort('name')" style="cursor:pointer">會員</th><th onclick="setMemberSort('phone')" style="cursor:pointer">電話</th><th onclick="setMemberSort('plan')" style="cursor:pointer">方案</th><th onclick="setMemberSort('points')" style="cursor:pointer">點數</th><th onclick="setMemberSort('status')" style="cursor:pointer">狀態</th><th onclick="setMemberSort('joined')" style="cursor:pointer">加入</th><th></th></tr>
+              <tr><th onclick="setMemberSort('name')" style="cursor:pointer">會員</th><th onclick="setMemberSort('phone')" style="cursor:pointer">電話</th><th onclick="setMemberSort('plan')" style="cursor:pointer">方案</th><th onclick="setMemberSort('promoCode')" style="cursor:pointer">折扣</th><th onclick="setMemberSort('points')" style="cursor:pointer">點數</th><th onclick="setMemberSort('status')" style="cursor:pointer">狀態</th><th onclick="setMemberSort('joined')" style="cursor:pointer">加入</th><th></th></tr>
             </thead>
             <tbody id="member-table-body"></tbody>
           </table>
@@ -343,14 +347,20 @@ textarea.input{resize:vertical}
 
       <!-- ADMIN: 交易 -->
       <div class="page" id="page-transactions">
+        <div class="toolbar">
+          <input class="input" id="tx-from" type="date" onchange="renderTransactions()"/>
+          <input class="input" id="tx-to" type="date" onchange="renderTransactions()"/>
+          <button class="btn btn-s" onclick="setTransactionRange(30)">近 30 天</button>
+          <button class="btn btn-s" onclick="exportTransactions()">下載 CSV</button>
+        </div>
         <div class="metrics g3">
-          <div class="metric"><div class="m-label">本月收入</div><div class="m-val">NT$68,420</div></div>
-          <div class="metric"><div class="m-label">成功交易</div><div class="m-val">57 筆</div></div>
-          <div class="metric"><div class="m-label">退款</div><div class="m-val">2 筆</div><div class="m-sub">NT$1,798</div></div>
+          <div class="metric"><div class="m-label">區間收入</div><div class="m-val" id="tx-income">NT$0</div></div>
+          <div class="metric"><div class="m-label">成功交易</div><div class="m-val" id="tx-success">0 筆</div></div>
+          <div class="metric"><div class="m-label">退款</div><div class="m-val" id="tx-refund">0 筆</div><div class="m-sub" id="tx-refund-amount">NT$0</div></div>
         </div>
         <div class="card" style="padding:0">
           <table>
-            <tr><th>交易編號</th><th>會員</th><th>金額</th><th>方式</th><th>日期</th><th>狀態</th></tr>
+            <tr><th>交易編號</th><th>會員</th><th>金額</th><th>方式</th><th>折扣碼</th><th>日期</th><th>狀態</th></tr>
             <tbody id="transaction-table-body"></tbody>
           </table>
         </div>
@@ -394,9 +404,6 @@ textarea.input{resize:vertical}
               <button class="btn btn-p" style="flex:1" onclick="setMemberAuthState('logged_in_paid');swMember('m-home')">登入</button>
               <button class="btn" style="flex:1" onclick="swMember('m-register')">新用戶註冊</button>
             </div>
-            <div class="divider"></div>
-            <div style="font-size:12px;color:var(--t3);text-align:center;margin-bottom:10px">遇到事故，尚未是會員？</div>
-            <button class="btn btn-d" style="width:100%;justify-content:center" onclick="swMember('m-nonmember')">非會員 — 立即申請單次服務</button>
           </div>
         </div>
       </div>
@@ -405,28 +412,16 @@ textarea.input{resize:vertical}
       <div class="page" id="page-m-nonmember">
         <div class="splash">
           <div class="urgency">發生事故了？選擇方案並完成付款，客服馬上聯繫您。</div>
-          <div class="si-bar" id="nonmember-step-bar"></div>
           <div class="plan-grid">
             <div class="plan sel" id="plan-single" onclick="selPlan('single')">
-              <div class="plan-name">單次服務</div>
-              <div class="plan-price">NT$1,800<span> / 次</span></div>
-              <div class="plan-desc">本次事故完整協助，立即啟動</div>
+              <div class="plan-badge">唯一方案</div>
+              <div class="plan-name">PAMO 年費會員</div>
+              <div class="plan-price">NT$1,200<span> / 年</span></div>
+              <div class="plan-desc">加入後可提交事故申請並享會員服務</div>
               <div class="plan-features">
-                <div class="pf">專屬客服回電</div>
-                <div class="pf">和解協商協助</div>
-                <div class="pf">線上和解書</div>
-              </div>
-            </div>
-            <div class="plan" id="plan-annual" onclick="selPlan('annual')">
-              <div class="plan-badge">推薦</div>
-              <div class="plan-name">年費會員</div>
-              <div class="plan-price">NT$899<span> / 年</span></div>
-              <div class="plan-desc">無限次數 + 點數回饋</div>
-              <div class="plan-features">
-                <div class="pf">無限次事故申請</div>
-                <div class="pf">點數回饋</div>
-                <div class="pf">優先處理</div>
-                <div class="pf">和解書存檔</div>
+                <div class="pf">事故協助流程</div>
+                <div class="pf">續約與點數回饋</div>
+                <div class="pf">會員資料存檔</div>
               </div>
             </div>
           </div>
@@ -439,17 +434,9 @@ textarea.input{resize:vertical}
       <!-- MEMBER: 付款 -->
       <div class="page" id="page-m-payment">
         <div class="splash">
-          <div class="si-bar">
-            <div class="si-dot done">✓</div><div class="si-step done">選擇方案</div>
-            <div class="si-line"></div>
-            <div class="si-dot on" id="pay-step-num">2</div><div class="si-step on" id="pay-step-label">付款</div>
-            <div class="si-line"></div>
-            <div class="si-dot" id="pay-third-num">3</div><div class="si-step" id="pay-third-label">事故資料</div>
-            <div class="si-line"></div>
-            <div class="si-dot" id="pay-fourth-num">4</div><div class="si-step" id="pay-fourth-label">等待回電</div>
-          </div>
           <div class="card">
             <div class="card-title">付款資訊 <span id="pay-amount" style="font-size:16px;font-weight:700;color:var(--blue)">NT$1,800</span></div>
+            <div id="payment-helper" style="font-size:12px;color:var(--t2);margin:-4px 0 14px">完成付款後即可啟用年費會員服務。</div>
             <div class="tabs">
               <div class="tab on" onclick="swPayTab(this,'credit')">信用卡</div>
               <div class="tab" onclick="swPayTab(this,'cvs')">超商代碼</div>
@@ -476,6 +463,7 @@ textarea.input{resize:vertical}
             </div>
             <div style="display:flex;gap:8px;margin-top:6px">
               <button class="btn btn-p" style="flex:1" onclick="submitPayment()">確認付款 →</button>
+              <button class="btn" id="payment-skip-btn" style="display:none" onclick="skipRegistrationPayment()">稍後付款</button>
             </div>
           </div>
         </div>
@@ -484,15 +472,6 @@ textarea.input{resize:vertical}
       <!-- MEMBER: 事故表單 -->
       <div class="page" id="page-m-incident-form">
         <div class="splash" style="max-width:500px">
-          <div class="si-bar">
-            <div class="si-dot done">✓</div><div class="si-step done">選擇方案</div>
-            <div class="si-line"></div>
-            <div class="si-dot done" id="incident-second-dot">✓</div><div class="si-step done" id="incident-second-label">付款</div>
-            <div class="si-line"></div>
-            <div class="si-dot on" id="incident-third-dot">3</div><div class="si-step on" id="incident-third-label">事故資料</div>
-            <div class="si-line"></div>
-            <div class="si-dot" id="incident-fourth-dot">4</div><div class="si-step" id="incident-fourth-label">等待回電</div>
-          </div>
           <div class="card">
             <div class="card-title">事故資料</div>
             <div class="fr">
@@ -538,7 +517,7 @@ textarea.input{resize:vertical}
             <div class="si-dot">4</div><div class="si-step">結案</div>
           </div>
           <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-            <button class="btn" onclick="swMember('m-register')">建立帳號以追蹤進度</button>
+            <button class="btn" onclick="returnToAccount()">返回我的帳戶</button>
           </div>
         </div>
       </div>
@@ -555,7 +534,6 @@ textarea.input{resize:vertical}
             <div class="fr"><div class="fg"><div class="fl">密碼</div><input class="input" id="register-password" type="password" placeholder="至少 8 碼"/></div><div class="fg"><div class="fl">確認密碼</div><input class="input" id="register-password-confirm" type="password" placeholder="再輸入一次"/></div></div>
             <div style="display:flex;gap:8px">
               <button class="btn btn-p" style="flex:1" onclick="submitRegistration()">建立帳號</button>
-              <button class="btn" onclick="swMember('m-login')">已有帳號</button>
             </div>
           </div>
         </div>
@@ -571,14 +549,19 @@ textarea.input{resize:vertical}
         <div class="metrics g2">
           <div>
             <div class="sec-label">快速操作</div>
-            <div class="qa" onclick="swMember('m-nonmember')">
+            <div class="qa" onclick="startAccidentEntry()">
               <div class="qa-icon" style="background:var(--red-bg)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2L2 14h12L8 2z"/><path d="M8 6v3M8 11h.01"/></svg></div>
               <div><div class="qa-title">提交事故申請</div><div class="qa-sub">立即啟動協助流程</div></div>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
             </div>
+            <div class="qa" onclick="startSettlementEntry()">
+              <div class="qa-icon" style="background:var(--green-bg)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h8v10H4z"/><path d="M6 6h4M6 9h4"/></svg></div>
+              <div><div class="qa-title">和解書製作</div><div class="qa-sub">前台獨立製作與下載</div></div>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
+            </div>
             <div class="qa" onclick="swMember('m-points')">
               <div class="qa-icon" style="background:var(--amber-bg)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg></div>
-              <div><div class="qa-title">點數管理</div><div class="qa-sub">餘額 320 點 · 可轉贈</div></div>
+              <div><div class="qa-title">點數管理</div><div class="qa-sub">餘額 320 點 · 可查看紀錄</div></div>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
             </div>
             <div class="qa" onclick="swMember('m-profile')">
@@ -601,11 +584,7 @@ textarea.input{resize:vertical}
             <div class="card-title">點數餘額</div>
             <div style="font-size:38px;font-weight:700;margin:6px 0 2px" id="points-balance">320</div>
             <div style="font-size:12px;color:var(--t3);margin-bottom:16px">點 · 無期限</div>
-            <div class="divider"></div>
-            <div class="sec-label" style="margin-top:12px">轉贈點數</div>
-            <div class="fg"><div class="fl">收件人手機</div><input class="input" id="gift-phone" placeholder="0912-345-678"/></div>
-            <div class="fg"><div class="fl">轉贈數量</div><input class="input" id="gift-amount" type="number" placeholder="0" min="1"/></div>
-            <button class="btn btn-p btn-s" onclick="giftPoints()">確認轉贈</button>
+            <div style="font-size:12px;color:var(--t2);line-height:1.6">點數可用於會員福利與續約回饋，轉贈功能目前未開放。</div>
           </div>
           <div class="card">
             <div class="card-title">點數紀錄</div>
@@ -637,7 +616,24 @@ textarea.input{resize:vertical}
             <span class="badge bg" style="font-size:10px">主要</span>
           </div>
           <button class="btn btn-s" style="margin-bottom:14px">+ 新增信用卡</button>
+          <details style="margin:10px 0 14px">
+            <summary style="font-size:11px;color:var(--t3);cursor:pointer;user-select:none">更多設定</summary>
+            <div style="margin-top:10px;padding:12px;border:1px dashed var(--bd2);border-radius:var(--r);background:var(--bg2)">
+              <div style="font-size:11px;color:var(--t3);line-height:1.6;margin-bottom:8px">如需停止後續自動扣款，請先送出申報，由客服人工確認。</div>
+              <button class="btn btn-s" style="font-size:12px" onclick="reportAutoRenewCancellation()">申報取消自動扣款</button>
+            </div>
+          </details>
           <div style="display:flex;gap:8px"><button class="btn btn-p btn-s" onclick="saveProfile()">儲存</button><button class="btn btn-s" onclick="showToast('密碼變更流程待串接','warn')">變更密碼</button></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-m-settlement">
+        <div class="card" style="max-width:720px">
+          <div class="card-title">和解書製作</div>
+          <div class="fr"><div class="fg"><div class="fl">甲方姓名</div><input class="input" value="陳小明"/></div><div class="fg"><div class="fl">乙方姓名</div><input class="input" placeholder="對方姓名"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">事故日期</div><input class="input" type="date"/></div><div class="fg"><div class="fl">和解金額</div><input class="input" placeholder="NT$ 0"/></div></div>
+          <div class="fg"><div class="fl">和解內容</div><textarea class="input" rows="5" placeholder="雙方協議內容、付款方式、簽署條件"></textarea></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-p">下載 PDF</button><button class="btn" onclick="showToast('和解書草稿已儲存')">儲存草稿</button></div>
         </div>
       </div>
 
@@ -650,9 +646,19 @@ textarea.input{resize:vertical}
           <div style="padding:10px 12px;border-bottom:1px solid var(--bd)">
             <input class="input" id="inc-search" placeholder="搜尋案件、姓名…" style="font-size:12px;padding:5px 9px" oninput="renderList()"/>
           </div>
+          <div style="padding:8px 10px;border-bottom:1px solid var(--bd);display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:6px">
+              <input class="input" id="inc-from" type="date" style="font-size:12px;padding:5px 9px" onchange="renderList()"/>
+              <input class="input" id="inc-to" type="date" style="font-size:12px;padding:5px 9px" onchange="renderList()"/>
+            </div>
+            <select class="input" id="inc-sort" style="font-size:12px;padding:5px 9px" onchange="renderList()">
+              <option value="asc">時間早到晚</option>
+              <option value="desc">時間晚到早</option>
+            </select>
+          </div>
           <div style="padding:7px 10px;border-bottom:1px solid var(--bd);display:flex;gap:3px;flex-wrap:wrap" id="inc-filters">
             <span class="chip on" onclick="setIncidentFilter('all',this)">全部</span><span class="chip" onclick="setIncidentFilter('待回電',this)">待回電</span>
-            <span class="chip" onclick="setIncidentFilter('和解中',this)">和解中</span><span class="chip" onclick="setIncidentFilter('已結案',this)">已結案</span>
+            <span class="chip" onclick="setIncidentFilter('處理中',this)">處理中</span><span class="chip" onclick="setIncidentFilter('已結案',this)">已結案</span>
           </div>
           <div class="inc-list-scroll" id="inc-list-items"></div>
         </div>
@@ -663,6 +669,34 @@ textarea.input{resize:vertical}
   </div>
 </div>
 <div class="toast-wrap" id="toast-wrap"></div>
+<div class="modal" id="member-modal" onclick="closeMemberModal(event)">
+  <div class="modal-card" id="member-modal-card"></div>
+</div>
+<div class="modal" id="add-member-modal" onclick="closeAddMemberModal(event)">
+  <div class="modal-card">
+    <div class="card-title">新增會員</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">姓名</div><input class="input" id="new-member-name" placeholder="例：王小美"/></div>
+      <div class="fg"><div class="fl">Email</div><input class="input" id="new-member-email" placeholder="member@email.com"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">電話</div><input class="input" id="new-member-phone" placeholder="09xx-xxx-xxx"/></div>
+      <div class="fg"><div class="fl">加入日期</div><input class="input" id="new-member-joined" type="date"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">狀態</div><select class="input" id="new-member-status"><option>訂閱中</option><option>待啟動</option><option>已過期</option><option>黑名單</option></select></div>
+      <div class="fg"><div class="fl">點數</div><input class="input" id="new-member-points" type="number" value="0"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">折扣碼</div><input class="input" id="new-member-promo" placeholder="選填"/></div>
+      <div class="fg"><div class="fl">續約狀態</div><select class="input" id="new-member-renewal"><option value="none">—</option><option value="success">續約成功</option><option value="failed">續約失敗</option></select></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button class="btn" onclick="document.getElementById('add-member-modal').classList.remove('show')">取消</button>
+      <button class="btn btn-p" onclick="submitNewMember()">新增會員</button>
+    </div>
+  </div>
+</div>
 <div class="remote-ui" id="remote-ui">
   <div class="remote-head">
     <div class="remote-title">Demo 遙控 UI</div>
@@ -709,9 +743,22 @@ textarea.input{resize:vertical}
 const INC=[
   {id:'#A2024-038',name:'林小安',phone:'0923-456-789',type:'車輛碰撞',loc:'忠孝東路四段 220 號前',date:'2024-04-02 09:14',status:'待回電',sc:'ba',
    desc:'騎車途中遭對向車輛擦撞，對方車牌 ABC-1234，當事人已離開現場，右側車身受損。',steps:[1,0,0,0],slot:'今日 18:00 前',
+   media:[
+    {id:'M-038-1',type:'image',name:'現場照-右側車身.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23dbeafe%22/%3E%3Crect x=%2228%22 y=%22116%22 width=%22264%22 height=%2238%22 rx=%2210%22 fill=%22%233b82f6%22/%3E%3Ccircle cx=%2290%22 cy=%22158%22 r=%2220%22 fill=%22%231e293b%22/%3E%3Ccircle cx=%22238%22 cy=%22158%22 r=%2220%22 fill=%22%231e293b%22/%3E%3Ctext x=%22160%22 y=%2258%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%231e3a8a%22 font-family=%22Arial%22%3E%E7%8F%BE%E5%A0%B4%E7%85%A7%E7%89%87%3C/text%3E%3Ctext x=%22160%22 y=%2286%22 text-anchor=%22middle%22 font-size=%2214%22 fill=%22%231e40af%22 font-family=%22Arial%22%3E%E8%BB%8A%E8%BA%AB%E5%8F%B3%E5%81%B4%E5%8F%97%E6%90%8D%3C/text%3E%3C/svg%3E',uploadedAt:'2024-04-02 09:16'}
+   ],
+   recordings:[
+    {id:'REC-038-1',at:'2024-04-02 09:45',agent:'陳客服',duration:'05:14',summary:'第一次聯繫會員，確認事故地點與對方離場情況。',tone:410}
+   ],
    notes:[{a:'系統',tp:'系統',tc:'bgr',t:'2024-04-02 09:14',b:'會員提交事故申請，類型：車輛碰撞'}]},
-  {id:'#A2024-035',name:'黃大華',phone:'0934-111-222',type:'刮傷',loc:'信義區松壽路停車場 B2',date:'2024-03-28 14:30',status:'和解中',sc:'bb',
+  {id:'#A2024-035',name:'黃大華',phone:'0934-111-222',type:'刮傷',loc:'信義區松壽路停車場 B2',date:'2024-03-28 14:30',status:'處理中',sc:'bb',
    desc:'停車場遭刮傷，監視器有存檔可能，車輛左後方明顯刮痕。',steps:[1,1,1,0],slot:'已完成首次聯繫',
+   media:[
+    {id:'M-035-1',type:'image',name:'停車場監視器截圖.png',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23e5e7eb%22/%3E%3Crect x=%2238%22 y=%2238%22 width=%22244%22 height=%22124%22 rx=%2210%22 fill=%22%239ca3af%22/%3E%3Crect x=%2266%22 y=%2294%22 width=%22188%22 height=%2232%22 rx=%228%22 fill=%22%234b5563%22/%3E%3Ctext x=%22160%22 y=%2270%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23111827%22 font-family=%22Arial%22%3E%E5%81%9C%E8%BB%8A%E5%A0%B4%E7%9B%A3%E8%A6%96%E5%99%A8%E6%88%AA%E5%9C%96%3C/text%3E%3C/svg%3E',uploadedAt:'2024-03-28 16:02'},
+    {id:'M-035-2',type:'video',name:'停車場動線影片.mp4',url:'',uploadedAt:'2024-03-29 10:08'}
+   ],
+   recordings:[
+    {id:'REC-035-1',at:'2024-03-28 15:10',agent:'陳客服',duration:'08:32',summary:'與會員確認監視器保留期限與調閱流程。',tone:470}
+   ],
    notes:[
     {a:'陳客服',tp:'通話',tc:'bb',t:'2024-03-28 15:10',b:'已通話確認細節。停車場業者說監視器保留 7 天，需 4/4 前申請調閱。通話時長 8 分 32 秒。'},
     {a:'陳客服',tp:'筆記',tc:'bp',t:'2024-03-29 10:05',b:'通知會員備妥停車收據，業者將協助調閱畫面。'},
@@ -719,6 +766,13 @@ const INC=[
   ]},
   {id:'#A2024-031',name:'陳小明',phone:'0912-345-678',type:'車輛碰撞',loc:'民生西路 100 號前',date:'2024-03-10 11:00',status:'已結案',sc:'bg',
    desc:'路口碰撞，雙方協議和解，和解金 NT$15,000，和解書已簽署。',steps:[1,1,1,1],slot:'已結案',
+   media:[
+    {id:'M-031-1',type:'image',name:'和解前車損照片.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23dcfce7%22/%3E%3Crect x=%2236%22 y=%22108%22 width=%22248%22 height=%2238%22 rx=%2210%22 fill=%22%2316a34a%22/%3E%3Ccircle cx=%2290%22 cy=%22156%22 r=%2220%22 fill=%22%23145532%22/%3E%3Ccircle cx=%22234%22 cy=%22156%22 r=%2220%22 fill=%22%23145532%22/%3E%3Ctext x=%22160%22 y=%2262%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%23166534%22 font-family=%22Arial%22%3E%E8%BB%8A%E6%90%8D%E7%85%A7%E7%89%87%3C/text%3E%3C/svg%3E',uploadedAt:'2024-03-10 11:08'}
+   ],
+   recordings:[
+    {id:'REC-031-1',at:'2024-03-11 10:30',agent:'陳客服',duration:'06:48',summary:'初次通話，確認肇責與對方已承認過失。',tone:520},
+    {id:'REC-031-2',at:'2024-03-13 14:22',agent:'陳客服',duration:'12:05',summary:'與雙方確認和解條件與簽署安排。',tone:560}
+   ],
    notes:[
     {a:'陳客服',tp:'筆記',tc:'bg',t:'2024-03-15 16:00',b:'和解書雙方簽署完成，案件結案。NT$15,000 由對方負擔。'},
     {a:'陳客服',tp:'通話',tc:'bb',t:'2024-03-13 14:22',b:'與雙方確認和解條件，安排簽署。通話時長 12 分 05 秒。'},
@@ -727,6 +781,8 @@ const INC=[
   ]},
   {id:'#A2024-029',name:'蔡○○',phone:'0956-789-012',type:'車輛竊盜',loc:'大安區復興南路二段',date:'2024-03-05 08:00',status:'逾期',sc:'br',
    desc:'路邊停放機車遭竊，警察備案號 1130305001。',steps:[1,1,0,0],slot:'待會員回覆',
+   media:[],
+   recordings:[],
    notes:[
     {a:'陳客服',tp:'筆記',tc:'ba',t:'2024-03-07 15:00',b:'第三次嘗試聯繫，仍未接聽。已發 LINE，若 3/10 無回應將暫停處理。'},
     {a:'系統',tp:'系統',tc:'bgr',t:'2024-03-05 08:00',b:'會員提交事故申請，類型：車輛竊盜'}
@@ -734,22 +790,33 @@ const INC=[
 ];
 
 const MEMBER_ROWS=[
-  {name:'陳小明',email:'ming@email.com',phone:'0912-345-678',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功'},
-  {name:'林小安',email:'an@email.com',phone:'0923-456-789',plan:'單次',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—'},
-  {name:'王大偉',email:'wei@email.com',phone:'0934-567-890',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗'},
-  {name:'張小不',email:'bu@email.com',phone:'0945-678-901',plan:'—',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—'}
+  {name:'陳小明',email:'ming@email.com',phone:'0912-345-678',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
+  {name:'林小安',email:'an@email.com',phone:'0923-456-789',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
+  {name:'王大偉',email:'wei@email.com',phone:'0934-567-890',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
+  {name:'張小不',email:'bu@email.com',phone:'0945-678-901',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
 ];
 
 const TXNS=[
-  {id:'#T240402-001',member:'陳小明',amount:'NT$899',method:'信用卡',date:'2024-04-02',status:'成功',sc:'bg'},
-  {id:'#T240401-008',member:'林小安',amount:'NT$1,800',method:'信用卡',date:'2024-04-01',status:'成功',sc:'bg'},
-  {id:'#T240330-012',member:'蔡○○',amount:'NT$899',method:'超商代碼',date:'2024-03-30',status:'待付款',sc:'ba'},
-  {id:'#T240328-003',member:'黃○○',amount:'NT$899',method:'信用卡',date:'2024-03-28',status:'退款',sc:'br'}
+  {id:'#T240402-001',member:'陳小明',amount:'NT$1,080',method:'信用卡',promoCode:'NEW1200',date:'2024-04-02',status:'成功',sc:'bg'},
+  {id:'#T240401-008',member:'林小安',amount:'NT$1,020',method:'信用卡',promoCode:'SPRING',date:'2024-04-01',status:'成功',sc:'bg'},
+  {id:'#T240331-005',member:'陳怡君',amount:'NT$1,200',method:'LINE Pay',promoCode:'',date:'2024-03-31',status:'成功',sc:'bg'},
+  {id:'#T240330-012',member:'蔡○○',amount:'NT$1,200',method:'超商代碼',promoCode:'',date:'2024-03-30',status:'待付款',sc:'ba'},
+  {id:'#T240328-003',member:'黃○○',amount:'NT$1,200',method:'信用卡',promoCode:'',date:'2024-03-28',status:'退款',sc:'br'},
+  {id:'#T240327-015',member:'許家豪',amount:'NT$1,020',method:'信用卡',promoCode:'SPRING',date:'2024-03-27',status:'成功',sc:'bg'},
+  {id:'#T240325-014',member:'王大偉',amount:'NT$1,200',method:'LINE Pay',promoCode:'',date:'2024-03-25',status:'成功',sc:'bg'},
+  {id:'#T240321-010',member:'張小不',amount:'NT$1,080',method:'信用卡',promoCode:'NEW1200',date:'2024-03-21',status:'成功',sc:'bg'},
+  {id:'#T240320-009',member:'吳雅婷',amount:'NT$1,200',method:'超商代碼',promoCode:'',date:'2024-03-20',status:'成功',sc:'bg'},
+  {id:'#T240318-006',member:'陳小明',amount:'NT$1,200',method:'超商代碼',promoCode:'',date:'2024-03-18',status:'成功',sc:'bg'},
+  {id:'#T240315-004',member:'鄭小華',amount:'NT$1,020',method:'信用卡',promoCode:'SPRING',date:'2024-03-15',status:'成功',sc:'bg'},
+  {id:'#T240312-002',member:'周佩琪',amount:'NT$1,200',method:'LINE Pay',promoCode:'',date:'2024-03-12',status:'成功',sc:'bg'},
+  {id:'#T240308-011',member:'郭○○',amount:'NT$1,080',method:'信用卡',promoCode:'NEW1200',date:'2024-03-08',status:'退款',sc:'br'},
+  {id:'#T240307-013',member:'何承恩',amount:'NT$1,080',method:'信用卡',promoCode:'NEW1200',date:'2024-03-07',status:'成功',sc:'bg'},
+  {id:'#T240305-007',member:'李○○',amount:'NT$1,200',method:'超商代碼',promoCode:'',date:'2024-03-05',status:'成功',sc:'bg'}
 ];
 
 const PROMOS=[
-  {code:'PAMO2024',discount:'20%',used:14,expiry:'2026-12-31'},
-  {code:'NEWUSER',discount:'50%',used:8,expiry:'2026-06-30'}
+  {code:'NEW1200',discount:'10%',used:14,expiry:'2026-12-31'},
+  {code:'SPRING',discount:'15%',used:8,expiry:'2026-06-30'}
 ];
 
 const TRIALS=[
@@ -760,7 +827,6 @@ const TRIALS=[
 const POINTS=[
   {date:'04/01',desc:'續費獎勵',value:50},
   {date:'03/15',desc:'事故申請回饋',value:100},
-  {date:'02/20',desc:'轉贈給林○○',value:-80},
   {date:'01/15',desc:'年費續約',value:250}
 ];
 
@@ -776,6 +842,8 @@ let memberFlowSource='member';
 let memberAuthState='logged_out';
 let memberHistory=[];
 let remoteCollapsed=false;
+let selectedMemberPhone='';
+let registrationPaymentPending=false;
 
 const memberProfile={
   name:'陳小明',
@@ -789,6 +857,8 @@ const memberProfile={
   expiry:'2025-01-15',
   points:320,
   autoRenew:true,
+  cancelReported:false,
+  promoCode:'NEW1200',
   joined:'2023-06-12'
 };
 
@@ -802,22 +872,67 @@ function nextIncidentId(){return `#A${new Date().getFullYear()}-${String(INC.len
 function nextTxnId(){return `#T${todayStr().replaceAll('-','').slice(2)}-${String(TXNS.length+1).padStart(3,'0')}`}
 function parseDate(str){return new Date(`${str}T00:00:00`)}
 function dateOnly(str){return (str||'').slice(0,10)}
+function parseDateTime(str){return new Date(String(str).replace(' ','T'))}
+function mediaIcon(type){return type==='video'?'影片':'照片'}
+function nextMemberTone(){const tones=[['var(--blue-bg)','var(--blue-t)'],['var(--green-bg)','var(--green-t)'],['var(--amber-bg)','var(--amber-t)'],['var(--red-bg)','var(--red-t)']];return tones[MEMBER_ROWS.length%tones.length]}
+function nextMediaId(inc){return `M-${String(inc.id).replace(/[^\d]/g,'')}-${(inc.media?.length||0)+1}`}
+function nextRecordingId(inc){return `REC-${String(inc.id).replace(/[^\d]/g,'')}-${(inc.recordings?.length||0)+1}`}
+function renewalLabelOf(value){return value==='success'?'續約成功':value==='failed'?'續約失敗':'—'}
+function statusStyleOf(status){return status==='訂閱中'?'bg' : status==='待啟動'?'ba' : status==='黑名單'?'br' : 'bgr'}
+function audioDataUrl(freq=440,duration=1.2){
+  const sampleRate=8000;
+  const samples=Math.floor(sampleRate*duration);
+  const bytes=new Uint8Array(44+samples);
+  const writeString=(offset,str)=>{for(let i=0;i<str.length;i++) bytes[offset+i]=str.charCodeAt(i);}
+  const write16=(offset,val)=>{bytes[offset]=val&255;bytes[offset+1]=(val>>8)&255;}
+  const write32=(offset,val)=>{bytes[offset]=val&255;bytes[offset+1]=(val>>8)&255;bytes[offset+2]=(val>>16)&255;bytes[offset+3]=(val>>24)&255;}
+  writeString(0,'RIFF');
+  write32(4,36+samples);
+  writeString(8,'WAVEfmt ');
+  write32(16,16); write16(20,1); write16(22,1); write32(24,sampleRate); write32(28,sampleRate); write16(32,1); write16(34,8);
+  writeString(36,'data'); write32(40,samples);
+  for(let i=0;i<samples;i++){
+    const t=i/sampleRate;
+    const env=Math.min(1,i/600)*Math.min(1,(samples-i)/1200);
+    bytes[44+i]=128+Math.round(Math.sin(2*Math.PI*freq*t)*40*env);
+  }
+  let binary='';
+  bytes.forEach(b=>binary+=String.fromCharCode(b));
+  return `data:audio/wav;base64,${btoa(binary)}`;
+}
+function recordingAudioUrl(rec,index=0){return rec.audioUrl||audioDataUrl(rec.tone||420+(index*35),1.25)}
 function latestDataDate(){
-  const dates=[...TXNS.map(tx=>dateOnly(tx.date)),...INC.map(inc=>dateOnly(inc.date)),todayStr()].filter(Boolean).sort();
-  return dates[dates.length-1];
+  const dates=[...TXNS.map(tx=>dateOnly(tx.date)),...INC.map(inc=>dateOnly(inc.date))].filter(Boolean).sort();
+  return dates[dates.length-1]||todayStr();
+}
+function downloadCsv(filename, rows){
+  const csv=rows.map(row=>row.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 function getStatusMeta(status){
   return {
     '待回電':{sc:'ba',steps:[1,0,0,0]},
-    '和解中':{sc:'bb',steps:[1,1,1,0]},
+    '處理中':{sc:'bb',steps:[1,1,1,0]},
     '已結案':{sc:'bg',steps:[1,1,1,1]},
-    '逾期':{sc:'br',steps:[1,1,0,0]}
+    '逾期':{sc:'br',steps:[1,1,0,0]},
+    '已撤回':{sc:'bgr',steps:[1,0,0,0]}
   }[status]||{sc:'bgr',steps:[1,0,0,0]};
 }
 function currentIncident(){return INC.find(inc=>inc.id===selIncidentId)||INC[0]}
+function currentIncidentMemberTarget(){
+  const inc=currentIncident();
+  if(!inc) return null;
+  if(inc.phone===memberProfile.phone || inc.name===memberProfile.name) return memberProfile;
+  return MEMBER_ROWS.find(m=>m.phone===inc.phone) || null;
+}
 function needsPayment(){return ['logged_in_unpaid','nonmember'].includes(memberAuthState)}
 function currentAmount(){
-  let amount=curPlan==='annual'?899:1800;
+  let amount=1200;
   const code=(document.getElementById('pay-promo')||{}).value?.trim().toUpperCase();
   const promo=PROMOS.find(p=>p.code===code);
   if(promo&&promo.discount.endsWith('%')) amount=Math.round(amount*(100-parseInt(promo.discount,10))/100);
@@ -827,7 +942,7 @@ function memberDataset(){
   const currentStatus=memberProfile.plan.includes('年費')?'訂閱中':'待啟動';
   const currentSc=currentStatus==='訂閱中'?'bg':'ba';
   return [
-    {...MEMBER_ROWS[0],name:memberProfile.name,email:memberProfile.email,phone:memberProfile.phone,plan:memberProfile.plan.includes('年費')?'年費':'單次',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功'},
+    {...MEMBER_ROWS[0],name:memberProfile.name,email:memberProfile.email,phone:memberProfile.phone,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
     ...MEMBER_ROWS.slice(1)
   ];
 }
@@ -850,46 +965,60 @@ function showToast(msg,type='success'){
 }
 function renderSingleFlowSteps(){
   const needPay=needsPayment();
-  document.getElementById('nonmember-step-bar').innerHTML=needPay
-    ?'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">付款</div><div class="si-line"></div><div class="si-dot">4</div><div class="si-step">等待回電</div>'
-    :'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">等待回電</div>';
-  document.getElementById('pay-step-num').textContent='3';
-  document.getElementById('pay-step-label').textContent='付款';
-  document.getElementById('pay-third-num').textContent='4';
-  document.getElementById('pay-third-label').textContent='等待回電';
-  document.getElementById('pay-fourth-num').style.display='none';
-  document.getElementById('pay-fourth-label').style.display='none';
-  document.getElementById('pay-fourth-num').textContent='4';
-  document.getElementById('pay-fourth-label').textContent='等待回電';
-  document.getElementById('incident-second-dot').textContent='2';
-  document.getElementById('incident-second-dot').className='si-dot on';
-  document.getElementById('incident-second-label').textContent='填寫事故資料';
-  document.getElementById('incident-second-label').className='si-step on';
-  document.getElementById('incident-third-dot').textContent=needPay?'3':'3';
-  document.getElementById('incident-third-label').textContent=needPay?'付款':'等待回電';
-  document.getElementById('incident-fourth-dot').style.display=needPay?'flex':'none';
-  document.getElementById('incident-fourth-label').style.display=needPay?'block':'none';
-  if(needPay){
-    document.getElementById('incident-third-dot').className='si-dot';
-    document.getElementById('incident-third-label').className='si-step';
-    document.getElementById('incident-fourth-dot').textContent='4';
-    document.getElementById('incident-fourth-label').textContent='等待回電';
-  } else {
-    document.getElementById('incident-third-dot').className='si-dot';
-    document.getElementById('incident-third-label').className='si-step';
+  const payBeforeIncident=memberAuthState==='logged_in_unpaid';
+  const nonmemberBar=document.getElementById('nonmember-step-bar');
+  if(nonmemberBar){
+    nonmemberBar.innerHTML=payBeforeIncident
+      ?'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">付款</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">4</div><div class="si-step">等待回電</div>'
+      :needPay
+      ?'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">付款</div><div class="si-line"></div><div class="si-dot">4</div><div class="si-step">等待回電</div>'
+      :'<div class="si-dot on">1</div><div class="si-step on">選擇方案</div><div class="si-line"></div><div class="si-dot">2</div><div class="si-step">填寫事故資料</div><div class="si-line"></div><div class="si-dot">3</div><div class="si-step">等待回電</div>';
   }
+  const payStepNum=document.getElementById('pay-step-num');
+  const payStepLabel=document.getElementById('pay-step-label');
+  const payThirdNum=document.getElementById('pay-third-num');
+  const payThirdLabel=document.getElementById('pay-third-label');
+  const payFourthNum=document.getElementById('pay-fourth-num');
+  const payFourthLabel=document.getElementById('pay-fourth-label');
+  if(payStepNum) payStepNum.textContent=payBeforeIncident?'2':'3';
+  if(payStepLabel) payStepLabel.textContent='付款';
+  if(payThirdNum) payThirdNum.textContent=payBeforeIncident?'3':'4';
+  if(payThirdLabel) payThirdLabel.textContent=payBeforeIncident?'事故資料':'等待回電';
+  if(payFourthNum) payFourthNum.style.display='none';
+  if(payFourthLabel) payFourthLabel.style.display='none';
+}
+function renderPaymentActions(){
+  const helper=document.getElementById('payment-helper');
+  const skipBtn=document.getElementById('payment-skip-btn');
+  if(!helper||!skipBtn) return;
+  helper.textContent=registrationPaymentPending
+    ?'帳號已建立，你可以先完成付款，或先跳過回到我的帳戶。'
+    :'完成付款後即可啟用年費會員服務。';
+  skipBtn.style.display=registrationPaymentPending?'inline-flex':'none';
 }
 function backFromIncident(){
   swMember(needsPayment()&&pendingIncidentDraft?'m-nonmember':'m-home');
 }
+function returnToAccount(){
+  registrationPaymentPending=false;
+  if(memberAuthState==='nonmember') swMember('m-login');
+  else swMember('m-home');
+}
 
 function visibleIncidents(){
   const q=(document.getElementById('inc-search')||{}).value?.trim().toLowerCase()||'';
+  const from=(document.getElementById('inc-from')||{}).value||'';
+  const to=(document.getElementById('inc-to')||{}).value||'';
+  const sort=(document.getElementById('inc-sort')||{}).value||'asc';
   return INC.filter(inc=>{
     const hit=incidentFilter==='all'||inc.status===incidentFilter;
     const text=`${inc.id} ${inc.name} ${inc.type} ${inc.loc}`.toLowerCase();
-    return hit&&(!q||text.includes(q));
-  });
+    const day=dateOnly(inc.date);
+    const inRange=(!from||day>=from)&&(!to||day<=to);
+    return hit&&inRange&&(!q||text.includes(q));
+  }).sort((a,b)=>sort==='desc'
+    ?parseDateTime(b.date)-parseDateTime(a.date)
+    :parseDateTime(a.date)-parseDateTime(b.date));
 }
 
 function renderList(){
@@ -908,6 +1037,16 @@ function renderList(){
       </div>
     </div>`).join(''):'<div class="empty">目前沒有符合條件的案件</div>';
 }
+function initIncidentFilters(){
+  const from=document.getElementById('inc-from');
+  const to=document.getElementById('inc-to');
+  const sort=document.getElementById('inc-sort');
+  if(!from||!to||!sort) return;
+  const dates=INC.map(inc=>dateOnly(inc.date)).filter(Boolean).sort();
+  from.value=dates[0]||todayStr();
+  to.value=dates[dates.length-1]||todayStr();
+  sort.value='asc';
+}
 
 function renderDetail(){
   const inc=currentIncident();
@@ -915,6 +1054,8 @@ function renderDetail(){
     document.getElementById('inc-detail').innerHTML='<div class="empty">請先建立第一筆案件</div>';
     return;
   }
+  inc.media=inc.media||[];
+  inc.recordings=inc.recordings||[];
   const stepsHtml=STEP_LABELS.map((lbl,i)=>{
     const done=inc.steps[i]===1;
     const cur=!done&&(i===0||inc.steps[i-1]===1);
@@ -932,6 +1073,34 @@ function renderDetail(){
   const callBtns=callOn
     ?`<button class="cbtn r" onclick="endCall()">掛斷</button><button class="cbtn" onclick="showToast('已靜音通話')">靜音</button><button class="cbtn" onclick="showToast('已保留通話','warn')">保留</button>`
     :`<button class="cbtn g" onclick="startCall()">撥打</button><button class="cbtn" onclick="showToast('已開啟 LINE 聯繫')">LINE</button><button class="cbtn" onclick="showToast('已建立簡訊範本')">簡訊</button>`;
+  const mediaHtml=inc.media.length?inc.media.map(item=>`
+    <div class="card" style="padding:12px 14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:10px">
+        <div>
+          <div style="font-size:12px;font-weight:600">${esc(item.name)}</div>
+          <div style="font-size:11px;color:var(--t3)">${esc(mediaIcon(item.type))} · ${esc(item.uploadedAt||'')}</div>
+        </div>
+        <button class="btn btn-s" onclick="removeIncidentMedia('${esc(item.id)}')">移除</button>
+      </div>
+      ${item.type==='image'
+        ?`<img src="${esc(item.url)}" alt="${esc(item.name)}" style="width:100%;border-radius:10px;border:1px solid var(--bd);display:block;background:var(--bg2)">`
+        :item.url
+          ?`<video controls src="${esc(item.url)}" style="width:100%;border-radius:10px;border:1px solid var(--bd);background:var(--bg2)"></video>`
+          :`<div style="padding:14px;border:1px dashed var(--bd2);border-radius:10px;background:var(--bg2);font-size:12px;color:var(--t2)">已建立影片檔案紀錄，可在 demo 中替換成實際上傳影片後播放。</div>`
+      }
+    </div>`).join(''):'<div class="card"><div class="empty">目前尚未上傳照片或影片</div></div>';
+  const recordingsHtml=inc.recordings.length?inc.recordings.map((rec,idx)=>`
+    <div class="card" style="padding:12px 14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:12px;font-weight:600">${esc(rec.agent||'客服')} · ${esc(rec.at)}</div>
+          <div style="font-size:11px;color:var(--t3)">通話長度 ${esc(rec.duration||'00:00')}</div>
+        </div>
+        <button class="btn btn-s" onclick="removeIncidentRecording('${esc(rec.id)}')">移除</button>
+      </div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">${esc(rec.summary||'通話錄音')}</div>
+      <audio controls style="width:100%" src="${recordingAudioUrl(rec,idx)}"></audio>
+    </div>`).join(''):'<div class="card"><div class="empty">目前沒有通話錄音</div></div>';
 
   document.getElementById('inc-detail').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">
@@ -951,6 +1120,7 @@ function renderDetail(){
         <div class="tabs" id="dtabs">
           <div class="tab ${dTab==='notes'?'on':''}" onclick="swDTab('notes')">通話 &amp; 筆記</div>
           <div class="tab ${dTab==='info'?'on':''}" onclick="swDTab('info')">案件資訊</div>
+          <div class="tab ${dTab==='media'?'on':''}" onclick="swDTab('media')">媒體 &amp; 錄音</div>
         </div>
         <div class="tc ${dTab==='notes'?'on':''}" id="tc-notes">
           <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
@@ -976,8 +1146,21 @@ function renderDetail(){
               <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${esc(inc.loc)}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">聯絡時段</td><td>${esc(inc.slot||'未提供')}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">申請</td><td>${esc(inc.date)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">媒體</td><td>${inc.media.length} 個檔案</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">錄音</td><td>${inc.recordings.length} 筆</td></tr>
             </table>
           </div>
+        </div>
+        <div class="tc ${dTab==='media'?'on':''}" id="tc-media">
+          <div class="card">
+            <div class="sec-label" style="margin-bottom:8px">上傳事故照片 / 影片</div>
+            <input class="input" type="file" accept="image/*,video/*" multiple onchange="uploadIncidentMedia(this.files); this.value='';"/>
+            <div style="font-size:12px;color:var(--t3);line-height:1.6;margin-top:8px">可將現場照片與影片直接掛到案件，方便後台整理證據與後續追蹤。</div>
+          </div>
+          <div class="sec-label" style="margin:14px 0 8px">媒體檔案</div>
+          ${mediaHtml}
+          <div class="sec-label" style="margin:14px 0 8px">通話錄音回放</div>
+          ${recordingsHtml}
         </div>
       </div>
       <div class="detail-side">
@@ -994,11 +1177,26 @@ function renderDetail(){
           <div class="sec-label" style="margin-bottom:8px">更新狀態</div>
           <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:11px">
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('待回電')">設為 待回電</button>
-            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('和解中')">設為 和解中</button>
+            <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('處理中')">設為 處理中</button>
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('已結案')">設為 已結案</button>
           </div>
           <div class="divider"></div>
-          <button class="btn btn-d btn-s" style="width:100%;justify-content:center" onclick="showToast('和解書已寄送至會員信箱')">發送和解書</button>
+          <div style="font-size:12px;color:var(--t3);line-height:1.6">和解書改由前台會員自行製作，後台僅保留案件紀錄與聯繫處理。</div>
+        </div>
+        <div class="card" style="padding:13px 15px">
+          <div class="sec-label" style="margin-bottom:8px">會員資料</div>
+          <div class="fr">
+            <div class="fg"><div class="fl">姓名</div><input class="input" id="incident-member-name" value="${esc(currentIncidentMemberTarget()?.name||inc.name)}"/></div>
+            <div class="fg"><div class="fl">Email</div><input class="input" id="incident-member-email" value="${esc(currentIncidentMemberTarget()?.email||'')}"/></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><div class="fl">電話</div><input class="input" id="incident-member-phone" value="${esc(currentIncidentMemberTarget()?.phone||inc.phone)}"/></div>
+            <div class="fg"><div class="fl">地址</div><input class="input" id="incident-member-address" value="${esc(currentIncidentMemberTarget()?.address||'')}"/></div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-s" onclick="saveIncidentMemberProfile()">儲存會員資料</button>
+            <button class="btn btn-s" onclick="openMemberDetail('${esc((currentIncidentMemberTarget()?.phone)||inc.phone)}')">查看完整會員</button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -1015,7 +1213,7 @@ function setIncidentFilter(status,el){
 }
 function swDTab(t){
   dTab=t;
-  document.querySelectorAll('#dtabs .tab').forEach((el,i)=>el.classList.toggle('on',['notes','info'][i]===t));
+  document.querySelectorAll('#dtabs .tab').forEach((el,i)=>el.classList.toggle('on',['notes','info','media'][i]===t));
   document.querySelectorAll('.tc').forEach(el=>el.classList.remove('on'));
   document.getElementById('tc-'+t).classList.add('on');
 }
@@ -1043,7 +1241,17 @@ function endCall(){
   clearInterval(callTick);
   const dur=`通話時長 ${p2(Math.floor(callSec/60))} 分 ${p2(callSec%60)} 秒`;
   callOn=false;
-  currentIncident().notes.unshift({a:'系統',tp:'通話',tc:'bb',t:nowStr(),b:`通話結束。${dur}。請在上方補充通話內容。`});
+  const inc=currentIncident();
+  inc.recordings=inc.recordings||[];
+  inc.recordings.unshift({
+    id:nextRecordingId(inc),
+    at:nowStr(),
+    agent:'陳客服',
+    duration:`${p2(Math.floor(callSec/60))}:${p2(callSec%60)}`,
+    summary:'本次通話已自動存成錄音，可於案件的媒體與錄音頁回放。',
+    tone:600+(inc.recordings.length*30)
+  });
+  inc.notes.unshift({a:'系統',tp:'通話',tc:'bb',t:nowStr(),b:`通話結束。${dur}。請在上方補充通話內容。`});
   renderDetail();
 }
 function upStatus(status){
@@ -1057,17 +1265,88 @@ function upStatus(status){
   renderMemberHome();
   showToast(`案件已更新為「${status}」`);
 }
+function saveIncidentMemberProfile(){
+  const inc=currentIncident();
+  const target=currentIncidentMemberTarget();
+  if(!inc||!target){
+    showToast('找不到可編輯的會員資料','warn');
+    return;
+  }
+  const oldPhone=target.phone;
+  const oldName=target.name;
+  const name=document.getElementById('incident-member-name').value.trim()||target.name;
+  const email=document.getElementById('incident-member-email').value.trim()||target.email||'';
+  const phone=document.getElementById('incident-member-phone').value.trim()||target.phone;
+  const address=document.getElementById('incident-member-address').value.trim()||(target.address||'');
+  target.name=name;
+  target.email=email;
+  target.phone=phone;
+  if('address' in target) target.address=address;
+  INC.forEach(item=>{
+    if(item.phone===oldPhone || item.name===oldName){
+      item.name=name;
+      item.phone=phone;
+    }
+  });
+  if(target===memberProfile){
+    memberProfile.name=name;
+    memberProfile.email=email;
+    memberProfile.phone=phone;
+    memberProfile.address=address;
+    syncProfileForm();
+  }
+  renderList();
+  renderDetail();
+  renderMembers();
+  renderMemberHome();
+  showToast('案件會員資料已更新');
+}
+function withdrawIncident(id){
+  const inc=INC.find(item=>item.id===id);
+  if(!inc) return;
+  const meta=getStatusMeta('已撤回');
+  inc.status='已撤回';
+  inc.sc=meta.sc;
+  inc.steps=[...meta.steps];
+  inc.slot='會員已撤回事故申請';
+  inc.notes=(inc.notes||[]);
+  inc.notes.unshift({a:'會員',tp:'系統備註',tc:'bgr',t:nowStr(),b:'會員於前台撤回事故申請。'});
+  renderMemberHome();
+  renderList();
+  if(selIncidentId===id) renderDetail();
+  showToast('事故申請已撤回');
+}
 
 function selPlan(p){
-  curPlan=p;
-  document.getElementById('plan-single').classList.toggle('sel',p==='single');
-  document.getElementById('plan-annual').classList.toggle('sel',p==='annual');
+  curPlan='annual';
+  document.getElementById('plan-single').classList.add('sel');
   renderSingleFlowSteps();
+}
+function reportAutoRenewCancellation(){
+  memberProfile.cancelReported=true;
+  MEMBER_ROWS[0].reportedCancel=true;
+  MEMBER_ROWS[0].notes=(MEMBER_ROWS[0].notes||[]);
+  MEMBER_ROWS[0].notes.unshift(`${todayStr()} 會員申報取消自動續約，待客服聯繫原因`);
+  renderMembers();
+  renderDashboard();
+  renderMemberHome();
+  showToast('已申報取消自動續約，後台客服將追蹤');
 }
 function startApplicationFlow(){
   document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
   pendingIncidentDraft=null;
-  swMember('m-incident-form');
+  registrationPaymentPending=false;
+  swMember(memberAuthState==='logged_in_unpaid'?'m-payment':'m-incident-form');
+}
+function startAccidentEntry(){
+  registrationPaymentPending=false;
+  if(memberAuthState==='logged_in_paid') swMember('m-incident-form');
+  else { pendingIncidentDraft=null; document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`; showToast('請先完成年費付款，再使用事故申請'); swMember('m-payment'); }
+}
+function startSettlementEntry(){
+  registrationPaymentPending=false;
+  if(memberAuthState==='logged_in_paid') swMember('m-settlement');
+  else { pendingIncidentDraft=null; document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`; showToast('請先完成年費付款，再使用和解書製作'); swMember('m-payment'); }
 }
 function swPayTab(el,t){
   curPayTab=t;
@@ -1084,20 +1363,25 @@ function submitPayment(){
     }
   }
   const methodMap={credit:'信用卡',cvs:'超商代碼',linepay:'LINE Pay'};
-  TXNS.unshift({id:nextTxnId(),member:memberProfile.name,amount:`NT$${amount.toLocaleString('zh-TW')}`,method:methodMap[curPayTab],date:todayStr(),status:curPayTab==='cvs'?'待付款':'成功',sc:curPayTab==='cvs'?'ba':'bg'});
-  if(curPlan==='annual'){
-    memberProfile.plan='年費會員';
-    memberProfile.expiry='2027-04-14';
-    memberProfile.autoRenew=true;
-    memberProfile.points+=100;
-    POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:'購買年費會員',value:100});
-  }
+  const promoCode=(document.getElementById('pay-promo').value||'').trim().toUpperCase();
+  TXNS.unshift({id:nextTxnId(),member:memberProfile.name,amount:`NT$${amount.toLocaleString('zh-TW')}`,method:methodMap[curPayTab],promoCode,date:todayStr(),status:curPayTab==='cvs'?'待付款':'成功',sc:curPayTab==='cvs'?'ba':'bg'});
+  memberProfile.plan='年費會員';
+  memberProfile.expiry='2027-04-16';
+  memberProfile.autoRenew=true;
+  memberProfile.promoCode=promoCode;
+  memberProfile.points+=100;
+  POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:'購買年費會員',value:100});
+  if(memberAuthState==='logged_in_unpaid'||memberAuthState==='nonmember') setMemberAuthState('logged_in_paid');
   renderTransactions();
   renderMembers();
   renderPoints();
   renderMemberHome();
   renderDashboard();
-  if(needsPayment()&&pendingIncidentDraft){
+  registrationPaymentPending=false;
+  if(memberAuthState==='logged_in_unpaid' && !pendingIncidentDraft){
+    showToast(curPayTab==='cvs'?'已建立繳費代碼，會員已啟用':'付款成功，會員已啟用');
+    swMember('m-home');
+  } else if(needsPayment()&&pendingIncidentDraft){
     createIncidentFromDraft(pendingIncidentDraft);
     pendingIncidentDraft=null;
     showToast(curPayTab==='cvs'?'已建立繳費代碼，案件待客服確認':'付款成功，案件已送出');
@@ -1126,6 +1410,8 @@ function createIncidentFromDraft(draft){
   const id=nextIncidentId();
   const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
   const inc={id,name:memberProfile.name,phone:draft.phone,type:draft.type,loc:draft.loc,date:dateTime,status:'待回電',sc:'ba',desc:draft.desc,steps:[1,0,0,0],slot:draft.slot,
+    media:[],
+    recordings:[],
     notes:[
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`會員提交事故申請，類型：${draft.type}`},
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot||'未指定'}`},
@@ -1149,7 +1435,8 @@ function submitIncident(){
     showToast('偵測到雙方皆為會員，案件不可處理','error');
     return;
   }
-  if(needsPayment()){
+  if(memberAuthState==='nonmember'){
+    registrationPaymentPending=false;
     pendingIncidentDraft=draft;
     document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
     showToast('案件資料已暫存，請完成付款');
@@ -1179,8 +1466,9 @@ function renderMembers(){
   document.getElementById('member-table-body').innerHTML=rows.length?rows.map(row=>`
     <tr>
       <td><div class="row"><div class="av av-s" style="background:${row.tone||'var(--blue-bg)'};color:${row.toneText||'var(--blue-t)'}">${esc(initials(row.name))}</div><div><div style="font-weight:500">${esc(row.name)}</div><div style="font-size:10px;color:var(--t3)">${esc(row.email)}</div></div></div></td>
-      <td>${esc(row.phone)}</td><td>${esc(row.plan)}</td><td>${esc(row.points)}</td><td><span class="badge ${esc(row.sc||'bg')}">${esc(row.status)}</span> <span style="font-size:10px;color:var(--t3)">${esc(row.renewalLabel||'')}</span></td><td>${esc(row.joined)}</td><td><button class="btn btn-s" onclick="showToast('會員檢視面板待串接')">查看</button></td>
-    </tr>`).join(''):'<tr><td colspan="7" class="empty">沒有符合條件的會員</td></tr>';
+      <td>${esc(row.phone)}</td><td>${esc(row.plan)}</td><td>${esc(row.promoCode||'—')}</td><td>${esc(row.points)}</td><td><span class="badge ${esc(row.sc||'bg')}">${esc(row.status)}</span> <span style="font-size:10px;color:var(--t3)">${esc(row.renewalLabel||'')}</span>${row.reportedCancel?'<div style="font-size:10px;color:var(--amber-t)">已申報取消自動續約</div>':''}</td><td>${esc(row.joined)}</td><td><button class="btn btn-s" onclick="openMemberDetail('${esc(row.phone)}')">查看</button></td>
+    </tr>`).join(''):'<tr><td colspan="8" class="empty">沒有符合條件的會員</td></tr>';
+  renderMemberDetail();
 }
 function setMemberSort(key){
   if(memberSortKey===key) memberSortDir=memberSortDir==='asc'?'desc':'asc';
@@ -1200,12 +1488,221 @@ function cycleMemberFilter(){
   tabs.forEach((tab,i)=>tab.classList.toggle('on',i===idx));
   renderMembers();
 }
-function exportMembers(){showToast('已匯出會員名單 CSV');}
+function exportMembers(){
+  downloadCsv('members.csv',[
+    ['姓名','電話','方案','折扣碼','點數','狀態','加入日期'],
+    ...memberDataset().map(m=>[m.name,m.phone,m.plan,m.promoCode||'',m.points,m.status,m.joined])
+  ]);
+  showToast('已匯出會員名單 CSV');
+}
+
+function openAddMemberModal(){
+  document.getElementById('new-member-name').value='';
+  document.getElementById('new-member-email').value='';
+  document.getElementById('new-member-phone').value='';
+  document.getElementById('new-member-joined').value=todayStr();
+  document.getElementById('new-member-status').value='訂閱中';
+  document.getElementById('new-member-points').value='0';
+  document.getElementById('new-member-promo').value='';
+  document.getElementById('new-member-renewal').value='none';
+  document.getElementById('add-member-modal').classList.add('show');
+}
+function closeAddMemberModal(e){
+  if(e.target.id==='add-member-modal') document.getElementById('add-member-modal').classList.remove('show');
+}
+function submitNewMember(){
+  const name=document.getElementById('new-member-name').value.trim();
+  const email=document.getElementById('new-member-email').value.trim();
+  const phone=document.getElementById('new-member-phone').value.trim();
+  const joined=document.getElementById('new-member-joined').value||todayStr();
+  const status=document.getElementById('new-member-status').value;
+  const points=parseInt(document.getElementById('new-member-points').value,10)||0;
+  const promoCode=document.getElementById('new-member-promo').value.trim().toUpperCase();
+  const renewal=document.getElementById('new-member-renewal').value;
+  if(!name||!email||!phone){
+    showToast('請完整填寫新增會員資料','warn');
+    return;
+  }
+  if(memberDataset().some(m=>m.phone===phone)){
+    showToast('此電話已存在會員資料','warn');
+    return;
+  }
+  const [tone,toneText]=nextMemberTone();
+  MEMBER_ROWS.push({
+    name,email,phone,plan:'年費',points,status,sc:statusStyleOf(status),joined,
+    tone,toneText,renewal,renewalLabel:renewalLabelOf(renewal),promoCode,reportedCancel:false,
+    notes:[`${todayStr()} 後台新增會員資料`]
+  });
+  document.getElementById('add-member-modal').classList.remove('show');
+  renderMembers();
+  renderDashboard();
+  showToast(`會員 ${name} 已新增`);
+}
+
+function openMemberDetail(phone){selectedMemberPhone=phone;renderMemberDetail();document.getElementById('member-modal').classList.add('show');}
+function closeMemberModal(e){if(e.target.id==='member-modal') document.getElementById('member-modal').classList.remove('show');}
+function currentMemberRecord(){return memberDataset().find(m=>m.phone===selectedMemberPhone);}
+function currentMemberTarget(){
+  if(selectedMemberPhone===memberProfile.phone) return memberProfile;
+  return MEMBER_ROWS.find(m=>m.phone===selectedMemberPhone);
+}
+function renderMemberDetail(){
+  const member=currentMemberRecord();
+  const box=document.getElementById('member-modal-card');
+  if(!member){box.innerHTML='';return;}
+  box.innerHTML=`<div>
+    <div class="card-title">會員查看：${esc(member.name)}</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">電話：${esc(member.phone)} · 折扣：${esc(member.promoCode||'—')} · 自動續約：${member.reportedCancel?'已申報取消':'正常'}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn btn-s" onclick="memberAction('contact')">聯絡詢問原因</button>
+      <button class="btn btn-s" onclick="memberAction('note')">紀錄處理</button>
+      <button class="btn btn-s" onclick="memberAction('cancel_auto')">手動取消自動續約</button>
+      <button class="btn btn-s" onclick="memberAction('refund')">退費</button>
+      <button class="btn btn-s" onclick="memberAction('blacklist')">設黑名單</button>
+      <button class="btn btn-d btn-s" onclick="memberAction('delete')">刪除會員</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">修改資料</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">姓名</div><input class="input" id="member-edit-name" value="${esc(member.name)}"/></div>
+      <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">電話</div><input class="input" id="member-edit-phone" value="${esc(member.phone)}"/></div>
+      <div class="fg"><div class="fl">折扣碼</div><input class="input" id="member-edit-promo" value="${esc(member.promoCode||'')}"/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-s" onclick="memberAction('edit')">儲存修改</button></div>
+    <div class="divider"></div>
+    <div class="sec-label">點數調整</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">調整數字</div><input class="input" id="point-adjust-value" type="number" value="0"/></div>
+      <div class="fg"><div class="fl">原因</div><input class="input" id="point-adjust-reason" placeholder="例：客服補償"/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-p btn-s" onclick="memberAction('points')">套用點數調整</button></div>
+    <div class="sec-label">處理紀錄</div>
+    <div style="font-size:12px;color:var(--t3);line-height:1.7">${member.notes?.length?member.notes.map(esc).join('<br>'):'目前尚無處理紀錄'}</div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" onclick="document.getElementById('member-modal').classList.remove('show')">關閉</button></div>
+  </div>`;
+}
+function memberAction(action){
+  const idx=MEMBER_ROWS.findIndex(m=>m.phone===selectedMemberPhone);
+  const target=currentMemberTarget();
+  if(!target) return;
+  if(action==='contact') showToast('已建立聯絡任務');
+  if(action==='note') (target.notes||(target.notes=[])).unshift(`${todayStr()} 已記錄取消自動續約原因待回覆`);
+  if(action==='cancel_auto'){target.reportedCancel=false; if(target===memberProfile) memberProfile.autoRenew=false; showToast('已手動取消自動續約');}
+  if(action==='edit'){
+    target.name=document.getElementById('member-edit-name').value.trim()||target.name;
+    target.email=document.getElementById('member-edit-email').value.trim()||target.email;
+    target.phone=document.getElementById('member-edit-phone').value.trim()||target.phone;
+    target.promoCode=document.getElementById('member-edit-promo').value.trim().toUpperCase();
+    selectedMemberPhone=target.phone;
+    (target.notes||(target.notes=[])).unshift(`${todayStr()} 後台已修改會員資料`);
+    if(target===memberProfile){
+      memberProfile.name=target.name;
+      memberProfile.email=target.email;
+      memberProfile.phone=target.phone;
+      memberProfile.promoCode=target.promoCode;
+      syncProfileForm();
+    }
+    showToast('會員資料已更新');
+  }
+  if(action==='points'){
+    const val=parseInt(document.getElementById('point-adjust-value').value,10)||0;
+    const reason=document.getElementById('point-adjust-reason').value.trim()||'手動調整';
+    target.points=(target.points||0)+val;
+    (target.notes||(target.notes=[])).unshift(`${todayStr()} 點數調整 ${val>=0?'+':''}${val}：${reason}`);
+    if(target===memberProfile){memberProfile.points=target.points; POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:reason,value:val});}
+    showToast(`已調整點數 ${val>=0?'+':''}${val}`);
+  }
+  if(action==='refund'){TXNS.unshift({id:nextTxnId(),member:target.name,amount:'NT$1,200',method:'人工退款',promoCode:target.promoCode||'',date:todayStr(),status:'退款',sc:'br'}); showToast('已建立退款紀錄'); renderTransactions();}
+  if(action==='blacklist'){target.status='黑名單';target.sc='br';showToast('已設為黑名單');}
+  if(action==='delete' && idx>=0){MEMBER_ROWS.splice(idx,1); selectedMemberPhone=''; document.getElementById('member-modal').classList.remove('show'); showToast('會員已刪除');}
+  renderMembers(); renderDashboard(); renderPoints(); renderMemberHome();
+  if(selectedMemberPhone) renderMemberDetail();
+}
+
+function uploadIncidentMedia(fileList){
+  const inc=currentIncident();
+  if(!inc||!fileList?.length) return;
+  inc.media=inc.media||[];
+  Array.from(fileList).forEach(file=>{
+    const type=file.type.startsWith('video/')?'video':'image';
+    inc.media.unshift({
+      id:nextMediaId(inc),
+      type,
+      name:file.name,
+      url:URL.createObjectURL(file),
+      uploadedAt:nowStr()
+    });
+  });
+  renderDetail();
+  showToast(`已上傳 ${fileList.length} 個媒體檔案`);
+}
+function removeIncidentMedia(id){
+  const inc=currentIncident();
+  if(!inc?.media) return;
+  const target=inc.media.find(item=>item.id===id);
+  if(target?.url?.startsWith('blob:')) URL.revokeObjectURL(target.url);
+  inc.media=inc.media.filter(item=>item.id!==id);
+  renderDetail();
+  showToast('媒體檔案已移除');
+}
+function removeIncidentRecording(id){
+  const inc=currentIncident();
+  if(!inc?.recordings) return;
+  inc.recordings=inc.recordings.filter(item=>item.id!==id);
+  renderDetail();
+  showToast('錄音紀錄已移除');
+}
+function uploadMemberCaseMedia(incidentId,fileList){
+  const inc=INC.find(item=>item.id===incidentId);
+  if(!inc||!fileList?.length) return;
+  inc.media=inc.media||[];
+  Array.from(fileList).forEach(file=>{
+    const type=file.type.startsWith('video/')?'video':'image';
+    inc.media.unshift({
+      id:nextMediaId(inc),
+      type,
+      name:file.name,
+      url:URL.createObjectURL(file),
+      uploadedAt:nowStr()
+    });
+  });
+  renderMemberHome();
+  renderList();
+  if(selIncidentId===incidentId) renderDetail();
+  showToast(`已附上 ${fileList.length} 個案件檔案，後台已同步收到`);
+}
 
 function renderTransactions(){
-  document.getElementById('transaction-table-body').innerHTML=TXNS.map(tx=>`
-    <tr><td style="font-family:var(--mono);font-size:11px">${esc(tx.id)}</td><td>${esc(tx.member)}</td><td>${esc(tx.amount)}</td><td>${esc(tx.method)}</td><td>${esc(tx.date)}</td><td><span class="badge ${esc(tx.sc)}">${esc(tx.status)}</span></td></tr>
+  const from=document.getElementById('tx-from').value||'1900-01-01';
+  const to=document.getElementById('tx-to').value||todayStr();
+  const rows=TXNS.filter(tx=>dateOnly(tx.date)>=from && dateOnly(tx.date)<=to);
+  document.getElementById('tx-income').textContent=`NT$${rows.filter(tx=>tx.status==='成功').reduce((s,tx)=>s+Number(tx.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}`;
+  document.getElementById('tx-success').textContent=`${rows.filter(tx=>tx.status==='成功').length} 筆`;
+  document.getElementById('tx-refund').textContent=`${rows.filter(tx=>tx.status==='退款').length} 筆`;
+  document.getElementById('tx-refund-amount').textContent=`NT$${rows.filter(tx=>tx.status==='退款').reduce((s,tx)=>s+Number(tx.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}`;
+  document.getElementById('transaction-table-body').innerHTML=rows.map(tx=>`
+    <tr><td style="font-family:var(--mono);font-size:11px">${esc(tx.id)}</td><td>${esc(tx.member)}</td><td>${esc(tx.amount)}</td><td>${esc(tx.method)}</td><td>${esc(tx.promoCode||'—')}</td><td>${esc(tx.date)}</td><td><span class="badge ${esc(tx.sc)}">${esc(tx.status)}</span></td></tr>
   `).join('');
+}
+function setTransactionRange(days){
+  const end=parseDate(latestDataDate());
+  const start=new Date(end); start.setDate(start.getDate()-(days-1));
+  document.getElementById('tx-from').value=start.toISOString().slice(0,10);
+  document.getElementById('tx-to').value=end.toISOString().slice(0,10);
+  renderTransactions();
+}
+function exportTransactions(){
+  const from=document.getElementById('tx-from').value||'1900-01-01';
+  const to=document.getElementById('tx-to').value||todayStr();
+  const rows=TXNS.filter(tx=>dateOnly(tx.date)>=from && dateOnly(tx.date)<=to);
+  downloadCsv('transactions.csv',[
+    ['交易編號','會員','金額','方式','折扣碼','日期','狀態'],
+    ...rows.map(tx=>[tx.id,tx.member,tx.amount,tx.method,tx.promoCode||'',tx.date,tx.status])
+  ]);
+  showToast('已下載交易列表 CSV');
 }
 
 function setDashboardRange(days){
@@ -1240,11 +1737,9 @@ function renderDashboard(){
   document.getElementById('dashboard-timeline').innerHTML=INC.slice(0,4).map(inc=>`
     <div class="tl-item"><div class="tl-dot ${inc.sc==='bg'?'g':inc.sc==='bb'?'b':inc.sc==='br'?'r':'a'}"></div><div class="tl-t">${esc(inc.name)} ${esc(inc.status)} — ${esc(inc.type)}</div><div class="tl-time">${esc(inc.date)}</div></div>
   `).join('');
-  const annual=txInRange.filter(tx=>tx.amount.includes('899')&&tx.status==='成功');
-  const single=txInRange.filter(tx=>tx.amount.includes('1,800')&&tx.status==='成功');
+  const annual=txInRange.filter(tx=>tx.status==='成功');
   document.getElementById('dashboard-transactions').innerHTML=`
-    <tr><td>年費 $899</td><td>${annual.length}</td><td>NT$${annual.reduce((s,t)=>s+Number(t.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}</td></tr>
-    <tr><td>單次 $1,800</td><td>${single.length}</td><td>NT$${single.reduce((s,t)=>s+Number(t.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}</td></tr>
+    <tr><td>年費 $1,200</td><td>${annual.length}</td><td>NT$${annual.reduce((s,t)=>s+Number(t.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}</td></tr>
     <tr><td>待付款</td><td>${txInRange.filter(tx=>tx.status==='待付款').length}</td><td>—</td></tr>`;
   const trendMonths=['01','02','03','04','05','06'];
   const trendValues=[12,18,16,22,24,29];
@@ -1288,17 +1783,6 @@ function renderPoints(){
     <tr><td>${esc(item.date)}</td><td>${esc(item.desc)}</td><td style="text-align:right;color:${item.value>=0?'var(--green-t)':'var(--red-t)'};font-weight:600">${item.value>=0?'+':''}${esc(item.value)}</td></tr>
   `).join('');
 }
-function giftPoints(){
-  const phone=document.getElementById('gift-phone').value.trim();
-  const amount=parseInt(document.getElementById('gift-amount').value,10);
-  if(!phone||!amount){showToast('請填入收件手機與轉贈數量','warn');return;}
-  if(amount>memberProfile.points){showToast('點數不足','error');return;}
-  memberProfile.points-=amount;
-  POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:`轉贈給 ${phone}`,value:-amount});
-  renderPoints();
-  renderMemberHome();
-  showToast(`已轉贈 ${amount} 點`);
-}
 
 function renderMemberHome(){
   document.getElementById('hero-name').textContent=`你好，${memberProfile.name}`;
@@ -1306,7 +1790,8 @@ function renderMemberHome(){
   document.getElementById('hero-tags').innerHTML=`
     <span class="hero-tag">${memberProfile.points} 點</span>
     <span class="hero-tag">${INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).length} 件紀錄</span>
-    <span class="hero-tag">${memberProfile.autoRenew?'自動續費開啟':'自動續費關閉'}</span>`;
+    <span class="hero-tag">${memberProfile.autoRenew?'自動續費開啟':'自動續費關閉'}</span>
+    ${memberProfile.cancelReported?'<span class="hero-tag">已申報取消續約</span>':''}`;
   const cases=INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).slice(0,3);
   document.getElementById('member-cases').innerHTML=cases.length?cases.map(inc=>`
     <div class="card">
@@ -1318,6 +1803,16 @@ function renderMemberHome(){
         ${STEP_LABELS.map((lbl,i)=>`<span style="${inc.steps[i]?'background:var(--green-bg);color:var(--green-t);font-weight:600':'color:var(--t3)'};padding:2px 7px;border-radius:4px">${inc.steps[i]?'✓ ':''}${lbl}</span>`).join('<span style="color:var(--bd2)">—</span>')}
       </div>
       <div style="font-size:11px;color:var(--t3);margin-top:7px">客服更新：${esc(inc.slot||'待聯繫')}</div>
+      ${inc.status!=='已結案'
+        ?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">
+            <div style="font-size:11px;color:var(--t3);margin-bottom:6px">補充照片 / 影片給客服</div>
+            <input class="input" type="file" accept="image/*,video/*" multiple onchange="uploadMemberCaseMedia('${esc(inc.id)}', this.files); this.value='';"/>
+            <div style="font-size:11px;color:var(--t3);margin-top:6px">目前已附上 ${(inc.media||[]).length} 個檔案</div>
+            ${inc.status==='待回電'
+              ?`<div style="margin-top:8px"><button class="btn btn-s" onclick="withdrawIncident('${esc(inc.id)}')">撤回事故</button></div>`
+              :''}
+          </div>`
+        :''}
     </div>`).join(''):'<div class="card"><div class="empty">目前沒有案件，發生事故時可立即提交申請。</div></div>';
 }
 
@@ -1345,10 +1840,16 @@ function submitRegistration(){
   memberProfile.address=address;
   memberProfile.email=email;
   setMemberAuthState('logged_in_unpaid');
+  registrationPaymentPending=true;
   syncProfileForm();
   renderMemberHome();
   renderMembers();
-  showToast('帳號已建立');
+  showToast('帳號已建立，接著可完成付款或先跳過');
+  swMember('m-payment');
+}
+function skipRegistrationPayment(){
+  registrationPaymentPending=false;
+  showToast('已先跳過付款，你可以稍後再啟用會員');
   swMember('m-home');
 }
 
@@ -1402,7 +1903,7 @@ const MNAV=[
 const PG_TITLE={
   dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表',settings:'設定',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
-  'm-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號',
+  'm-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
 };
 const REMOTE_MEMBER_PAGES={
@@ -1414,6 +1915,7 @@ const REMOTE_MEMBER_PAGES={
     {id:'m-home',label:'我的帳戶'},
     {id:'m-nonmember',label:'選擇方案'},
     {id:'m-incident-form',label:'事故資料'},
+    {id:'m-settlement',label:'和解書製作'},
     {id:'m-waiting',label:'申請完成'},
     {id:'m-points',label:'點數'},
     {id:'m-profile',label:'個人資料'}
@@ -1422,6 +1924,7 @@ const REMOTE_MEMBER_PAGES={
     {id:'m-home',label:'我的帳戶'},
     {id:'m-nonmember',label:'選擇方案'},
     {id:'m-incident-form',label:'事故資料'},
+    {id:'m-settlement',label:'和解書製作'},
     {id:'m-payment',label:'付款'},
     {id:'m-waiting',label:'申請完成'},
     {id:'m-points',label:'點數'},
@@ -1511,6 +2014,7 @@ function resetRemoteState(){
   memberFlowSource='member';
   memberHistory=[];
   pendingIncidentDraft=null;
+  registrationPaymentPending=false;
   switchMode('admin');
   swAdmin('dashboard');
   syncRemoteControls();
@@ -1618,6 +2122,7 @@ function swAdmin(id){
 function swMember(id,options={}){
   const {pushHistory=true}=options;
   const prev=mPg;
+  if(['m-login','m-register'].includes(id)) registrationPaymentPending=false;
   mPg=id;
   if(pushHistory&&prev&&prev!==id){
     const roots=MEMBER_ROOT_PAGES[memberAuthState]||[];
@@ -1626,7 +2131,7 @@ function swMember(id,options={}){
   }
   if(['m-login','m-register'].includes(id)) setMemberAuthState('logged_out');
   else if(['m-nonmember','m-payment'].includes(id) && memberAuthState==='nonmember') setMemberAuthState('nonmember');
-  else if(['m-home','m-points','m-profile'].includes(id) && !['logged_in_paid','logged_in_unpaid'].includes(memberAuthState)) setMemberAuthState('logged_in_paid');
+  else if(['m-home','m-points','m-profile','m-settlement'].includes(id) && !['logged_in_paid','logged_in_unpaid'].includes(memberAuthState)) setMemberAuthState('logged_in_paid');
   else if(id==='m-waiting'&&memberFlowSource==='nonmember') setMemberAuthState('nonmember');
   else if(id==='m-waiting'&&memberAuthState==='logged_out') setMemberAuthState('logged_in_unpaid');
   const rootsAfter=MEMBER_ROOT_PAGES[memberAuthState]||[];
@@ -1639,7 +2144,10 @@ function swMember(id,options={}){
   if(id==='m-points'){renderPoints();}
   if(id==='m-profile'){syncProfileForm();}
   if(id==='m-register'){syncRegisterForm();}
-  if(id==='m-payment'){document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;}
+  if(id==='m-payment'){
+    document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
+    renderPaymentActions();
+  }
   if(id==='m-incident-form'){
     if(!document.getElementById('incident-date').value){document.getElementById('incident-date').value=todayStr();}
     document.getElementById('conflict-box').style.display='none';
@@ -1666,6 +2174,8 @@ renderPoints();
 renderMemberHome();
 syncProfileForm();
 setDashboardRange(30);
+setTransactionRange(30);
+initIncidentFilters();
 renderSingleFlowSteps();
 populateRemoteOptions();
 document.getElementById('incident-date').value=todayStr();
