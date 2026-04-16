@@ -548,12 +548,13 @@ textarea.input{resize:vertical}
         <div class="splash">
           <div class="card">
             <div class="card-title">建立帳號</div>
-            <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" placeholder="真實姓名"/></div><div class="fg"><div class="fl">手機</div><input class="input" placeholder="0912-345-678"/></div></div>
-            <div class="fg"><div class="fl">電子信箱</div><input class="input" placeholder="your@email.com"/></div>
-            <div class="fr"><div class="fg"><div class="fl">密碼</div><input class="input" type="password" placeholder="至少 8 碼"/></div><div class="fg"><div class="fl">確認密碼</div><input class="input" type="password" placeholder="再輸入一次"/></div></div>
-            <div class="fg"><div class="fl">車牌（選填）</div><input class="input" placeholder="ABC-1234"/></div>
+            <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" id="register-name" placeholder="真實姓名"/></div><div class="fg"><div class="fl">身分證字號</div><input class="input" id="register-idno" placeholder="A123456789"/></div></div>
+            <div class="fr"><div class="fg"><div class="fl">手機</div><input class="input" id="register-phone" placeholder="0912-345-678"/></div><div class="fg"><div class="fl">生日</div><input class="input" id="register-birthday" type="date"/></div></div>
+            <div class="fg"><div class="fl">地址</div><input class="input" id="register-address" placeholder="例：台北市大安區仁愛路四段 100 號"/></div>
+            <div class="fg"><div class="fl">Email</div><input class="input" id="register-email" placeholder="your@email.com"/></div>
+            <div class="fr"><div class="fg"><div class="fl">密碼</div><input class="input" id="register-password" type="password" placeholder="至少 8 碼"/></div><div class="fg"><div class="fl">確認密碼</div><input class="input" id="register-password-confirm" type="password" placeholder="再輸入一次"/></div></div>
             <div style="display:flex;gap:8px">
-              <button class="btn btn-p" style="flex:1" onclick="setMemberAuthState('logged_in_unpaid');swMember('m-home')">建立帳號</button>
+              <button class="btn btn-p" style="flex:1" onclick="submitRegistration()">建立帳號</button>
               <button class="btn" onclick="swMember('m-login')">已有帳號</button>
             </div>
           </div>
@@ -622,9 +623,11 @@ textarea.input{resize:vertical}
             <div class="av av-l" style="background:var(--blue-bg);color:var(--blue-t)">陳</div>
             <div><div style="font-size:15px;font-weight:600" id="profile-title">陳小明</div><div style="font-size:11px;color:var(--t3)" id="profile-sub">ming@email.com · 年費會員</div></div>
           </div>
-          <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" id="profile-name" value="陳小明"/></div><div class="fg"><div class="fl">手機</div><input class="input" id="profile-phone" value="0912-345-678"/></div></div>
-          <div class="fg"><div class="fl">電子信箱</div><input class="input" id="profile-email" value="ming@email.com"/></div>
-          <div class="fr"><div class="fg"><div class="fl">車牌</div><input class="input" id="profile-plate" value="ABC-1234"/></div><div class="fg"><div class="fl">車款</div><input class="input" id="profile-car" value="Toyota Corolla"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">姓名</div><input class="input" id="profile-name" value="陳小明" readonly/></div><div class="fg"><div class="fl">身分證字號</div><input class="input" id="profile-idno" value="A123456789" readonly/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">手機</div><input class="input" id="profile-phone" value="0912-345-678" readonly/></div><div class="fg"><div class="fl">生日</div><input class="input" id="profile-birthday" type="date" value="1990-01-15" readonly/></div></div>
+          <div class="fg"><div class="fl">地址</div><input class="input" id="profile-address" value="台北市大安區仁愛路四段 100 號"/></div>
+          <div class="fg"><div class="fl">Email</div><input class="input" id="profile-email" value="ming@email.com"/></div>
+          <div class="fg"><div class="fl">車牌</div><input class="input" id="profile-plate" value="ABC-1234"/></div>
           <div class="divider"></div>
           <div class="sec-label">付款方式</div>
           <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px">
@@ -776,10 +779,12 @@ let remoteCollapsed=false;
 
 const memberProfile={
   name:'陳小明',
+  idNo:'A123456789',
   email:'ming@email.com',
   phone:'0912-345-678',
+  birthday:'1990-01-15',
+  address:'台北市大安區仁愛路四段 100 號',
   plate:'ABC-1234',
-  car:'Toyota Corolla',
   plan:'年費會員',
   expiry:'2025-01-15',
   points:320,
@@ -1316,18 +1321,41 @@ function renderMemberHome(){
     </div>`).join(''):'<div class="card"><div class="empty">目前沒有案件，發生事故時可立即提交申請。</div></div>';
 }
 
+function submitRegistration(){
+  const name=document.getElementById('register-name').value.trim();
+  const idNo=document.getElementById('register-idno').value.trim().toUpperCase();
+  const phone=document.getElementById('register-phone').value.trim();
+  const birthday=document.getElementById('register-birthday').value;
+  const address=document.getElementById('register-address').value.trim();
+  const email=document.getElementById('register-email').value.trim();
+  const password=document.getElementById('register-password').value;
+  const confirm=document.getElementById('register-password-confirm').value;
+  if(!name||!idNo||!phone||!birthday||!address||!email||!password||!confirm){
+    showToast('請完整填寫註冊資料','warn');
+    return;
+  }
+  if(password!==confirm){
+    showToast('兩次輸入的密碼不一致','warn');
+    return;
+  }
+  memberProfile.name=name;
+  memberProfile.idNo=idNo;
+  memberProfile.phone=phone;
+  memberProfile.birthday=birthday;
+  memberProfile.address=address;
+  memberProfile.email=email;
+  setMemberAuthState('logged_in_unpaid');
+  syncProfileForm();
+  renderMemberHome();
+  renderMembers();
+  showToast('帳號已建立');
+  swMember('m-home');
+}
+
 function saveProfile(){
-  const prevName=memberProfile.name;
-  const prevPhone=memberProfile.phone;
-  memberProfile.name=document.getElementById('profile-name').value.trim()||memberProfile.name;
-  memberProfile.phone=document.getElementById('profile-phone').value.trim()||memberProfile.phone;
+  memberProfile.address=document.getElementById('profile-address').value.trim()||memberProfile.address;
   memberProfile.email=document.getElementById('profile-email').value.trim()||memberProfile.email;
   memberProfile.plate=document.getElementById('profile-plate').value.trim();
-  memberProfile.car=document.getElementById('profile-car').value.trim();
-  INC.forEach(inc=>{
-    if(inc.name===prevName) inc.name=memberProfile.name;
-    if(inc.phone===prevPhone) inc.phone=memberProfile.phone;
-  });
   document.getElementById('profile-title').textContent=memberProfile.name;
   document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
   renderMembers();
@@ -1338,12 +1366,22 @@ function saveProfile(){
 }
 function syncProfileForm(){
   document.getElementById('profile-name').value=memberProfile.name;
+  document.getElementById('profile-idno').value=memberProfile.idNo;
   document.getElementById('profile-phone').value=memberProfile.phone;
+  document.getElementById('profile-birthday').value=memberProfile.birthday;
+  document.getElementById('profile-address').value=memberProfile.address;
   document.getElementById('profile-email').value=memberProfile.email;
   document.getElementById('profile-plate').value=memberProfile.plate;
-  document.getElementById('profile-car').value=memberProfile.car;
   document.getElementById('profile-title').textContent=memberProfile.name;
   document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
+}
+function syncRegisterForm(){
+  document.getElementById('register-name').value=memberProfile.name;
+  document.getElementById('register-idno').value=memberProfile.idNo;
+  document.getElementById('register-phone').value=memberProfile.phone;
+  document.getElementById('register-birthday').value=memberProfile.birthday;
+  document.getElementById('register-address').value=memberProfile.address;
+  document.getElementById('register-email').value=memberProfile.email;
 }
 
 /* ── Navigation ── */
@@ -1600,6 +1638,7 @@ function swMember(id,options={}){
   if(id==='m-home'){renderMemberHome();}
   if(id==='m-points'){renderPoints();}
   if(id==='m-profile'){syncProfileForm();}
+  if(id==='m-register'){syncRegisterForm();}
   if(id==='m-payment'){document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;}
   if(id==='m-incident-form'){
     if(!document.getElementById('incident-date').value){document.getElementById('incident-date').value=todayStr();}
