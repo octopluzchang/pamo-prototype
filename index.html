@@ -331,8 +331,6 @@ textarea.input{resize:vertical}
           <div class="tab" onclick="setMemberFilter('待啟動',this)">待啟動</div>
           <div class="tab" onclick="setMemberFilter('已過期',this)">已過期</div>
           <div class="tab" onclick="setMemberFilter('黑名單',this)">黑名單</div>
-          <div class="tab" onclick="setMemberFilter('續約成功',this)">續約成功</div>
-          <div class="tab" onclick="setMemberFilter('續約失敗',this)">續約失敗</div>
         </div>
         <div class="card" style="padding:0">
           <table>
@@ -351,6 +349,14 @@ textarea.input{resize:vertical}
           <input class="input" id="tx-to" type="date" onchange="renderTransactions()"/>
           <button class="btn btn-s" onclick="setTransactionRange(30)">近 30 天</button>
           <button class="btn btn-s" onclick="exportTransactions()">下載 CSV</button>
+        </div>
+        <div class="tabs" id="transaction-tabs">
+          <div class="tab on" onclick="setTransactionFilter('all',this)">全部</div>
+          <div class="tab" onclick="setTransactionFilter('成功',this)">成功</div>
+          <div class="tab" onclick="setTransactionFilter('待付款',this)">待付款</div>
+          <div class="tab" onclick="setTransactionFilter('退款',this)">退款</div>
+          <div class="tab" onclick="setTransactionFilter('續約成功',this)">續約成功</div>
+          <div class="tab" onclick="setTransactionFilter('續約失敗',this)">續約失敗</div>
         </div>
         <div class="metrics g3">
           <div class="metric"><div class="m-label">區間收入</div><div class="m-val" id="tx-income">NT$0</div></div>
@@ -396,11 +402,11 @@ textarea.input{resize:vertical}
             <div style="font-size:13px;color:var(--t2)">即時車禍客服</div>
           </div>
           <div class="card">
-            <div class="card-title" style="margin-bottom:16px">登入 / 註冊</div>
-            <div class="fg"><div class="fl">手機號碼</div><input class="input" value="0912-345-678"/></div>
-            <div class="fg"><div class="fl">密碼</div><input class="input" type="password" value="••••••••"/></div>
+            <div class="card-title" style="margin-bottom:16px">手機登入 / 註冊</div>
+            <div class="fg"><div class="fl">手機號碼</div><input class="input" id="login-phone" value="0912-345-678"/></div>
+            <div style="font-size:12px;color:var(--t3);line-height:1.6;margin:4px 0 10px">輸入手機後即可登入會員，原型不需設定或驗證密碼。</div>
             <div style="display:flex;gap:8px;margin-top:4px;margin-bottom:14px">
-              <button class="btn btn-p" style="flex:1" onclick="setMemberAuthState('logged_in_paid');swMember('m-home')">登入</button>
+              <button class="btn btn-p" style="flex:1" onclick="loginWithPhone()">登入</button>
               <button class="btn" style="flex:1" onclick="swMember('m-register')">新用戶註冊</button>
             </div>
           </div>
@@ -539,7 +545,6 @@ textarea.input{resize:vertical}
             <div class="fr"><div class="fg"><div class="fl">手機</div><input class="input" id="register-phone" placeholder="0912-345-678"/></div><div class="fg"><div class="fl">生日</div><input class="input" id="register-birthday" type="date"/></div></div>
             <div class="fg"><div class="fl">地址</div><input class="input" id="register-address" placeholder="例：台北市大安區仁愛路四段 100 號"/></div>
             <div class="fg"><div class="fl">Email</div><input class="input" id="register-email" placeholder="your@email.com"/></div>
-            <div class="fr"><div class="fg"><div class="fl">密碼</div><input class="input" id="register-password" type="password" placeholder="至少 8 碼"/></div><div class="fg"><div class="fl">確認密碼</div><input class="input" id="register-password-confirm" type="password" placeholder="再輸入一次"/></div></div>
             <div style="display:flex;gap:8px">
               <button class="btn btn-p" style="flex:1" onclick="submitRegistration()">建立帳號</button>
             </div>
@@ -631,7 +636,7 @@ textarea.input{resize:vertical}
               <button class="btn btn-s" style="font-size:12px" onclick="reportAutoRenewCancellation()">申報取消自動扣款</button>
             </div>
           </details>
-          <div style="display:flex;gap:8px"><button class="btn btn-p btn-s" onclick="saveProfile()">儲存</button><button class="btn btn-s" onclick="showToast('密碼變更流程待串接','warn')">變更密碼</button></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-p btn-s" onclick="saveProfile()">儲存</button></div>
         </div>
       </div>
 
@@ -757,7 +762,7 @@ textarea.input{resize:vertical}
     </div>
     <div class="fr">
       <div class="fg"><div class="fl">手機</div><input class="input" id="admin-user-phone" placeholder="09xx-xxx-xxx"/></div>
-      <div class="fg"><div class="fl">密碼</div><input class="input" id="admin-user-password" type="password" placeholder="設定登入密碼"/></div>
+      <div class="fg"><div class="fl">登入方式</div><input class="input" value="手機驗證" readonly/></div>
     </div>
     <div class="fr">
       <div class="fg"><div class="fl">角色</div><select class="input" id="admin-user-role"><option>系統管理員</option><option>客服主管</option><option>客服專員</option><option>財務</option></select></div>
@@ -775,6 +780,32 @@ textarea.input{resize:vertical}
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
       <button class="btn" onclick="document.getElementById('admin-user-modal').classList.remove('show')">取消</button>
       <button class="btn btn-p" onclick="saveAdminUser()">儲存</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="create-incident-modal" onclick="closeCreateIncidentModal(event)">
+  <div class="modal-card">
+    <div class="card-title">建立事故</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">事故日期</div><input class="input" id="create-incident-date" type="date"/></div>
+      <div class="fg"><div class="fl">事故類型</div><select class="input" id="create-incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
+    </div>
+    <div class="fg"><div class="fl">事故地點</div><input class="input" id="create-incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
+    <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="create-incident-desc" rows="4" placeholder="描述事故經過、對方車牌（若有）…"></textarea></div>
+    <div class="fr">
+      <div class="fg"><div class="fl">對方姓名</div><input class="input" id="create-counterparty-name" placeholder="若已知請填寫"/></div>
+      <div class="fg"><div class="fl">對方電話</div><input class="input" id="create-counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">聯絡電話</div><input class="input" id="create-incident-phone"/></div>
+      <div class="fg"><div class="fl">方便聯絡時段</div><input class="input" id="create-incident-slot" placeholder="例：平日 14–18 時"/></div>
+    </div>
+    <div id="create-incident-conflict" style="display:none;padding:10px 12px;background:var(--red-bg);border-radius:var(--r);font-size:12px;color:var(--red-t);margin-top:10px;border:1px solid #F09595">
+      對方也是 PAMO 會員，屬於利益衝突案件，系統將停止建立並提示改由其他管道處理。
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button class="btn" onclick="document.getElementById('create-incident-modal').classList.remove('show')">取消</button>
+      <button class="btn btn-p" onclick="submitAdminMemberIncident()">建立事故</button>
     </div>
   </div>
 </div>
@@ -906,9 +937,9 @@ const TRIALS=[
 ];
 
 const ADMIN_USERS=[
-  {id:'U-001',name:'陳客服',email:'support@pamo.tw',phone:'0911-100-200',role:'客服主管',status:'啟用中',lastLogin:'2026-04-16 09:12',password:'pamo1234',permissions:['dashboard','incidents','members','transactions']},
-  {id:'U-002',name:'王會計',email:'finance@pamo.tw',phone:'0912-300-400',role:'財務',status:'啟用中',lastLogin:'2026-04-15 18:26',password:'finance123',permissions:['dashboard','transactions']},
-  {id:'U-003',name:'林管理員',email:'admin@pamo.tw',phone:'0933-500-600',role:'系統管理員',status:'啟用中',lastLogin:'2026-04-16 08:40',password:'admin1234',permissions:['dashboard','incidents','members','transactions','settings','admin_users']}
+  {id:'U-001',name:'陳客服',email:'support@pamo.tw',phone:'0911-100-200',role:'客服主管',status:'啟用中',lastLogin:'2026-04-16 09:12',permissions:['dashboard','incidents','members','transactions']},
+  {id:'U-002',name:'王會計',email:'finance@pamo.tw',phone:'0912-300-400',role:'財務',status:'啟用中',lastLogin:'2026-04-15 18:26',permissions:['dashboard','transactions']},
+  {id:'U-003',name:'林管理員',email:'admin@pamo.tw',phone:'0933-500-600',role:'系統管理員',status:'啟用中',lastLogin:'2026-04-16 08:40',permissions:['dashboard','incidents','members','transactions','settings','admin_users']}
 ];
 
 const POINTS=[
@@ -918,7 +949,7 @@ const POINTS=[
 ];
 
 const STEP_LABELS=['申請提交','首次聯繫','協商處理','結案'];
-const MEMBER_FILTERS=['all','訂閱中','待啟動','已過期','黑名單','續約成功','續約失敗'];
+const MEMBER_FILTERS=['all','訂閱中','待啟動','已過期','黑名單'];
 let selIncidentId=INC[0].id;
 let callOn=false,callSec=0,callTick=null,dTab='notes';
 let curPlan='single',curPayTab='credit',memberFilter='all',incidentFilter='all';
@@ -932,6 +963,7 @@ let remoteCollapsed=false;
 let selectedMemberPhone='';
 let registrationPaymentPending=false;
 let editingAdminUserId='';
+let transactionFilter='all';
 
 const memberProfile={
   name:'陳小明',
@@ -1661,8 +1693,7 @@ function renderMemberDetail(){
     <div class="card-title">會員查看：${esc(member.name)}</div>
     <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">電話：${esc(member.phone)} · 折扣：${esc(member.promoCode||'—')} · 自動續約：${member.reportedCancel?'已申報取消':'正常'}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
-      <button class="btn btn-s" onclick="memberAction('contact')">聯絡詢問原因</button>
-      <button class="btn btn-s" onclick="memberAction('note')">紀錄處理</button>
+      <button class="btn btn-s" onclick="openCreateIncidentModal()">建立事故</button>
       <button class="btn btn-s" onclick="memberAction('cancel_auto')">手動取消自動續約</button>
       <button class="btn btn-s" onclick="memberAction('refund')">退費</button>
       <button class="btn btn-s" onclick="memberAction('blacklist')">設黑名單</button>
@@ -1704,8 +1735,6 @@ function memberAction(action){
   const idx=MEMBER_ROWS.findIndex(m=>m.phone===selectedMemberPhone);
   const target=currentMemberTarget();
   if(!target) return;
-  if(action==='contact') showToast('已建立聯絡任務');
-  if(action==='note') (target.notes||(target.notes=[])).unshift(`${todayStr()} 已記錄取消自動續約原因待回覆`);
   if(action==='cancel_auto'){target.reportedCancel=false; if(target===memberProfile) memberProfile.autoRenew=false; showToast('已手動取消自動續約');}
   if(action==='edit'){
     target.name=document.getElementById('member-edit-name').value.trim()||target.name;
@@ -1798,11 +1827,26 @@ function uploadMemberCaseMedia(incidentId,fileList){
   if(selIncidentId===incidentId) renderDetail();
   showToast(`已附上 ${fileList.length} 個案件檔案，後台已同步收到`);
 }
+function setTransactionFilter(filter,el){
+  transactionFilter=filter;
+  document.querySelectorAll('#transaction-tabs .tab').forEach(tab=>tab.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderTransactions();
+}
 
 function renderTransactions(){
   const from=document.getElementById('tx-from').value||'1900-01-01';
   const to=document.getElementById('tx-to').value||todayStr();
-  const rows=TXNS.filter(tx=>dateOnly(tx.date)>=from && dateOnly(tx.date)<=to);
+  const rows=TXNS.filter(tx=>{
+    const inRange=dateOnly(tx.date)>=from && dateOnly(tx.date)<=to;
+    if(!inRange) return false;
+    if(transactionFilter==='all') return true;
+    if(['成功','待付款','退款'].includes(transactionFilter)) return tx.status===transactionFilter;
+    const member=memberDataset().find(m=>m.name===tx.member);
+    if(transactionFilter==='續約成功') return member?.renewal==='success';
+    if(transactionFilter==='續約失敗') return member?.renewal==='failed';
+    return true;
+  });
   document.getElementById('tx-income').textContent=`NT$${rows.filter(tx=>tx.status==='成功').reduce((s,tx)=>s+Number(tx.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}`;
   document.getElementById('tx-success').textContent=`${rows.filter(tx=>tx.status==='成功').length} 筆`;
   document.getElementById('tx-refund').textContent=`${rows.filter(tx=>tx.status==='退款').length} 筆`;
@@ -1933,7 +1977,6 @@ function openAdminUserModal(id=''){
   document.getElementById('admin-user-name').value=user?.name||'';
   document.getElementById('admin-user-email').value=user?.email||'';
   document.getElementById('admin-user-phone').value=user?.phone||'';
-  document.getElementById('admin-user-password').value=user?.password||'';
   document.getElementById('admin-user-role').value=user?.role||'客服專員';
   document.getElementById('admin-user-status').value=user?.status||'啟用中';
   document.querySelectorAll('#admin-user-permissions input[type="checkbox"]').forEach(box=>{
@@ -1944,16 +1987,108 @@ function openAdminUserModal(id=''){
 function closeAdminUserModal(e){
   if(e.target.id==='admin-user-modal') document.getElementById('admin-user-modal').classList.remove('show');
 }
+function loginWithPhone(){
+  const phone=document.getElementById('login-phone').value.trim();
+  if(!phone){
+    showToast('請輸入手機號碼','warn');
+    return;
+  }
+  const member=memberDataset().find(item=>item.phone===phone);
+  if(member){
+    setMemberAuthState(member.status==='訂閱中'?'logged_in_paid':'logged_in_unpaid');
+    showToast('手機驗證成功，已登入');
+    swMember('m-home');
+  } else {
+    showToast('查無會員資料，請先建立帳號','warn');
+    swMember('m-register');
+  }
+}
+function openCreateIncidentModal(){
+  const target=currentMemberTarget();
+  if(!target){
+    showToast('找不到可建立事故的會員','warn');
+    return;
+  }
+  document.getElementById('create-incident-date').value=todayStr();
+  document.getElementById('create-incident-type').value='車輛碰撞';
+  document.getElementById('create-incident-loc').value='';
+  document.getElementById('create-incident-desc').value='';
+  document.getElementById('create-counterparty-name').value='';
+  document.getElementById('create-counterparty-phone').value='';
+  document.getElementById('create-incident-phone').value=target.phone||'';
+  document.getElementById('create-incident-slot').value='';
+  document.getElementById('create-incident-conflict').style.display='none';
+  document.getElementById('create-incident-modal').classList.add('show');
+}
+function closeCreateIncidentModal(e){
+  if(e.target.id==='create-incident-modal') document.getElementById('create-incident-modal').classList.remove('show');
+}
+function submitAdminMemberIncident(){
+  const target=currentMemberTarget();
+  if(!target){
+    showToast('找不到可建立事故的會員','warn');
+    return;
+  }
+  const draft={
+    date:document.getElementById('create-incident-date').value,
+    type:document.getElementById('create-incident-type').value,
+    loc:document.getElementById('create-incident-loc').value.trim(),
+    desc:document.getElementById('create-incident-desc').value.trim(),
+    phone:document.getElementById('create-incident-phone').value.trim(),
+    slot:document.getElementById('create-incident-slot').value.trim()||'24 小時內皆可',
+    counterpartyName:document.getElementById('create-counterparty-name').value.trim(),
+    counterpartyPhone:document.getElementById('create-counterparty-phone').value.trim()
+  };
+  if(!draft.date||!draft.loc||!draft.desc||!draft.phone){
+    showToast('請完整填寫事故日期、地點、說明與電話','warn');
+    return;
+  }
+  const conflict=incidentConflict(draft.counterpartyPhone);
+  document.getElementById('create-incident-conflict').style.display=conflict?'block':'none';
+  if(conflict){
+    showToast('偵測到雙方皆為會員，案件不可處理','error');
+    return;
+  }
+  const id=nextIncidentId();
+  const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
+  INC.unshift({
+    id,
+    name:target.name,
+    phone:draft.phone,
+    type:draft.type,
+    loc:draft.loc,
+    date:dateTime,
+    status:'待回電',
+    sc:'ba',
+    desc:draft.desc,
+    steps:[1,0,0,0],
+    slot:draft.slot,
+    media:[],
+    recordings:[],
+    notes:[
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`後台由會員管理建立事故案件。會員：${target.name}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
+    ]
+  });
+  selIncidentId=id;
+  document.getElementById('create-incident-modal').classList.remove('show');
+  document.getElementById('member-modal').classList.remove('show');
+  switchMode('admin');
+  swAdmin('incidents');
+  renderDashboard();
+  renderMemberHome();
+  showToast('已建立新事故案件');
+}
 function saveAdminUser(){
   const name=document.getElementById('admin-user-name').value.trim();
   const email=document.getElementById('admin-user-email').value.trim();
   const phone=document.getElementById('admin-user-phone').value.trim();
-  const password=document.getElementById('admin-user-password').value;
   const role=document.getElementById('admin-user-role').value;
   const status=document.getElementById('admin-user-status').value;
   const permissions=[...document.querySelectorAll('#admin-user-permissions input[type="checkbox"]:checked')].map(box=>box.value);
-  if(!name||!email||!phone||!password){
-    showToast('請完整填寫使用者基本資料與密碼','warn');
+  if(!name||!email||!phone){
+    showToast('請完整填寫使用者基本資料','warn');
     return;
   }
   if(!permissions.length){
@@ -1965,7 +2100,6 @@ function saveAdminUser(){
     existing.name=name;
     existing.email=email;
     existing.phone=phone;
-    existing.password=password;
     existing.role=role;
     existing.status=status;
     existing.permissions=permissions;
@@ -1973,7 +2107,7 @@ function saveAdminUser(){
   } else {
     ADMIN_USERS.unshift({
       id:`U-${String(ADMIN_USERS.length+1).padStart(3,'0')}`,
-      name,email,phone,password,role,status,permissions,lastLogin:'尚未登入'
+      name,email,phone,role,status,permissions,lastLogin:'尚未登入'
     });
   }
   document.getElementById('admin-user-modal').classList.remove('show');
@@ -2027,14 +2161,8 @@ function submitRegistration(){
   const birthday=document.getElementById('register-birthday').value;
   const address=document.getElementById('register-address').value.trim();
   const email=document.getElementById('register-email').value.trim();
-  const password=document.getElementById('register-password').value;
-  const confirm=document.getElementById('register-password-confirm').value;
-  if(!name||!idNo||!phone||!birthday||!address||!email||!password||!confirm){
+  if(!name||!idNo||!phone||!birthday||!address||!email){
     showToast('請完整填寫註冊資料','warn');
-    return;
-  }
-  if(password!==confirm){
-    showToast('兩次輸入的密碼不一致','warn');
     return;
   }
   memberProfile.name=name;
