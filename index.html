@@ -365,7 +365,7 @@ textarea.input{resize:vertical}
         </div>
         <div class="card" style="padding:0">
           <table>
-            <tr><th>交易編號</th><th>會員</th><th>金額</th><th>方式</th><th>折扣碼</th><th>日期</th><th>狀態</th></tr>
+            <tr><th>交易編號</th><th>會員</th><th>手機</th><th>續約狀態</th><th>金額</th><th>方式</th><th>折扣碼</th><th>日期</th><th>狀態</th></tr>
             <tbody id="transaction-table-body"></tbody>
           </table>
         </div>
@@ -373,24 +373,14 @@ textarea.input{resize:vertical}
 
       <!-- ADMIN: 設定 -->
       <div class="page" id="page-settings">
-        <div class="metrics g2">
-          <div class="card">
-            <div class="card-title">優惠碼管理</div>
-            <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" id="promo-code" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" id="promo-discount" value="20%"/></div></div>
-            <div class="fr"><div class="fg"><div class="fl">到期日</div><input class="input" id="promo-expiry" type="date" value="2026-12-31"/></div><div class="fg"><div class="fl">上限</div><input class="input" id="promo-limit" value="100"/></div></div>
-            <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="addPromo()">新增</button>
-            <table style="font-size:12px"><tr><th>代碼</th><th>折扣</th><th>已用</th><th>到期</th></tr>
-              <tbody id="promo-table-body"></tbody>
-            </table>
-          </div>
-          <div class="card">
-            <div class="card-title">試用序號</div>
-            <div class="fr"><div class="fg"><div class="fl">有效天數</div><input class="input" id="trial-days" value="30"/></div><div class="fg"><div class="fl">數量</div><input class="input" id="trial-qty" value="10"/></div></div>
-            <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="generateTrials()">產生序號</button>
-            <table style="font-size:12px"><tr><th>序號</th><th>狀態</th><th>使用者</th></tr>
-              <tbody id="trial-table-body"></tbody>
-            </table>
-          </div>
+        <div class="card">
+          <div class="card-title">優惠碼管理</div>
+          <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" id="promo-code" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" id="promo-discount" value="20%"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">到期日</div><input class="input" id="promo-expiry" type="date" value="2026-12-31"/></div><div class="fg"><div class="fl">上限</div><input class="input" id="promo-limit" value="100"/></div></div>
+          <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="addPromo()">新增</button>
+          <table style="font-size:12px"><tr><th>代碼</th><th>折扣</th><th>已用</th><th>到期</th></tr>
+            <tbody id="promo-table-body"></tbody>
+          </table>
         </div>
       </div>
 
@@ -493,7 +483,7 @@ textarea.input{resize:vertical}
               <div class="fg"><div class="fl">事故類型</div><select class="input" id="incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
             </div>
             <div class="fg"><div class="fl">事故地點</div><input class="input" id="incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
-            <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="incident-desc" rows="4" placeholder="描述事故經過、對方車牌（若有）…"></textarea></div>
+            <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="incident-desc" rows="4" placeholder="描述事故經過、現場情況與對方資訊（若有）…"></textarea></div>
             <div class="fr">
               <div class="fg"><div class="fl">對方姓名</div><input class="input" id="counterparty-name" placeholder="若已知請填寫"/></div>
               <div class="fg"><div class="fl">對方電話</div><input class="input" id="counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
@@ -619,7 +609,6 @@ textarea.input{resize:vertical}
           <div class="fr"><div class="fg"><div class="fl">手機</div><input class="input" id="profile-phone" value="0912-345-678" readonly/></div><div class="fg"><div class="fl">生日</div><input class="input" id="profile-birthday" type="date" value="1990-01-15" readonly/></div></div>
           <div class="fg"><div class="fl">地址</div><input class="input" id="profile-address" value="台北市大安區仁愛路四段 100 號"/></div>
           <div class="fg"><div class="fl">Email</div><input class="input" id="profile-email" value="ming@email.com"/></div>
-          <div class="fg"><div class="fl">車牌</div><input class="input" id="profile-plate" value="ABC-1234"/></div>
           <div class="divider"></div>
           <div class="sec-label">付款方式</div>
           <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--bd);border-radius:var(--r);margin-bottom:8px">
@@ -714,20 +703,9 @@ textarea.input{resize:vertical}
       <div class="fg"><div class="fl">生日</div><input class="input" id="new-member-birthday" type="date"/></div>
     </div>
     <div class="fg"><div class="fl">地址</div><input class="input" id="new-member-address" placeholder="例：台北市大安區仁愛路四段 100 號"/></div>
-    <div class="fr">
-      <div class="fg"><div class="fl">Email</div><input class="input" id="new-member-email" placeholder="member@email.com"/></div>
-      <div class="fg"><div class="fl">車牌</div><input class="input" id="new-member-plate" placeholder="ABC-1234"/></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><div class="fl">加入日期</div><input class="input" id="new-member-joined" type="date"/></div>
-      <div class="fg"><div class="fl">狀態</div><select class="input" id="new-member-status"><option>訂閱中</option><option>待啟動</option><option>已過期</option><option>黑名單</option></select></div>
-    </div>
+    <div class="fg"><div class="fl">Email</div><input class="input" id="new-member-email" placeholder="member@email.com"/></div>
     <div class="fr">
       <div class="fg"><div class="fl">點數</div><input class="input" id="new-member-points" type="number" value="0"/></div>
-      <div class="fg"><div class="fl">折扣碼</div><input class="input" id="new-member-promo" placeholder="選填"/></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><div class="fl">續約狀態</div><select class="input" id="new-member-renewal"><option value="none">—</option><option value="success">續約成功</option><option value="failed">續約失敗</option></select></div>
       <div class="fg"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
@@ -791,7 +769,7 @@ textarea.input{resize:vertical}
       <div class="fg"><div class="fl">事故類型</div><select class="input" id="create-incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
     </div>
     <div class="fg"><div class="fl">事故地點</div><input class="input" id="create-incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
-    <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="create-incident-desc" rows="4" placeholder="描述事故經過、對方車牌（若有）…"></textarea></div>
+    <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="create-incident-desc" rows="4" placeholder="描述事故經過、現場情況與對方資訊（若有）…"></textarea></div>
     <div class="fr">
       <div class="fg"><div class="fl">對方姓名</div><input class="input" id="create-counterparty-name" placeholder="若已知請填寫"/></div>
       <div class="fg"><div class="fl">對方電話</div><input class="input" id="create-counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
@@ -902,10 +880,10 @@ const INC=[
 ];
 
 const MEMBER_ROWS=[
-  {name:'陳小明',idNo:'A123456789',email:'ming@email.com',phone:'0912-345-678',birthday:'1990-01-15',address:'台北市大安區仁愛路四段 100 號',plate:'ABC-1234',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
-  {name:'林小安',idNo:'B223456789',email:'an@email.com',phone:'0923-456-789',birthday:'1993-07-21',address:'新北市板橋區文化路一段 88 號',plate:'BCD-5678',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
-  {name:'王大偉',idNo:'C323456789',email:'wei@email.com',phone:'0934-567-890',birthday:'1988-11-02',address:'桃園市中壢區中美路二段 16 號',plate:'EFG-9012',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
-  {name:'張小不',idNo:'D423456789',email:'bu@email.com',phone:'0945-678-901',birthday:'1995-03-18',address:'台中市西屯區台灣大道三段 200 號',plate:'HIJ-3456',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
+  {name:'陳小明',idNo:'A123456789',email:'ming@email.com',phone:'0912-345-678',birthday:'1990-01-15',address:'台北市大安區仁愛路四段 100 號',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
+  {name:'林小安',idNo:'B223456789',email:'an@email.com',phone:'0923-456-789',birthday:'1993-07-21',address:'新北市板橋區文化路一段 88 號',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
+  {name:'王大偉',idNo:'C323456789',email:'wei@email.com',phone:'0934-567-890',birthday:'1988-11-02',address:'桃園市中壢區中美路二段 16 號',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
+  {name:'張小不',idNo:'D423456789',email:'bu@email.com',phone:'0945-678-901',birthday:'1995-03-18',address:'台中市西屯區台灣大道三段 200 號',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
 ];
 
 const TXNS=[
@@ -929,11 +907,6 @@ const TXNS=[
 const PROMOS=[
   {code:'NEW1200',discount:'10%',used:14,expiry:'2026-12-31'},
   {code:'SPRING',discount:'15%',used:8,expiry:'2026-06-30'}
-];
-
-const TRIALS=[
-  {code:'TRIAL-A3X9',status:'未使用',sc:'bg',user:'—'},
-  {code:'TRIAL-K2M7',status:'已使用',sc:'bgr',user:'陳小明'}
 ];
 
 const ADMIN_USERS=[
@@ -964,6 +937,7 @@ let selectedMemberPhone='';
 let registrationPaymentPending=false;
 let editingAdminUserId='';
 let transactionFilter='all';
+let memberDetailTab='profile';
 
 const memberProfile={
   name:'陳小明',
@@ -972,7 +946,6 @@ const memberProfile={
   phone:'0912-345-678',
   birthday:'1990-01-15',
   address:'台北市大安區仁愛路四段 100 號',
-  plate:'ABC-1234',
   plan:'年費會員',
   expiry:'2025-01-15',
   points:320,
@@ -1062,7 +1035,7 @@ function memberDataset(){
   const currentStatus=memberProfile.plan.includes('年費')?'訂閱中':'待啟動';
   const currentSc=currentStatus==='訂閱中'?'bg':'ba';
   return [
-    {...MEMBER_ROWS[0],name:memberProfile.name,idNo:memberProfile.idNo,email:memberProfile.email,phone:memberProfile.phone,birthday:memberProfile.birthday,address:memberProfile.address,plate:memberProfile.plate,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
+    {...MEMBER_ROWS[0],name:memberProfile.name,idNo:memberProfile.idNo,email:memberProfile.email,phone:memberProfile.phone,birthday:memberProfile.birthday,address:memberProfile.address,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
     ...MEMBER_ROWS.slice(1)
   ];
 }
@@ -1618,12 +1591,7 @@ function openAddMemberModal(){
   document.getElementById('new-member-phone').value='';
   document.getElementById('new-member-birthday').value='';
   document.getElementById('new-member-address').value='';
-  document.getElementById('new-member-plate').value='';
-  document.getElementById('new-member-joined').value=todayStr();
-  document.getElementById('new-member-status').value='訂閱中';
   document.getElementById('new-member-points').value='0';
-  document.getElementById('new-member-promo').value='';
-  document.getElementById('new-member-renewal').value='none';
   document.getElementById('add-member-modal').classList.add('show');
 }
 function closeAddMemberModal(e){
@@ -1652,13 +1620,8 @@ function submitNewMember(){
   const phone=document.getElementById('new-member-phone').value.trim();
   const birthday=document.getElementById('new-member-birthday').value;
   const address=document.getElementById('new-member-address').value.trim();
-  const plate=document.getElementById('new-member-plate').value.trim().toUpperCase();
-  const joined=document.getElementById('new-member-joined').value||todayStr();
-  const status=document.getElementById('new-member-status').value;
   const points=parseInt(document.getElementById('new-member-points').value,10)||0;
-  const promoCode=document.getElementById('new-member-promo').value.trim().toUpperCase();
-  const renewal=document.getElementById('new-member-renewal').value;
-  if(!name||!idNo||!phone||!birthday||!address||!email||!plate){
+  if(!name||!idNo||!phone||!birthday||!address||!email){
     showToast('請完整填寫新增會員資料','warn');
     return;
   }
@@ -1668,8 +1631,8 @@ function submitNewMember(){
   }
   const [tone,toneText]=nextMemberTone();
   MEMBER_ROWS.push({
-    name,idNo,email,phone,birthday,address,plate,plan:'年費',points,status,sc:statusStyleOf(status),joined,
-    tone,toneText,renewal,renewalLabel:renewalLabelOf(renewal),promoCode,reportedCancel:false,
+    name,idNo,email,phone,birthday,address,plan:'年費',points,status:'訂閱中',sc:statusStyleOf('訂閱中'),joined:todayStr(),
+    tone,toneText,renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,
     notes:[`${todayStr()} 後台新增會員資料`]
   });
   document.getElementById('add-member-modal').classList.remove('show');
@@ -1678,20 +1641,40 @@ function submitNewMember(){
   showToast(`會員 ${name} 已新增`);
 }
 
-function openMemberDetail(phone){selectedMemberPhone=phone;renderMemberDetail();document.getElementById('member-modal').classList.add('show');}
+function openMemberDetail(phone){selectedMemberPhone=phone;memberDetailTab='profile';renderMemberDetail();document.getElementById('member-modal').classList.add('show');}
 function closeMemberModal(e){if(e.target.id==='member-modal') document.getElementById('member-modal').classList.remove('show');}
 function currentMemberRecord(){return memberDataset().find(m=>m.phone===selectedMemberPhone);}
 function currentMemberTarget(){
   if(selectedMemberPhone===memberProfile.phone) return memberProfile;
   return MEMBER_ROWS.find(m=>m.phone===selectedMemberPhone);
 }
+function memberIncidents(member){
+  return INC.filter(inc=>inc.phone===member.phone||inc.name===member.name);
+}
+function setMemberDetailTab(tab){
+  memberDetailTab=tab;
+  renderMemberDetail();
+}
+function openIncidentFromMember(incidentId){
+  document.getElementById('member-modal').classList.remove('show');
+  selIncidentId=incidentId;
+  dTab='notes';
+  switchMode('admin');
+  swAdmin('incidents');
+}
 function renderMemberDetail(){
   const member=currentMemberRecord();
   const box=document.getElementById('member-modal-card');
   if(!member){box.innerHTML='';return;}
+  const incidents=memberIncidents(member);
   box.innerHTML=`<div>
     <div class="card-title">會員查看：${esc(member.name)}</div>
     <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">電話：${esc(member.phone)} · 折扣：${esc(member.promoCode||'—')} · 自動續約：${member.reportedCancel?'已申報取消':'正常'}</div>
+    <div class="tabs" style="margin-bottom:12px">
+      <div class="tab ${memberDetailTab==='profile'?'on':''}" onclick="setMemberDetailTab('profile')">會員資料</div>
+      <div class="tab ${memberDetailTab==='incidents'?'on':''}" onclick="setMemberDetailTab('incidents')">事故紀錄</div>
+    </div>
+    <div style="display:${memberDetailTab==='profile'?'block':'none'}">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
       <button class="btn btn-s" onclick="openCreateIncidentModal()">建立事故</button>
       <button class="btn btn-s" onclick="memberAction('cancel_auto')">手動取消自動續約</button>
@@ -1710,10 +1693,7 @@ function renderMemberDetail(){
       <div class="fg"><div class="fl">生日</div><input class="input" id="member-edit-birthday" type="date" value="${esc(member.birthday||'')}"/></div>
     </div>
     <div class="fg"><div class="fl">地址</div><input class="input" id="member-edit-address" value="${esc(member.address||'')}"/></div>
-    <div class="fr">
-      <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
-      <div class="fg"><div class="fl">車牌</div><input class="input" id="member-edit-plate" value="${esc(member.plate||'')}"/></div>
-    </div>
+    <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
     <div class="fr">
       <div class="fg"><div class="fl">折扣碼</div><input class="input" id="member-edit-promo" value="${esc(member.promoCode||'')}"/></div>
       <div class="fg"></div>
@@ -1728,6 +1708,22 @@ function renderMemberDetail(){
     <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-p btn-s" onclick="memberAction('points')">套用點數調整</button></div>
     <div class="sec-label">處理紀錄</div>
     <div style="font-size:12px;color:var(--t3);line-height:1.7">${member.notes?.length?member.notes.map(esc).join('<br>'):'目前尚無處理紀錄'}</div>
+    </div>
+    <div style="display:${memberDetailTab==='incidents'?'block':'none'}">
+      <div class="sec-label" style="margin-bottom:10px">事故紀錄</div>
+      ${incidents.length?incidents.map(inc=>`
+        <div class="card" style="padding:12px 14px;margin-bottom:10px;cursor:pointer" onclick="openIncidentFromMember('${esc(inc.id)}')">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:6px">
+            <div>
+              <div style="font-size:10px;color:var(--t3)">${esc(inc.id)}</div>
+              <div style="font-weight:600">${esc(inc.type)} — ${esc(inc.loc)}</div>
+            </div>
+            <span class="badge ${esc(inc.sc)}">${esc(inc.status)}</span>
+          </div>
+          <div style="font-size:12px;color:var(--t2)">${esc(inc.date)} · 點擊前往事故管理</div>
+        </div>
+      `).join(''):'<div class="card"><div class="empty">目前沒有事故紀錄</div></div>'}
+    </div>
     <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" onclick="document.getElementById('member-modal').classList.remove('show')">關閉</button></div>
   </div>`;
 }
@@ -1743,7 +1739,6 @@ function memberAction(action){
     target.address=document.getElementById('member-edit-address').value.trim()||target.address||'';
     target.email=document.getElementById('member-edit-email').value.trim()||target.email;
     target.phone=document.getElementById('member-edit-phone').value.trim()||target.phone;
-    target.plate=document.getElementById('member-edit-plate').value.trim()||target.plate||'';
     target.promoCode=document.getElementById('member-edit-promo').value.trim().toUpperCase();
     selectedMemberPhone=target.phone;
     (target.notes||(target.notes=[])).unshift(`${todayStr()} 後台已修改會員資料`);
@@ -1754,7 +1749,6 @@ function memberAction(action){
       memberProfile.address=target.address||memberProfile.address;
       memberProfile.email=target.email;
       memberProfile.phone=target.phone;
-      memberProfile.plate=target.plate||memberProfile.plate;
       memberProfile.promoCode=target.promoCode;
       syncProfileForm();
     }
@@ -1851,9 +1845,15 @@ function renderTransactions(){
   document.getElementById('tx-success').textContent=`${rows.filter(tx=>tx.status==='成功').length} 筆`;
   document.getElementById('tx-refund').textContent=`${rows.filter(tx=>tx.status==='退款').length} 筆`;
   document.getElementById('tx-refund-amount').textContent=`NT$${rows.filter(tx=>tx.status==='退款').reduce((s,tx)=>s+Number(tx.amount.replace(/[^\d]/g,'')),0).toLocaleString('zh-TW')}`;
-  document.getElementById('transaction-table-body').innerHTML=rows.map(tx=>`
-    <tr><td style="font-family:var(--mono);font-size:11px">${esc(tx.id)}</td><td>${esc(tx.member)}</td><td>${esc(tx.amount)}</td><td>${esc(tx.method)}</td><td>${esc(tx.promoCode||'—')}</td><td>${esc(tx.date)}</td><td><span class="badge ${esc(tx.sc)}">${esc(tx.status)}</span></td></tr>
-  `).join('');
+  document.getElementById('transaction-table-body').innerHTML=rows.map(tx=>{
+    const member=memberDataset().find(m=>m.name===tx.member);
+    const renewal=member?.renewal==='success'?'成功':member?.renewal==='failed'?'失敗':'—';
+    const phone=member?.phone||'—';
+    const statusLabel=member?.renewal==='failed'?'失敗':tx.status;
+    const statusClass=member?.renewal==='failed'?'br':tx.sc;
+    return `
+    <tr><td style="font-family:var(--mono);font-size:11px">${esc(tx.id)}</td><td>${esc(tx.member)}</td><td>${esc(phone)}</td><td>${esc(renewal)}</td><td>${esc(tx.amount)}</td><td>${esc(tx.method)}</td><td>${esc(tx.promoCode||'—')}</td><td>${esc(tx.date)}</td><td><span class="badge ${esc(statusClass)}">${esc(statusLabel)}</span></td></tr>`;
+  }).join('');
 }
 function setTransactionRange(days){
   const end=parseDate(latestDataDate());
@@ -1867,8 +1867,11 @@ function exportTransactions(){
   const to=document.getElementById('tx-to').value||todayStr();
   const rows=TXNS.filter(tx=>dateOnly(tx.date)>=from && dateOnly(tx.date)<=to);
   downloadCsv('transactions.csv',[
-    ['交易編號','會員','金額','方式','折扣碼','日期','狀態'],
-    ...rows.map(tx=>[tx.id,tx.member,tx.amount,tx.method,tx.promoCode||'',tx.date,tx.status])
+    ['交易編號','會員','手機','金額','方式','折扣碼','日期','狀態'],
+    ...rows.map(tx=>{
+      const member=memberDataset().find(m=>m.name===tx.member);
+      return [tx.id,tx.member,member?.phone||'',tx.amount,tx.method,tx.promoCode||'',tx.date,tx.status];
+    })
   ]);
   showToast('已下載交易列表 CSV');
 }
@@ -1927,7 +1930,6 @@ function renderDashboard(){
 
 function renderSettings(){
   document.getElementById('promo-table-body').innerHTML=PROMOS.map(p=>`<tr><td>${esc(p.code)}</td><td>${esc(p.discount)}</td><td>${esc(p.used)}</td><td>${esc(p.expiry)}</td></tr>`).join('');
-  document.getElementById('trial-table-body').innerHTML=TRIALS.map(t=>`<tr><td style="font-family:var(--mono)">${esc(t.code)}</td><td><span class="badge ${esc(t.sc)}">${esc(t.status)}</span></td><td>${esc(t.user)}</td></tr>`).join('');
 }
 function addPromo(){
   const code=document.getElementById('promo-code').value.trim().toUpperCase();
@@ -1937,12 +1939,6 @@ function addPromo(){
   PROMOS.unshift({code,discount,used:0,expiry});
   renderSettings();
   showToast(`優惠碼 ${code} 已新增`);
-}
-function generateTrials(){
-  const qty=Math.max(1,Math.min(20,parseInt(document.getElementById('trial-qty').value,10)||1));
-  for(let i=0;i<qty;i++) TRIALS.unshift({code:randomCode('TRIAL'),status:'未使用',sc:'bg',user:'—'});
-  renderSettings();
-  showToast(`已產生 ${qty} 組試用序號`);
 }
 function permissionLabel(key){
   return {
@@ -2188,7 +2184,6 @@ function skipRegistrationPayment(){
 function saveProfile(){
   memberProfile.address=document.getElementById('profile-address').value.trim()||memberProfile.address;
   memberProfile.email=document.getElementById('profile-email').value.trim()||memberProfile.email;
-  memberProfile.plate=document.getElementById('profile-plate').value.trim();
   document.getElementById('profile-title').textContent=memberProfile.name;
   document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
   renderMembers();
@@ -2204,7 +2199,6 @@ function syncProfileForm(){
   document.getElementById('profile-birthday').value=memberProfile.birthday;
   document.getElementById('profile-address').value=memberProfile.address;
   document.getElementById('profile-email').value=memberProfile.email;
-  document.getElementById('profile-plate').value=memberProfile.plate;
   document.getElementById('profile-title').textContent=memberProfile.name;
   document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
 }
@@ -2224,7 +2218,7 @@ const ANAV=[
   {id:'members',lbl:'會員管理',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
   {id:'transactions',lbl:'交易列表',ic:'M2 5h12M2 9h8M2 13h5'},
   {id:'admin-users',lbl:'使用者管理',ic:'M8 4a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm-5 9a5 5 0 0110 0'},
-  {id:'settings',lbl:'優惠碼/序號管理',ic:'M8 5a3 3 0 100 6 3 3 0 000-6z M2 8a6 6 0 1012 0A6 6 0 002 8z'},
+  {id:'settings',lbl:'優惠碼管理',ic:'M8 5a3 3 0 100 6 3 3 0 000-6z M2 8a6 6 0 1012 0A6 6 0 002 8z'},
 ];
 const MNAV=[
   {id:'m-login',lbl:'登入 / 入口',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
@@ -2234,7 +2228,7 @@ const MNAV=[
   {id:'m-profile',lbl:'個人資料',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
 ];
 const PG_TITLE={
-  dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼/序號管理',
+  dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼管理',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
   'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
