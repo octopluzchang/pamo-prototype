@@ -702,19 +702,28 @@ textarea.input{resize:vertical}
     <div class="card-title">新增會員</div>
     <div class="fr">
       <div class="fg"><div class="fl">姓名</div><input class="input" id="new-member-name" placeholder="例：王小美"/></div>
+      <div class="fg"><div class="fl">身分證字號</div><input class="input" id="new-member-idno" placeholder="A123456789"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">手機</div><input class="input" id="new-member-phone" placeholder="09xx-xxx-xxx"/></div>
+      <div class="fg"><div class="fl">生日</div><input class="input" id="new-member-birthday" type="date"/></div>
+    </div>
+    <div class="fg"><div class="fl">地址</div><input class="input" id="new-member-address" placeholder="例：台北市大安區仁愛路四段 100 號"/></div>
+    <div class="fr">
       <div class="fg"><div class="fl">Email</div><input class="input" id="new-member-email" placeholder="member@email.com"/></div>
+      <div class="fg"><div class="fl">車牌</div><input class="input" id="new-member-plate" placeholder="ABC-1234"/></div>
     </div>
     <div class="fr">
-      <div class="fg"><div class="fl">電話</div><input class="input" id="new-member-phone" placeholder="09xx-xxx-xxx"/></div>
       <div class="fg"><div class="fl">加入日期</div><input class="input" id="new-member-joined" type="date"/></div>
-    </div>
-    <div class="fr">
       <div class="fg"><div class="fl">狀態</div><select class="input" id="new-member-status"><option>訂閱中</option><option>待啟動</option><option>已過期</option><option>黑名單</option></select></div>
-      <div class="fg"><div class="fl">點數</div><input class="input" id="new-member-points" type="number" value="0"/></div>
     </div>
     <div class="fr">
+      <div class="fg"><div class="fl">點數</div><input class="input" id="new-member-points" type="number" value="0"/></div>
       <div class="fg"><div class="fl">折扣碼</div><input class="input" id="new-member-promo" placeholder="選填"/></div>
+    </div>
+    <div class="fr">
       <div class="fg"><div class="fl">續約狀態</div><select class="input" id="new-member-renewal"><option value="none">—</option><option value="success">續約成功</option><option value="failed">續約失敗</option></select></div>
+      <div class="fg"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
       <button class="btn" onclick="document.getElementById('add-member-modal').classList.remove('show')">取消</button>
@@ -862,10 +871,10 @@ const INC=[
 ];
 
 const MEMBER_ROWS=[
-  {name:'陳小明',email:'ming@email.com',phone:'0912-345-678',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
-  {name:'林小安',email:'an@email.com',phone:'0923-456-789',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
-  {name:'王大偉',email:'wei@email.com',phone:'0934-567-890',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
-  {name:'張小不',email:'bu@email.com',phone:'0945-678-901',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
+  {name:'陳小明',idNo:'A123456789',email:'ming@email.com',phone:'0912-345-678',birthday:'1990-01-15',address:'台北市大安區仁愛路四段 100 號',plate:'ABC-1234',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
+  {name:'林小安',idNo:'B223456789',email:'an@email.com',phone:'0923-456-789',birthday:'1993-07-21',address:'新北市板橋區文化路一段 88 號',plate:'BCD-5678',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
+  {name:'王大偉',idNo:'C323456789',email:'wei@email.com',phone:'0934-567-890',birthday:'1988-11-02',address:'桃園市中壢區中美路二段 16 號',plate:'EFG-9012',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
+  {name:'張小不',idNo:'D423456789',email:'bu@email.com',phone:'0945-678-901',birthday:'1995-03-18',address:'台中市西屯區台灣大道三段 200 號',plate:'HIJ-3456',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
 ];
 
 const TXNS=[
@@ -1021,7 +1030,7 @@ function memberDataset(){
   const currentStatus=memberProfile.plan.includes('年費')?'訂閱中':'待啟動';
   const currentSc=currentStatus==='訂閱中'?'bg':'ba';
   return [
-    {...MEMBER_ROWS[0],name:memberProfile.name,email:memberProfile.email,phone:memberProfile.phone,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
+    {...MEMBER_ROWS[0],name:memberProfile.name,idNo:memberProfile.idNo,email:memberProfile.email,phone:memberProfile.phone,birthday:memberProfile.birthday,address:memberProfile.address,plate:memberProfile.plate,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
     ...MEMBER_ROWS.slice(1)
   ];
 }
@@ -1572,8 +1581,12 @@ function exportMembers(){
 
 function openAddMemberModal(){
   document.getElementById('new-member-name').value='';
+  document.getElementById('new-member-idno').value='';
   document.getElementById('new-member-email').value='';
   document.getElementById('new-member-phone').value='';
+  document.getElementById('new-member-birthday').value='';
+  document.getElementById('new-member-address').value='';
+  document.getElementById('new-member-plate').value='';
   document.getElementById('new-member-joined').value=todayStr();
   document.getElementById('new-member-status').value='訂閱中';
   document.getElementById('new-member-points').value='0';
@@ -1602,14 +1615,18 @@ function closeIncidentMemberModal(e){
 }
 function submitNewMember(){
   const name=document.getElementById('new-member-name').value.trim();
+  const idNo=document.getElementById('new-member-idno').value.trim().toUpperCase();
   const email=document.getElementById('new-member-email').value.trim();
   const phone=document.getElementById('new-member-phone').value.trim();
+  const birthday=document.getElementById('new-member-birthday').value;
+  const address=document.getElementById('new-member-address').value.trim();
+  const plate=document.getElementById('new-member-plate').value.trim().toUpperCase();
   const joined=document.getElementById('new-member-joined').value||todayStr();
   const status=document.getElementById('new-member-status').value;
   const points=parseInt(document.getElementById('new-member-points').value,10)||0;
   const promoCode=document.getElementById('new-member-promo').value.trim().toUpperCase();
   const renewal=document.getElementById('new-member-renewal').value;
-  if(!name||!email||!phone){
+  if(!name||!idNo||!phone||!birthday||!address||!email||!plate){
     showToast('請完整填寫新增會員資料','warn');
     return;
   }
@@ -1619,7 +1636,7 @@ function submitNewMember(){
   }
   const [tone,toneText]=nextMemberTone();
   MEMBER_ROWS.push({
-    name,email,phone,plan:'年費',points,status,sc:statusStyleOf(status),joined,
+    name,idNo,email,phone,birthday,address,plate,plan:'年費',points,status,sc:statusStyleOf(status),joined,
     tone,toneText,renewal,renewalLabel:renewalLabelOf(renewal),promoCode,reportedCancel:false,
     notes:[`${todayStr()} 後台新增會員資料`]
   });
@@ -1655,11 +1672,20 @@ function renderMemberDetail(){
     <div class="sec-label">修改資料</div>
     <div class="fr">
       <div class="fg"><div class="fl">姓名</div><input class="input" id="member-edit-name" value="${esc(member.name)}"/></div>
-      <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
+      <div class="fg"><div class="fl">身分證字號</div><input class="input" id="member-edit-idno" value="${esc(member.idNo||'')}"/></div>
     </div>
     <div class="fr">
-      <div class="fg"><div class="fl">電話</div><input class="input" id="member-edit-phone" value="${esc(member.phone)}"/></div>
+      <div class="fg"><div class="fl">手機</div><input class="input" id="member-edit-phone" value="${esc(member.phone)}"/></div>
+      <div class="fg"><div class="fl">生日</div><input class="input" id="member-edit-birthday" type="date" value="${esc(member.birthday||'')}"/></div>
+    </div>
+    <div class="fg"><div class="fl">地址</div><input class="input" id="member-edit-address" value="${esc(member.address||'')}"/></div>
+    <div class="fr">
+      <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
+      <div class="fg"><div class="fl">車牌</div><input class="input" id="member-edit-plate" value="${esc(member.plate||'')}"/></div>
+    </div>
+    <div class="fr">
       <div class="fg"><div class="fl">折扣碼</div><input class="input" id="member-edit-promo" value="${esc(member.promoCode||'')}"/></div>
+      <div class="fg"></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-s" onclick="memberAction('edit')">儲存修改</button></div>
     <div class="divider"></div>
@@ -1683,15 +1709,23 @@ function memberAction(action){
   if(action==='cancel_auto'){target.reportedCancel=false; if(target===memberProfile) memberProfile.autoRenew=false; showToast('已手動取消自動續約');}
   if(action==='edit'){
     target.name=document.getElementById('member-edit-name').value.trim()||target.name;
+    target.idNo=document.getElementById('member-edit-idno').value.trim().toUpperCase()||target.idNo||'';
+    target.birthday=document.getElementById('member-edit-birthday').value||target.birthday||'';
+    target.address=document.getElementById('member-edit-address').value.trim()||target.address||'';
     target.email=document.getElementById('member-edit-email').value.trim()||target.email;
     target.phone=document.getElementById('member-edit-phone').value.trim()||target.phone;
+    target.plate=document.getElementById('member-edit-plate').value.trim()||target.plate||'';
     target.promoCode=document.getElementById('member-edit-promo').value.trim().toUpperCase();
     selectedMemberPhone=target.phone;
     (target.notes||(target.notes=[])).unshift(`${todayStr()} 後台已修改會員資料`);
     if(target===memberProfile){
       memberProfile.name=target.name;
+      memberProfile.idNo=target.idNo||memberProfile.idNo;
+      memberProfile.birthday=target.birthday||memberProfile.birthday;
+      memberProfile.address=target.address||memberProfile.address;
       memberProfile.email=target.email;
       memberProfile.phone=target.phone;
+      memberProfile.plate=target.plate||memberProfile.plate;
       memberProfile.promoCode=target.promoCode;
       syncProfileForm();
     }
