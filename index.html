@@ -29,7 +29,6 @@ body{font-family:var(--f);background:var(--bg3);color:var(--t);font-size:14px;li
 .topbar{height:52px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--bd);z-index:2}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
 .topbar-back{display:none}
-.app.member-mode .topbar-back{display:inline-flex}
 #scroll-content{flex:1;overflow-y:auto;padding:20px}
 .page{display:none}
 .page.active{display:block}
@@ -469,6 +468,15 @@ textarea.input{resize:vertical}
         </div>
       </div>
 
+      <div class="page" id="page-m-payment-success">
+        <div class="splash" style="text-align:center">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--green)">✓</div>
+          <div style="font-size:22px;font-weight:700;margin-bottom:8px">付款成功！</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.7">會員服務已啟用，你可以回到我的帳戶查看目前狀態。</div>
+          <button class="btn" onclick="returnToAccount()">返回我的帳戶</button>
+        </div>
+      </div>
+
       <!-- MEMBER: 事故表單 -->
       <div class="page" id="page-m-incident-form">
         <div class="splash" style="max-width:500px">
@@ -694,6 +702,23 @@ textarea.input{resize:vertical}
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
       <button class="btn" onclick="document.getElementById('add-member-modal').classList.remove('show')">取消</button>
       <button class="btn btn-p" onclick="submitNewMember()">新增會員</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="incident-member-modal" onclick="closeIncidentMemberModal(event)">
+  <div class="modal-card">
+    <div class="card-title">編輯會員資料</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">姓名</div><input class="input" id="incident-member-name"/></div>
+      <div class="fg"><div class="fl">Email</div><input class="input" id="incident-member-email"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">電話</div><input class="input" id="incident-member-phone"/></div>
+      <div class="fg"><div class="fl">地址</div><input class="input" id="incident-member-address"/></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+      <button class="btn" onclick="document.getElementById('incident-member-modal').classList.remove('show')">取消</button>
+      <button class="btn btn-p" onclick="saveIncidentMemberProfile()">儲存會員資料</button>
     </div>
   </div>
 </div>
@@ -1185,16 +1210,13 @@ function renderDetail(){
         </div>
         <div class="card" style="padding:13px 15px">
           <div class="sec-label" style="margin-bottom:8px">會員資料</div>
-          <div class="fr">
-            <div class="fg"><div class="fl">姓名</div><input class="input" id="incident-member-name" value="${esc(currentIncidentMemberTarget()?.name||inc.name)}"/></div>
-            <div class="fg"><div class="fl">Email</div><input class="input" id="incident-member-email" value="${esc(currentIncidentMemberTarget()?.email||'')}"/></div>
-          </div>
-          <div class="fr">
-            <div class="fg"><div class="fl">電話</div><input class="input" id="incident-member-phone" value="${esc(currentIncidentMemberTarget()?.phone||inc.phone)}"/></div>
-            <div class="fg"><div class="fl">地址</div><input class="input" id="incident-member-address" value="${esc(currentIncidentMemberTarget()?.address||'')}"/></div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px">
+            ${esc(currentIncidentMemberTarget()?.name||inc.name)}<br>
+            ${esc(currentIncidentMemberTarget()?.phone||inc.phone)}
+            ${currentIncidentMemberTarget()?.email?` · ${esc(currentIncidentMemberTarget().email)}`:''}
           </div>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-s" onclick="saveIncidentMemberProfile()">儲存會員資料</button>
+            <button class="btn btn-s" onclick="openIncidentMemberModal()">編輯會員資料</button>
             <button class="btn btn-s" onclick="openMemberDetail('${esc((currentIncidentMemberTarget()?.phone)||inc.phone)}')">查看完整會員</button>
           </div>
         </div>
@@ -1295,6 +1317,7 @@ function saveIncidentMemberProfile(){
     memberProfile.address=address;
     syncProfileForm();
   }
+  document.getElementById('incident-member-modal').classList.remove('show');
   renderList();
   renderDetail();
   renderMembers();
@@ -1378,17 +1401,14 @@ function submitPayment(){
   renderMemberHome();
   renderDashboard();
   registrationPaymentPending=false;
-  if(memberAuthState==='logged_in_unpaid' && !pendingIncidentDraft){
-    showToast(curPayTab==='cvs'?'已建立繳費代碼，會員已啟用':'付款成功，會員已啟用');
-    swMember('m-home');
-  } else if(needsPayment()&&pendingIncidentDraft){
+  if(needsPayment()&&pendingIncidentDraft){
     createIncidentFromDraft(pendingIncidentDraft);
     pendingIncidentDraft=null;
-    showToast(curPayTab==='cvs'?'已建立繳費代碼，案件待客服確認':'付款成功，案件已送出');
-    swMember('m-waiting');
+    showToast('付款成功，案件已送出');
+    swMember('m-payment-success');
   } else {
-    showToast(curPayTab==='cvs'?'已建立繳費代碼，等待付款':'付款成功，請繼續填寫事故資料');
-    swMember('m-incident-form');
+    showToast('付款成功，會員已啟用');
+    swMember('m-payment-success');
   }
 }
 function buildIncidentDraft(){
@@ -1509,6 +1529,22 @@ function openAddMemberModal(){
 }
 function closeAddMemberModal(e){
   if(e.target.id==='add-member-modal') document.getElementById('add-member-modal').classList.remove('show');
+}
+function openIncidentMemberModal(){
+  const inc=currentIncident();
+  const target=currentIncidentMemberTarget();
+  if(!inc||!target){
+    showToast('找不到可編輯的會員資料','warn');
+    return;
+  }
+  document.getElementById('incident-member-name').value=target.name||inc.name||'';
+  document.getElementById('incident-member-email').value=target.email||'';
+  document.getElementById('incident-member-phone').value=target.phone||inc.phone||'';
+  document.getElementById('incident-member-address').value=target.address||'';
+  document.getElementById('incident-member-modal').classList.add('show');
+}
+function closeIncidentMemberModal(e){
+  if(e.target.id==='incident-member-modal') document.getElementById('incident-member-modal').classList.remove('show');
 }
 function submitNewMember(){
   const name=document.getElementById('new-member-name').value.trim();
@@ -1903,7 +1939,7 @@ const MNAV=[
 const PG_TITLE={
   dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表',settings:'設定',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
-  'm-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
+  'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
 };
 const REMOTE_MEMBER_PAGES={
@@ -1916,6 +1952,7 @@ const REMOTE_MEMBER_PAGES={
     {id:'m-nonmember',label:'選擇方案'},
     {id:'m-incident-form',label:'事故資料'},
     {id:'m-settlement',label:'和解書製作'},
+    {id:'m-payment-success',label:'付款成功'},
     {id:'m-waiting',label:'申請完成'},
     {id:'m-points',label:'點數'},
     {id:'m-profile',label:'個人資料'}
@@ -1926,6 +1963,7 @@ const REMOTE_MEMBER_PAGES={
     {id:'m-incident-form',label:'事故資料'},
     {id:'m-settlement',label:'和解書製作'},
     {id:'m-payment',label:'付款'},
+    {id:'m-payment-success',label:'付款成功'},
     {id:'m-waiting',label:'申請完成'},
     {id:'m-points',label:'點數'},
     {id:'m-profile',label:'個人資料'}
@@ -1934,6 +1972,7 @@ const REMOTE_MEMBER_PAGES={
     {id:'m-nonmember',label:'非會員申請'},
     {id:'m-incident-form',label:'事故資料'},
     {id:'m-payment',label:'付款'},
+    {id:'m-payment-success',label:'付款成功'},
     {id:'m-waiting',label:'申請完成'}
   ]
 };
@@ -1942,6 +1981,7 @@ const MEMBER_BACK_MAP={
   'm-register':'m-login',
   'm-nonmember':'m-login',
   'm-payment':'m-nonmember',
+  'm-payment-success':'m-home',
   'm-incident-form':'m-home',
   'm-waiting':'m-home',
   'm-home':'m-login',
@@ -2026,6 +2066,7 @@ function shouldShowMemberBack(){
 }
 function updateTopbarBack(){
   const back=document.querySelector('.topbar-back');
+  if(!back) return;
   back.style.display=shouldShowMemberBack()?'inline-flex':'none';
 }
 function memberBack(){
@@ -2112,6 +2153,7 @@ function swAdmin(id){
   aPg=id;
   document.getElementById('pg-title').textContent=PG_TITLE[id]||id;
   showPg(id);mkNav(ANAV,id);
+  updateTopbarBack();
   if(id==='incidents'){renderList();renderDetail();}
   if(id==='members'){renderMembers();}
   if(id==='transactions'){renderTransactions();}
@@ -2158,6 +2200,7 @@ function swMember(id,options={}){
 function switchMode(m){
   mode=m;
   updateShellMode();
+  updateTopbarBack();
   document.getElementById('mode-label').textContent=m==='admin'?'管理後台':'會員前台';
   document.getElementById('user-name').textContent=m==='admin'?'陳客服':'陳小明';
   document.getElementById('user-role').textContent=m==='admin'?'客服專員':'年費會員';
