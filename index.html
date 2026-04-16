@@ -645,6 +645,23 @@ textarea.input{resize:vertical}
         </div>
       </div>
 
+      <!-- ADMIN: 使用者管理 -->
+      <div class="page" id="page-admin-users">
+        <div class="toolbar">
+          <input class="input" id="admin-user-search" placeholder="搜尋姓名、信箱、角色…" oninput="renderAdminUsers()"/>
+          <button class="btn btn-s" onclick="renderAdminUsers()">重新整理</button>
+          <button class="btn btn-p btn-s spacer" onclick="openAdminUserModal()">+ 新增後台使用者</button>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead>
+              <tr><th>使用者</th><th>角色</th><th>權限</th><th>狀態</th><th>最後登入</th><th></th></tr>
+            </thead>
+            <tbody id="admin-user-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div><!-- /scroll-content -->
 
     <!-- ── INCIDENT PAGE (fills remaining height, no outer scroll) ── -->
@@ -719,6 +736,36 @@ textarea.input{resize:vertical}
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
       <button class="btn" onclick="document.getElementById('incident-member-modal').classList.remove('show')">取消</button>
       <button class="btn btn-p" onclick="saveIncidentMemberProfile()">儲存會員資料</button>
+    </div>
+  </div>
+</div>
+<div class="modal" id="admin-user-modal" onclick="closeAdminUserModal(event)">
+  <div class="modal-card">
+    <div class="card-title" id="admin-user-modal-title">新增後台使用者</div>
+    <div class="fr">
+      <div class="fg"><div class="fl">姓名</div><input class="input" id="admin-user-name" placeholder="例：王主管"/></div>
+      <div class="fg"><div class="fl">Email</div><input class="input" id="admin-user-email" placeholder="admin@pamo.tw"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">手機</div><input class="input" id="admin-user-phone" placeholder="09xx-xxx-xxx"/></div>
+      <div class="fg"><div class="fl">密碼</div><input class="input" id="admin-user-password" type="password" placeholder="設定登入密碼"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">角色</div><select class="input" id="admin-user-role"><option>系統管理員</option><option>客服主管</option><option>客服專員</option><option>財務</option></select></div>
+      <div class="fg"><div class="fl">狀態</div><select class="input" id="admin-user-status"><option>啟用中</option><option>停用</option></select></div>
+    </div>
+    <div class="sec-label" style="margin:8px 0">使用權限</div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;font-size:12px" id="admin-user-permissions">
+      <label><input type="checkbox" value="dashboard"/> 儀表板</label>
+      <label><input type="checkbox" value="incidents"/> 事故管理</label>
+      <label><input type="checkbox" value="members"/> 會員管理</label>
+      <label><input type="checkbox" value="transactions"/> 交易列表</label>
+      <label><input type="checkbox" value="settings"/> 系統設定</label>
+      <label><input type="checkbox" value="admin_users"/> 使用者管理</label>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn" onclick="document.getElementById('admin-user-modal').classList.remove('show')">取消</button>
+      <button class="btn btn-p" onclick="saveAdminUser()">儲存</button>
     </div>
   </div>
 </div>
@@ -849,6 +896,12 @@ const TRIALS=[
   {code:'TRIAL-K2M7',status:'已使用',sc:'bgr',user:'陳小明'}
 ];
 
+const ADMIN_USERS=[
+  {id:'U-001',name:'陳客服',email:'support@pamo.tw',phone:'0911-100-200',role:'客服主管',status:'啟用中',lastLogin:'2026-04-16 09:12',password:'pamo1234',permissions:['dashboard','incidents','members','transactions']},
+  {id:'U-002',name:'王會計',email:'finance@pamo.tw',phone:'0912-300-400',role:'財務',status:'啟用中',lastLogin:'2026-04-15 18:26',password:'finance123',permissions:['dashboard','transactions']},
+  {id:'U-003',name:'林管理員',email:'admin@pamo.tw',phone:'0933-500-600',role:'系統管理員',status:'啟用中',lastLogin:'2026-04-16 08:40',password:'admin1234',permissions:['dashboard','incidents','members','transactions','settings','admin_users']}
+];
+
 const POINTS=[
   {date:'04/01',desc:'續費獎勵',value:50},
   {date:'03/15',desc:'事故申請回饋',value:100},
@@ -869,6 +922,7 @@ let memberHistory=[];
 let remoteCollapsed=false;
 let selectedMemberPhone='';
 let registrationPaymentPending=false;
+let editingAdminUserId='';
 
 const memberProfile={
   name:'陳小明',
@@ -1812,6 +1866,86 @@ function generateTrials(){
   renderSettings();
   showToast(`已產生 ${qty} 組試用序號`);
 }
+function permissionLabel(key){
+  return {
+    dashboard:'儀表板',
+    incidents:'事故管理',
+    members:'會員管理',
+    transactions:'交易列表',
+    settings:'系統設定',
+    admin_users:'使用者管理'
+  }[key]||key;
+}
+function renderAdminUsers(){
+  const q=(document.getElementById('admin-user-search')||{}).value?.trim().toLowerCase()||'';
+  const rows=ADMIN_USERS.filter(user=>{
+    const text=`${user.name} ${user.email} ${user.role}`.toLowerCase();
+    return !q||text.includes(q);
+  });
+  document.getElementById('admin-user-table-body').innerHTML=rows.length?rows.map(user=>`
+    <tr>
+      <td><div style="font-weight:600">${esc(user.name)}</div><div style="font-size:11px;color:var(--t3)">${esc(user.email)} · ${esc(user.phone)}</div></td>
+      <td>${esc(user.role)}</td>
+      <td style="font-size:11px;color:var(--t2)">${user.permissions.map(permissionLabel).map(esc).join('、')}</td>
+      <td><span class="badge ${user.status==='啟用中'?'bg':'bgr'}">${esc(user.status)}</span></td>
+      <td>${esc(user.lastLogin)}</td>
+      <td><button class="btn btn-s" onclick="openAdminUserModal('${user.id}')">編輯</button></td>
+    </tr>`).join(''):'<tr><td colspan="6" class="empty">目前沒有符合條件的後台使用者</td></tr>';
+}
+function openAdminUserModal(id=''){
+  editingAdminUserId=id;
+  const user=ADMIN_USERS.find(item=>item.id===id);
+  document.getElementById('admin-user-modal-title').textContent=user?'編輯後台使用者':'新增後台使用者';
+  document.getElementById('admin-user-name').value=user?.name||'';
+  document.getElementById('admin-user-email').value=user?.email||'';
+  document.getElementById('admin-user-phone').value=user?.phone||'';
+  document.getElementById('admin-user-password').value=user?.password||'';
+  document.getElementById('admin-user-role').value=user?.role||'客服專員';
+  document.getElementById('admin-user-status').value=user?.status||'啟用中';
+  document.querySelectorAll('#admin-user-permissions input[type="checkbox"]').forEach(box=>{
+    box.checked=(user?.permissions||[]).includes(box.value);
+  });
+  document.getElementById('admin-user-modal').classList.add('show');
+}
+function closeAdminUserModal(e){
+  if(e.target.id==='admin-user-modal') document.getElementById('admin-user-modal').classList.remove('show');
+}
+function saveAdminUser(){
+  const name=document.getElementById('admin-user-name').value.trim();
+  const email=document.getElementById('admin-user-email').value.trim();
+  const phone=document.getElementById('admin-user-phone').value.trim();
+  const password=document.getElementById('admin-user-password').value;
+  const role=document.getElementById('admin-user-role').value;
+  const status=document.getElementById('admin-user-status').value;
+  const permissions=[...document.querySelectorAll('#admin-user-permissions input[type="checkbox"]:checked')].map(box=>box.value);
+  if(!name||!email||!phone||!password){
+    showToast('請完整填寫使用者基本資料與密碼','warn');
+    return;
+  }
+  if(!permissions.length){
+    showToast('至少要勾選一項使用權限','warn');
+    return;
+  }
+  const existing=ADMIN_USERS.find(user=>user.id===editingAdminUserId);
+  if(existing){
+    existing.name=name;
+    existing.email=email;
+    existing.phone=phone;
+    existing.password=password;
+    existing.role=role;
+    existing.status=status;
+    existing.permissions=permissions;
+    existing.lastLogin=todayStr();
+  } else {
+    ADMIN_USERS.unshift({
+      id:`U-${String(ADMIN_USERS.length+1).padStart(3,'0')}`,
+      name,email,phone,password,role,status,permissions,lastLogin:'尚未登入'
+    });
+  }
+  document.getElementById('admin-user-modal').classList.remove('show');
+  renderAdminUsers();
+  showToast(existing?'後台使用者已更新':'後台使用者已新增');
+}
 
 function renderPoints(){
   document.getElementById('points-balance').textContent=memberProfile.points;
@@ -1927,7 +2061,8 @@ const ANAV=[
   {id:'incidents',lbl:'事故管理',ic:'M8 2L2 14h12L8 2z M8 6v3M8 11h.01'},
   {id:'members',lbl:'會員管理',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
   {id:'transactions',lbl:'交易列表',ic:'M2 5h12M2 9h8M2 13h5'},
-  {id:'settings',lbl:'設定',ic:'M8 5a3 3 0 100 6 3 3 0 000-6z M2 8a6 6 0 1012 0A6 6 0 002 8z'},
+  {id:'admin-users',lbl:'使用者管理',ic:'M8 4a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm-5 9a5 5 0 0110 0'},
+  {id:'settings',lbl:'優惠碼/序號管理',ic:'M8 5a3 3 0 100 6 3 3 0 000-6z M2 8a6 6 0 1012 0A6 6 0 002 8z'},
 ];
 const MNAV=[
   {id:'m-login',lbl:'登入 / 入口',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
@@ -1937,7 +2072,7 @@ const MNAV=[
   {id:'m-profile',lbl:'個人資料',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
 ];
 const PG_TITLE={
-  dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表',settings:'設定',
+  dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼/序號管理',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
   'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
@@ -2157,6 +2292,7 @@ function swAdmin(id){
   if(id==='incidents'){renderList();renderDetail();}
   if(id==='members'){renderMembers();}
   if(id==='transactions'){renderTransactions();}
+  if(id==='admin-users'){renderAdminUsers();}
   if(id==='settings'){renderSettings();}
   if(id==='dashboard'){renderDashboard();}
   syncRemoteControls();
@@ -2212,6 +2348,7 @@ function switchMode(m){
 
 renderMembers();
 renderTransactions();
+renderAdminUsers();
 renderSettings();
 renderPoints();
 renderMemberHome();
