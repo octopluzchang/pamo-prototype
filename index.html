@@ -701,16 +701,54 @@ textarea.input{resize:vertical}
       <!-- ADMIN: 使用者管理 -->
       <div class="page" id="page-admin-users">
         <div class="toolbar">
-          <input class="input" id="admin-user-search" placeholder="搜尋姓名、信箱、角色…" oninput="renderAdminUsers()"/>
+          <input class="input" id="admin-user-search" placeholder="搜尋姓名、信箱…" oninput="renderAdminUsers()"/>
           <button class="btn btn-s" onclick="renderAdminUsers()">重新整理</button>
           <button class="btn btn-p btn-s spacer" onclick="openAdminUserModal()">+ 新增後台使用者</button>
         </div>
         <div class="card" style="padding:0">
           <table>
             <thead>
-              <tr><th>使用者</th><th>角色</th><th>權限</th><th>狀態</th><th>最後登入</th><th></th></tr>
+              <tr><th>使用者</th><th>權限</th><th>最後登入</th><th></th></tr>
             </thead>
             <tbody id="admin-user-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="page" id="page-audit-logs">
+        <div class="toolbar">
+          <input class="input" id="audit-search" placeholder="搜尋操作人、功能、內容…" oninput="renderAuditLogs()"/>
+          <select class="input" id="audit-module" onchange="renderAuditLogs()">
+            <option value="">全部功能</option>
+            <option value="使用者管理">使用者管理</option>
+            <option value="優惠碼管理">優惠碼管理</option>
+            <option value="會員管理">會員管理</option>
+            <option value="交易列表">交易列表</option>
+            <option value="資料報表">資料報表</option>
+          </select>
+          <select class="input" id="audit-action" onchange="renderAuditLogs()">
+            <option value="">全部操作</option>
+            <option value="新增">新增</option>
+            <option value="編輯">編輯</option>
+            <option value="刪除">刪除</option>
+            <option value="重設密碼">重設密碼</option>
+            <option value="發送重設信">發送重設信</option>
+            <option value="檢視">檢視</option>
+          </select>
+          <input class="input" id="audit-from" type="date" onchange="renderAuditLogs()"/>
+          <input class="input" id="audit-to" type="date" onchange="renderAuditLogs()"/>
+        </div>
+        <div class="metrics g3">
+          <div class="metric"><div class="m-label">今日操作</div><div class="m-val" id="audit-total-today">0</div><div class="m-sub" id="audit-total-users">0 位操作人</div></div>
+          <div class="metric"><div class="m-label">高風險操作</div><div class="m-val" id="audit-risk-count">0</div><div class="m-sub">刪除、密碼與權限異動</div></div>
+          <div class="metric"><div class="m-label">最近一次操作</div><div class="m-val" id="audit-last-actor" style="font-size:24px">-</div><div class="m-sub" id="audit-last-time">尚無資料</div></div>
+        </div>
+        <div class="card" style="padding:0">
+          <table>
+            <thead>
+              <tr><th>時間</th><th>操作人</th><th>功能</th><th>操作</th><th>內容</th><th>來源 IP</th></tr>
+            </thead>
+            <tbody id="audit-log-table-body"></tbody>
           </table>
         </div>
       </div>
@@ -794,17 +832,18 @@ textarea.input{resize:vertical}
   <div class="modal-card">
     <div class="card-title" id="admin-user-modal-title">新增後台使用者</div>
     <div class="fr">
-      <div class="fg"><div class="fl">姓名</div><input class="input" id="admin-user-name" placeholder="例：王主管"/></div>
-      <div class="fg"><div class="fl">Email</div><input class="input" id="admin-user-email" placeholder="admin@pamo.tw"/></div>
+      <div class="fg"><div class="fl">姓名</div><input class="input" id="admin-user-name"/></div>
+      <div class="fg"><div class="fl">Email</div><input class="input" id="admin-user-email"/></div>
     </div>
-    <div class="fr">
-      <div class="fg"><div class="fl">手機</div><input class="input" id="admin-user-phone" placeholder="09xx-xxx-xxx"/></div>
-      <div class="fg"><div class="fl">登入方式</div><input class="input" value="手機驗證" readonly/></div>
+    <div class="fr" id="admin-user-input-hints" style="gap:16px;margin-top:-6px">
+      <div class="fg" style="font-size:12px;color:var(--t3)">請填寫後台使用者顯示名稱，例如王主管</div>
+      <div class="fg" style="font-size:12px;color:var(--t3)">登入帳號使用公司 Email，例如 admin@pamo.tw</div>
     </div>
-    <div class="fr">
-      <div class="fg"><div class="fl">角色</div><select class="input" id="admin-user-role"><option>系統管理員</option><option>客服主管</option><option>客服專員</option><option>財務</option></select></div>
-      <div class="fg"><div class="fl">狀態</div><select class="input" id="admin-user-status"><option>啟用中</option><option>停用</option></select></div>
+    <div class="fr" id="admin-user-password-row">
+      <div class="fg"><div class="fl">密碼</div><input class="input" id="admin-user-password" type="password"/></div>
+      <div class="fg"><div class="fl">確認密碼</div><input class="input" id="admin-user-password-confirm" type="password"/></div>
     </div>
+    <div id="admin-user-password-helper" style="font-size:12px;color:var(--t3);line-height:1.6;margin-top:-2px;margin-bottom:8px"></div>
     <div class="sec-label" style="margin:8px 0">使用權限</div>
     <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;font-size:12px" id="admin-user-permissions">
       <label><input type="checkbox" value="dashboard"/> 資料報表</label>
@@ -813,10 +852,35 @@ textarea.input{resize:vertical}
       <label><input type="checkbox" value="transactions"/> 交易列表</label>
       <label><input type="checkbox" value="settings"/> 系統設定</label>
       <label><input type="checkbox" value="admin_users"/> 使用者管理</label>
+      <label><input type="checkbox" value="audit_logs"/> 稽核與操作紀錄</label>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+    <div id="admin-user-security-actions" style="display:none;gap:8px;flex-wrap:wrap;margin-top:16px">
+      <button class="btn btn-s" onclick="openAdminPasswordModal('change')">更改密碼</button>
+      <button class="btn btn-s" onclick="openAdminPasswordModal('forgot')">忘記密碼 / 發送重設信</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:16px">
+      <button class="btn" id="admin-user-delete-btn" style="display:none;color:var(--red-t);border-color:#e7c8c8;background:var(--red-bg)" onclick="deleteAdminUser()">刪除使用者</button>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-left:auto">
       <button class="btn" onclick="document.getElementById('admin-user-modal').classList.remove('show')">取消</button>
       <button class="btn btn-p" onclick="saveAdminUser()">儲存</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal" id="admin-password-modal" onclick="closeAdminPasswordModal(event)">
+  <div class="modal-card">
+    <div class="card-title" id="admin-password-modal-title">更改密碼</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:14px" id="admin-password-modal-desc"></div>
+    <div class="fg"><div class="fl">Email</div><input class="input" id="admin-password-email" readonly/></div>
+    <div id="admin-password-fields">
+      <div class="fr">
+        <div class="fg"><div class="fl">新密碼</div><input class="input" id="admin-password-new" type="password" placeholder="至少 8 碼"/></div>
+        <div class="fg"><div class="fl">確認新密碼</div><input class="input" id="admin-password-confirm" type="password" placeholder="再次輸入密碼"/></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn" onclick="document.getElementById('admin-password-modal').classList.remove('show')">取消</button>
+      <button class="btn btn-p" id="admin-password-submit" onclick="submitAdminPasswordAction()">確認</button>
     </div>
   </div>
 </div>
@@ -1001,9 +1065,19 @@ const PROMOS=[
 ];
 
 const ADMIN_USERS=[
-  {id:'U-001',name:'陳客服',email:'support@pamo.tw',phone:'0911-100-200',role:'客服主管',status:'啟用中',lastLogin:'2026-04-16 09:12',permissions:['dashboard','incidents','members','transactions']},
-  {id:'U-002',name:'王會計',email:'finance@pamo.tw',phone:'0912-300-400',role:'財務',status:'啟用中',lastLogin:'2026-04-15 18:26',permissions:['dashboard','transactions']},
-  {id:'U-003',name:'林管理員',email:'admin@pamo.tw',phone:'0933-500-600',role:'系統管理員',status:'啟用中',lastLogin:'2026-04-16 08:40',permissions:['dashboard','incidents','members','transactions','settings','admin_users']}
+  {id:'U-001',name:'陳客服',email:'support@pamo.tw',status:'啟用中',lastLogin:'2026-04-16 09:12',permissions:['dashboard','incidents','members','transactions'],password:'Support#2026',passwordUpdatedAt:'2026-04-10 11:30',resetRequestedAt:''},
+  {id:'U-002',name:'王會計',email:'finance@pamo.tw',status:'啟用中',lastLogin:'2026-04-15 18:26',permissions:['dashboard','transactions'],password:'Finance#2026',passwordUpdatedAt:'2026-03-29 15:10',resetRequestedAt:''},
+  {id:'U-003',name:'林管理員',email:'admin@pamo.tw',status:'啟用中',lastLogin:'2026-04-16 08:40',permissions:['dashboard','incidents','members','transactions','settings','admin_users'],password:'Admin#2026',passwordUpdatedAt:'2026-04-12 09:20',resetRequestedAt:''}
+];
+
+const AUDIT_LOGS=[
+  {time:'2026-04-21 09:42',actor:'林管理員',module:'使用者管理',action:'編輯',detail:'更新後台使用者 陳客服 的權限設定',ip:'10.20.8.31',risk:true},
+  {time:'2026-04-21 09:18',actor:'林管理員',module:'使用者管理',action:'重設密碼',detail:'直接更新 王會計 的登入密碼',ip:'10.20.8.31',risk:true},
+  {time:'2026-04-21 08:55',actor:'陳客服',module:'會員管理',action:'編輯',detail:'更新會員 陳小明 的 Email 與地址',ip:'10.20.8.22',risk:false},
+  {time:'2026-04-21 08:40',actor:'系統',module:'資料報表',action:'檢視',detail:'匯總近 30 天營運概況快照',ip:'127.0.0.1',risk:false},
+  {time:'2026-04-20 18:26',actor:'王會計',module:'交易列表',action:'檢視',detail:'查看本月退款與交易明細',ip:'10.20.8.45',risk:false},
+  {time:'2026-04-20 17:03',actor:'林管理員',module:'優惠碼管理',action:'新增',detail:'建立優惠碼 SPRING500',ip:'10.20.8.31',risk:false},
+  {time:'2026-04-20 16:42',actor:'林管理員',module:'使用者管理',action:'發送重設信',detail:'寄送密碼重設信給 support@pamo.tw',ip:'10.20.8.31',risk:true}
 ];
 
 const POINTS=[
@@ -1026,6 +1100,7 @@ let remoteCollapsed=false;
 let selectedMemberPhone='';
 let registrationPaymentPending=false;
 let editingAdminUserId='';
+let adminPasswordAction='change';
 let transactionFilter='all';
 let memberDetailTab='profile';
 
@@ -2294,6 +2369,22 @@ function clearPromoFilters(){
   document.getElementById('promo-filter-discount').value='';
   renderSettings();
 }
+function auditTodayCount(){
+  const today=todayStr();
+  return AUDIT_LOGS.filter(item=>item.time.startsWith(today)).length;
+}
+function pushAuditLog(entry){
+  AUDIT_LOGS.unshift({
+    time:nowStr(),
+    actor:'林管理員',
+    module:entry.module,
+    action:entry.action,
+    detail:entry.detail,
+    ip:entry.ip||'10.20.8.31',
+    risk:Boolean(entry.risk)
+  });
+  if(aPg==='audit-logs') renderAuditLogs();
+}
 function permissionLabel(key){
   return {
     dashboard:'資料報表',
@@ -2301,34 +2392,72 @@ function permissionLabel(key){
     members:'會員管理',
     transactions:'交易列表',
     settings:'系統設定',
-    admin_users:'使用者管理'
+    admin_users:'使用者管理',
+    audit_logs:'稽核與操作紀錄'
   }[key]||key;
+}
+function renderAuditLogs(){
+  const q=(document.getElementById('audit-search')||{}).value?.trim().toLowerCase()||'';
+  const moduleFilter=(document.getElementById('audit-module')||{}).value||'';
+  const actionFilter=(document.getElementById('audit-action')||{}).value||'';
+  const from=(document.getElementById('audit-from')||{}).value||'';
+  const to=(document.getElementById('audit-to')||{}).value||'';
+  const rows=AUDIT_LOGS.filter(item=>{
+    const day=item.time.slice(0,10);
+    const text=`${item.actor} ${item.module} ${item.action} ${item.detail} ${item.ip}`.toLowerCase();
+    return (!q||text.includes(q))
+      && (!moduleFilter||item.module===moduleFilter)
+      && (!actionFilter||item.action===actionFilter)
+      && (!from||day>=from)
+      && (!to||day<=to);
+  });
+  const actors=new Set(rows.map(item=>item.actor));
+  const riskCount=rows.filter(item=>item.risk).length;
+  const latest=rows[0];
+  document.getElementById('audit-total-today').textContent=auditTodayCount();
+  document.getElementById('audit-total-users').textContent=`${actors.size} 位操作人`;
+  document.getElementById('audit-risk-count').textContent=riskCount;
+  document.getElementById('audit-last-actor').textContent=latest?.actor||'-';
+  document.getElementById('audit-last-time').textContent=latest?`${latest.time} · ${latest.action} ${latest.module}`:'尚無資料';
+  document.getElementById('audit-log-table-body').innerHTML=rows.length?rows.map(item=>`
+    <tr>
+      <td style="white-space:nowrap">${esc(item.time)}</td>
+      <td>${esc(item.actor)}</td>
+      <td>${esc(item.module)}</td>
+      <td><span class="badge ${item.risk?'bgr':'bg'}">${esc(item.action)}</span></td>
+      <td style="font-size:12px;color:var(--t2)">${esc(item.detail)}</td>
+      <td style="font-family:var(--mono);font-size:11px">${esc(item.ip)}</td>
+    </tr>`).join(''):'<tr><td colspan="6" class="empty">目前沒有符合條件的稽核紀錄</td></tr>';
 }
 function renderAdminUsers(){
   const q=(document.getElementById('admin-user-search')||{}).value?.trim().toLowerCase()||'';
   const rows=ADMIN_USERS.filter(user=>{
-    const text=`${user.name} ${user.email} ${user.role}`.toLowerCase();
+    const text=`${user.name} ${user.email}`.toLowerCase();
     return !q||text.includes(q);
   });
   document.getElementById('admin-user-table-body').innerHTML=rows.length?rows.map(user=>`
     <tr>
-      <td><div style="font-weight:600">${esc(user.name)}</div><div style="font-size:11px;color:var(--t3)">${esc(user.email)} · ${esc(user.phone)}</div></td>
-      <td>${esc(user.role)}</td>
+      <td><div style="font-weight:600">${esc(user.name)}</div><div style="font-size:11px;color:var(--t3)">${esc(user.email)}</div></td>
       <td style="font-size:11px;color:var(--t2)">${user.permissions.map(permissionLabel).map(esc).join('、')}</td>
-      <td><span class="badge ${user.status==='啟用中'?'bg':'bgr'}">${esc(user.status)}</span></td>
       <td>${esc(user.lastLogin)}</td>
-      <td><button class="btn btn-s" onclick="openAdminUserModal('${user.id}')">編輯</button></td>
-    </tr>`).join(''):'<tr><td colspan="6" class="empty">目前沒有符合條件的後台使用者</td></tr>';
+      <td style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap"><button class="btn btn-s" onclick="openAdminUserModal('${user.id}')">編輯</button></td>
+    </tr>`).join(''):'<tr><td colspan="4" class="empty">目前沒有符合條件的後台使用者</td></tr>';
 }
 function openAdminUserModal(id=''){
   editingAdminUserId=id;
   const user=ADMIN_USERS.find(item=>item.id===id);
+  const isEditing=Boolean(user);
   document.getElementById('admin-user-modal-title').textContent=user?'編輯後台使用者':'新增後台使用者';
   document.getElementById('admin-user-name').value=user?.name||'';
   document.getElementById('admin-user-email').value=user?.email||'';
-  document.getElementById('admin-user-phone').value=user?.phone||'';
-  document.getElementById('admin-user-role').value=user?.role||'客服專員';
-  document.getElementById('admin-user-status').value=user?.status||'啟用中';
+  document.getElementById('admin-user-password').value='';
+  document.getElementById('admin-user-password-confirm').value='';
+  document.getElementById('admin-user-password-row').style.display=isEditing?'none':'';
+  document.getElementById('admin-user-password-helper').textContent=isEditing
+    ?`目前最後一次密碼更新：${user.passwordUpdatedAt||'尚未設定'}`
+    :'建立後台使用者時需一併設定登入密碼，且至少 8 碼。';
+  document.getElementById('admin-user-security-actions').style.display=isEditing?'flex':'none';
+  document.getElementById('admin-user-delete-btn').style.display=isEditing?'inline-flex':'none';
   document.querySelectorAll('#admin-user-permissions input[type="checkbox"]').forEach(box=>{
     box.checked=(user?.permissions||[]).includes(box.value);
   });
@@ -2336,6 +2465,74 @@ function openAdminUserModal(id=''){
 }
 function closeAdminUserModal(e){
   if(e.target.id==='admin-user-modal') document.getElementById('admin-user-modal').classList.remove('show');
+}
+function openAdminPasswordModal(action,id=editingAdminUserId){
+  const user=ADMIN_USERS.find(item=>item.id===id);
+  if(!user){
+    showToast('找不到後台使用者資料','warn');
+    return;
+  }
+  adminPasswordAction=action;
+  editingAdminUserId=id;
+  const isForgot=action==='forgot';
+  document.getElementById('admin-password-modal-title').textContent=isForgot?'忘記密碼 / 發送重設信':'更改密碼';
+  document.getElementById('admin-password-modal-desc').textContent=isForgot
+    ?'系統將寄送密碼重設連結至此使用者的 Email，供對方自行重新設定密碼。'
+    :'請直接為此後台使用者設定新密碼。';
+  document.getElementById('admin-password-email').value=user.email;
+  document.getElementById('admin-password-fields').style.display=isForgot?'none':'block';
+  document.getElementById('admin-password-new').value='';
+  document.getElementById('admin-password-confirm').value='';
+  document.getElementById('admin-password-submit').textContent=isForgot?'發送重設信':'更新密碼';
+  document.getElementById('admin-password-modal').classList.add('show');
+}
+function closeAdminPasswordModal(e){
+  if(e.target.id==='admin-password-modal') document.getElementById('admin-password-modal').classList.remove('show');
+}
+function submitAdminPasswordAction(){
+  const user=ADMIN_USERS.find(item=>item.id===editingAdminUserId);
+  if(!user){
+    showToast('找不到後台使用者資料','warn');
+    return;
+  }
+  if(adminPasswordAction==='forgot'){
+    user.resetRequestedAt=nowStr();
+    document.getElementById('admin-password-modal').classList.remove('show');
+    renderAdminUsers();
+    pushAuditLog({module:'使用者管理',action:'發送重設信',detail:`寄送密碼重設信給 ${user.email}`,risk:true});
+    showToast(`已寄送密碼重設信至 ${user.email}`);
+    return;
+  }
+  const password=document.getElementById('admin-password-new').value;
+  const confirm=document.getElementById('admin-password-confirm').value;
+  if(password.length<8){
+    showToast('密碼至少需要 8 碼','warn');
+    return;
+  }
+  if(password!==confirm){
+    showToast('兩次輸入的密碼不一致','warn');
+    return;
+  }
+  user.password=password;
+  user.passwordUpdatedAt=nowStr();
+  user.resetRequestedAt='';
+  document.getElementById('admin-password-modal').classList.remove('show');
+  document.getElementById('admin-user-password-helper').textContent=`目前最後一次密碼更新：${user.passwordUpdatedAt}`;
+  pushAuditLog({module:'使用者管理',action:'重設密碼',detail:`直接更新 ${user.name} 的登入密碼`,risk:true});
+  showToast('後台使用者密碼已更新');
+}
+function deleteAdminUser(){
+  const idx=ADMIN_USERS.findIndex(item=>item.id===editingAdminUserId);
+  if(idx<0){
+    showToast('找不到後台使用者資料','warn');
+    return;
+  }
+  const target=ADMIN_USERS[idx];
+  ADMIN_USERS.splice(idx,1);
+  document.getElementById('admin-user-modal').classList.remove('show');
+  renderAdminUsers();
+  pushAuditLog({module:'使用者管理',action:'刪除',detail:`刪除後台使用者 ${target.name}（${target.email}）`,risk:true});
+  showToast('後台使用者已刪除');
 }
 function loginWithPhone(){
   const phone=document.getElementById('login-phone').value.trim();
@@ -2459,13 +2656,31 @@ function submitAdminMemberIncident(){
 function saveAdminUser(){
   const name=document.getElementById('admin-user-name').value.trim();
   const email=document.getElementById('admin-user-email').value.trim();
-  const phone=document.getElementById('admin-user-phone').value.trim();
-  const role=document.getElementById('admin-user-role').value;
-  const status=document.getElementById('admin-user-status').value;
+  const password=document.getElementById('admin-user-password').value;
+  const confirm=document.getElementById('admin-user-password-confirm').value;
   const permissions=[...document.querySelectorAll('#admin-user-permissions input[type="checkbox"]:checked')].map(box=>box.value);
-  if(!name||!email||!phone){
+  if(!name||!email){
     showToast('請完整填寫使用者基本資料','warn');
     return;
+  }
+  const existingEmail=ADMIN_USERS.find(user=>user.email.toLowerCase()===email.toLowerCase() && user.id!==editingAdminUserId);
+  if(existingEmail){
+    showToast('此 Email 已存在，請使用其他 Email','warn');
+    return;
+  }
+  if(!editingAdminUserId && password.length<8){
+    showToast('新增後台使用者時請設定至少 8 碼密碼','warn');
+    return;
+  }
+  if(password || confirm){
+    if(password.length<8){
+      showToast('密碼至少需要 8 碼','warn');
+      return;
+    }
+    if(password!==confirm){
+      showToast('兩次輸入的密碼不一致','warn');
+      return;
+    }
   }
   if(!permissions.length){
     showToast('至少要勾選一項使用權限','warn');
@@ -2475,16 +2690,15 @@ function saveAdminUser(){
   if(existing){
     existing.name=name;
     existing.email=email;
-    existing.phone=phone;
-    existing.role=role;
-    existing.status=status;
     existing.permissions=permissions;
     existing.lastLogin=todayStr();
+    pushAuditLog({module:'使用者管理',action:'編輯',detail:`更新後台使用者 ${name} 的基本資料與權限`,risk:true});
   } else {
     ADMIN_USERS.unshift({
       id:`U-${String(ADMIN_USERS.length+1).padStart(3,'0')}`,
-      name,email,phone,role,status,permissions,lastLogin:'尚未登入'
+      name,email,status:'啟用中',permissions,lastLogin:'尚未登入',password,passwordUpdatedAt:nowStr(),resetRequestedAt:''
     });
+    pushAuditLog({module:'使用者管理',action:'新增',detail:`新增後台使用者 ${name}（${email}）`,risk:true});
   }
   document.getElementById('admin-user-modal').classList.remove('show');
   renderAdminUsers();
@@ -2572,6 +2786,11 @@ function ensureSettlementSelection(){
   const completed=signedSettlements();
   if(settlementState.tab==='drafts'){
     if(!records.some(item=>item.id===settlementState.currentRecordId)) settlementState.currentRecordId=records[0]?.id||'';
+    if(records.length && !settlementState.composerOpen){
+      settlementState.composerOpen=true;
+      settlementState.step=0;
+      if(settlementState.currentRecordId) initSettlementForm(getSettlementRecordById(settlementState.currentRecordId));
+    }
     if(!settlementState.currentContractId || currentSettlementContract()?.accidentRecordId!==settlementState.currentRecordId){
       settlementState.currentContractId='';
       if(settlementState.composerOpen){
@@ -2785,25 +3004,6 @@ function openSettlementPdf(type='preview',id=''){
 function closeSettlementPdfModal(e){
   if(e.target.id==='settlement-pdf-modal') document.getElementById('settlement-pdf-modal').classList.remove('show');
 }
-function renderSettlementIntro(records){
-  return `
-    <div class="settlement-panel">
-      <div class="card-title" style="margin-bottom:10px">製作新的和解書</div>
-      <div class="settlement-alert info" style="margin-bottom:14px">請先確認事故事件已經建立完成，再從左側選取該筆事故開始製作和解書。</div>
-      <div class="settlement-flow" style="margin-bottom:18px">
-        <span class="chip on">1 紀錄事件</span>
-        <span class="chip">2 選擇事故</span>
-        <span class="chip">3 填寫合約</span>
-        <span class="chip">4 完成簽署</span>
-      </div>
-      <div class="settlement-helper" style="margin-bottom:16px">${records.length?`目前有 ${records.length} 筆已紀錄的事故可建立和解書。`: '目前沒有可建立和解書的事故，請先回到事故申請建立事件紀錄。'}</div>
-      <div class="settlement-actions">
-        <button class="btn btn-p" onclick="startNewSettlement()" ${records.length?'':'disabled'}>開始製作</button>
-        <button class="btn" onclick="swMember('m-incident-form')">先紀錄事件</button>
-        <button class="btn" onclick="selectSettlementTab('completed')">查看已完成和解書</button>
-      </div>
-    </div>`;
-}
 function renderSettlementDraftDetail(record){
   const contract=currentSettlementContract();
   const f=settlementState.form;
@@ -2919,9 +3119,6 @@ function renderSettlementPage(){
       <div class="settlement-side">
         <div class="settlement-panel">
           <div class="card-title">和解書</div>
-          <div class="settlement-actions" style="margin-top:0;margin-bottom:10px">
-            <button class="btn btn-p btn-s" onclick="startNewSettlement()">+ 製作新的和解書</button>
-          </div>
           <div class="tabs" style="margin-bottom:10px">
             <div class="tab ${settlementState.tab==='drafts'?'on':''}" onclick="selectSettlementTab('drafts')">未完成事故</div>
             <div class="tab ${settlementState.tab==='completed'?'on':''}" onclick="selectSettlementTab('completed')">已完成和解書</div>
@@ -2937,9 +3134,7 @@ function renderSettlementPage(){
       </div>
       <div class="settlement-main">
         ${settlementState.tab==='drafts'
-          ?(!settlementState.composerOpen
-              ?renderSettlementIntro(records)
-              :(currentRecord?renderSettlementDraftDetail(currentRecord):'<div class="settlement-panel"><div class="empty">目前沒有未完成事故，完成的和解書會顯示在已完成列表。</div><div class="settlement-actions" style="justify-content:center"><button class="btn btn-p" onclick="startNewSettlement()">製作新的和解書</button></div></div>'))
+          ?(currentRecord?renderSettlementDraftDetail(currentRecord):'<div class="settlement-panel"><div class="empty">目前沒有未完成事故，完成的和解書會顯示在已完成列表。</div></div>')
           :(completedContract?renderSettlementCompletedDetail(completedContract):'<div class="settlement-panel"><div class="empty">尚未完成任何和解書。</div><div class="settlement-actions" style="justify-content:center"><button class="btn btn-p" onclick="startNewSettlement()">製作新的和解書</button></div></div>')}
       </div>
     </div>`;
@@ -3014,6 +3209,7 @@ const ANAV=[
   {id:'transactions',lbl:'交易列表',ic:'M2 5h12M2 9h8M2 13h5'},
   {id:'admin-users',lbl:'使用者管理',ic:'M8 4a2.5 2.5 0 100-5 2.5 2.5 0 000 5zm-5 9a5 5 0 0110 0'},
   {id:'settings',lbl:'優惠碼管理',ic:'M8 5a3 3 0 100 6 3 3 0 000-6z M2 8a6 6 0 1012 0A6 6 0 002 8z'},
+  {id:'audit-logs',lbl:'稽核與操作紀錄',ic:'M3 3h10v10H3z M5.5 6.5h5 M5.5 8.5h5 M5.5 10.5h3'},
 ];
 const MNAV=[
   {id:'m-login',lbl:'登入 / 入口',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
@@ -3023,7 +3219,7 @@ const MNAV=[
   {id:'m-profile',lbl:'個人資料',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
 ];
 const PG_TITLE={
-  dashboard:'資料報表',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼管理',
+  dashboard:'資料報表',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理','audit-logs':'後台稽核與操作紀錄',settings:'優惠碼管理',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
   'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
@@ -3245,6 +3441,7 @@ function swAdmin(id){
   if(id==='members'){renderMembers();}
   if(id==='transactions'){renderTransactions();}
   if(id==='admin-users'){renderAdminUsers();}
+  if(id==='audit-logs'){renderAuditLogs();}
   if(id==='settings'){renderSettings();}
   if(id==='dashboard'){renderDashboard();}
   syncRemoteControls();
@@ -3302,6 +3499,7 @@ function switchMode(m){
 renderMembers();
 renderTransactions();
 renderAdminUsers();
+renderAuditLogs();
 renderSettings();
 renderPoints();
 renderMemberHome();
