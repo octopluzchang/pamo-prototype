@@ -222,18 +222,51 @@ textarea.input{resize:vertical}
 .bar-fill{width:100%;max-width:40px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,var(--blue),#7db2e8);min-height:10px}
 .bar-label{font-size:11px;color:var(--t3)}
 .bar-val{font-size:11px;font-weight:600;color:var(--t2)}
-.remote-ui{position:fixed;right:18px;bottom:18px;width:260px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.14);padding:14px;z-index:35}
+.remote-ui{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:260px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--bd);border-radius:14px;box-shadow:0 16px 36px rgba(0,0,0,.14);padding:14px;z-index:35}
 .remote-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .remote-title{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);flex:1}
 .remote-sub{font-size:11px;color:var(--t3);line-height:1.5;margin-bottom:10px}
 .remote-group{padding-top:10px;margin-top:10px;border-top:1px solid var(--bd)}
 .remote-actions{display:flex;gap:8px;margin-top:12px}
-.remote-ui.collapsed{width:auto;padding:10px 12px}
+.remote-ui.collapsed{width:auto;min-width:auto;padding:8px 10px}
 .remote-ui.collapsed .remote-body{display:none}
+.remote-ui.collapsed .remote-head{margin-bottom:0}
+.remote-ui.collapsed .remote-title{display:none}
+.remote-ui.collapsed #remote-toggle{min-width:32px;padding:4px 8px}
 .readonly{background:var(--bg2)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.28);display:none;align-items:center;justify-content:center;z-index:45;padding:20px}
 .modal.show{display:flex}
 .modal-card{width:min(760px,100%);max-height:85vh;overflow:auto;background:var(--bg);border-radius:16px;border:1px solid var(--bd);box-shadow:0 18px 40px rgba(0,0,0,.18);padding:18px}
+.settlement-shell{display:grid;grid-template-columns:minmax(240px,280px) minmax(0,1fr);gap:16px}
+.settlement-side{display:flex;flex-direction:column;gap:14px}
+.settlement-main{min-width:0}
+.settlement-list{display:flex;flex-direction:column;gap:8px}
+.settlement-item{padding:12px 13px;border:1px solid var(--bd);border-radius:var(--rl);background:var(--bg);cursor:pointer;transition:all .12s}
+.settlement-item:hover{background:var(--bg2);border-color:var(--bd2)}
+.settlement-item.on{border-color:var(--blue);background:var(--blue-bg)}
+.settlement-item-title{font-size:12px;font-weight:600;margin-bottom:4px}
+.settlement-item-sub{font-size:11px;color:var(--t3);line-height:1.6}
+.settlement-panel{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 18px}
+.settlement-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.settlement-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.settlement-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.settlement-box{padding:11px 12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg2)}
+.settlement-box strong{display:block;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.settlement-flow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.settlement-flow .chip{cursor:default}
+.settlement-helper{font-size:12px;color:var(--t2);line-height:1.7}
+.settlement-alert{padding:10px 12px;border-radius:var(--r);font-size:12px;line-height:1.6;border:1px solid var(--bd)}
+.settlement-alert.info{background:var(--blue-bg);color:var(--blue-t);border-color:#bdd8f5}
+.settlement-alert.success{background:var(--green-bg);color:var(--green-t);border-color:#cbdcb7}
+.settlement-alert.warn{background:var(--amber-bg);color:var(--amber-t);border-color:#ecd3ac}
+.settlement-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.settlement-code{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.settlement-code .input{max-width:180px}
+.pdf-preview{border:1px solid var(--bd);border-radius:14px;background:linear-gradient(180deg,#fff,#f7f6f3);padding:20px}
+.pdf-preview h3{font-size:18px;margin-bottom:8px}
+.pdf-preview p{font-size:13px;color:var(--t2);line-height:1.8;margin-bottom:8px}
+.pdf-preview ul{padding-left:18px;margin:8px 0 10px}
+.pdf-preview li{margin-bottom:6px}
 
 @media (max-width: 960px){
   html,body{overflow:auto}
@@ -245,7 +278,9 @@ textarea.input{resize:vertical}
   .inc-list{width:100%;border-right:none;border-bottom:1px solid var(--bd);max-height:280px}
   .detail-side{width:auto}
   #page-incidents{position:relative;top:0;bottom:auto}
-  .remote-ui{position:static;width:auto;margin:14px}
+  .remote-ui{position:static;left:auto;bottom:auto;transform:none;width:auto;margin:14px}
+  .settlement-shell{grid-template-columns:1fr}
+  .settlement-kv{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -271,13 +306,13 @@ textarea.input{resize:vertical}
   <div class="main">
     <div class="topbar">
       <button class="btn btn-s topbar-back" onclick="memberBack()">← 返回</button>
-      <div class="topbar-title" id="pg-title">儀表板</div>
+      <div class="topbar-title" id="pg-title">資料報表</div>
     </div>
 
     <!-- normal pages scroll here -->
     <div id="scroll-content">
 
-      <!-- ADMIN: 儀表板 -->
+      <!-- ADMIN: 資料報表 -->
       <div class="page active" id="page-dashboard">
         <div class="toolbar">
           <input class="input" id="dash-from" type="date" onchange="renderDashboard()"/>
@@ -321,9 +356,15 @@ textarea.input{resize:vertical}
       <div class="page" id="page-members">
         <div class="toolbar">
           <input class="input" id="member-search" placeholder="搜尋姓名、電話、信箱…" oninput="renderMembers()"/>
-          <button class="btn btn-s" onclick="cycleMemberFilter()">篩選：<span id="member-filter-label">全部</span></button>
           <button class="btn btn-s" onclick="exportMembers()">匯出 CSV</button>
           <button class="btn btn-p btn-s spacer" onclick="openAddMemberModal()">+ 新增會員</button>
+        </div>
+        <div class="toolbar">
+          <input class="input" id="member-filter-promo" placeholder="篩選優惠碼" oninput="renderMembers()"/>
+          <input class="input" id="member-filter-points-min" type="number" placeholder="點數下限" oninput="renderMembers()"/>
+          <input class="input" id="member-filter-points-max" type="number" placeholder="點數上限" oninput="renderMembers()"/>
+          <input class="input" id="member-filter-joined-from" type="date" onchange="renderMembers()"/>
+          <input class="input" id="member-filter-joined-to" type="date" onchange="renderMembers()"/>
         </div>
         <div class="tabs" id="member-tabs">
           <div class="tab on" onclick="setMemberFilter('all',this)">全部</div>
@@ -335,7 +376,7 @@ textarea.input{resize:vertical}
         <div class="card" style="padding:0">
           <table>
             <thead>
-              <tr><th onclick="setMemberSort('name')" style="cursor:pointer">會員</th><th onclick="setMemberSort('phone')" style="cursor:pointer">電話</th><th onclick="setMemberSort('plan')" style="cursor:pointer">方案</th><th onclick="setMemberSort('promoCode')" style="cursor:pointer">折扣</th><th onclick="setMemberSort('points')" style="cursor:pointer">點數</th><th onclick="setMemberSort('status')" style="cursor:pointer">狀態</th><th onclick="setMemberSort('joined')" style="cursor:pointer">加入</th><th></th></tr>
+              <tr><th onclick="setMemberSort('name')" style="cursor:pointer">會員</th><th onclick="setMemberSort('phone')" style="cursor:pointer">電話</th><th onclick="setMemberSort('plan')" style="cursor:pointer">方案</th><th onclick="setMemberSort('promoCode')" style="cursor:pointer">優惠碼</th><th onclick="setMemberSort('points')" style="cursor:pointer">點數</th><th onclick="setMemberSort('status')" style="cursor:pointer">狀態</th><th onclick="setMemberSort('joined')" style="cursor:pointer">加入日期</th><th></th></tr>
             </thead>
             <tbody id="member-table-body"></tbody>
           </table>
@@ -375,10 +416,18 @@ textarea.input{resize:vertical}
       <div class="page" id="page-settings">
         <div class="card">
           <div class="card-title">優惠碼管理</div>
-          <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" id="promo-code" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" id="promo-discount" value="20%"/></div></div>
-          <div class="fr"><div class="fg"><div class="fl">到期日</div><input class="input" id="promo-expiry" type="date" value="2026-12-31"/></div><div class="fg"><div class="fl">上限</div><input class="input" id="promo-limit" value="100"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">優惠碼</div><input class="input" id="promo-code" value="PAMO2024"/></div><div class="fg"><div class="fl">折扣</div><input class="input" id="promo-discount" value="20%" placeholder="例如 20% 或 200"/></div></div>
+          <div class="fr"><div class="fg"><div class="fl">開始日</div><input class="input" id="promo-start" type="date" value="2026-04-01"/></div><div class="fg"><div class="fl">到期日</div><input class="input" id="promo-expiry" type="date" value="2026-12-31"/></div></div>
+          <div class="fg" style="max-width:260px"><div class="fl">使用人數上限</div><input class="input" id="promo-limit" value="100"/></div>
           <button class="btn btn-p btn-s" style="margin-bottom:12px" onclick="addPromo()">新增</button>
-          <table style="font-size:12px"><tr><th>代碼</th><th>折扣</th><th>已用</th><th>到期</th></tr>
+          <div class="toolbar" style="margin-top:8px">
+            <input class="input" id="promo-search" placeholder="搜尋優惠碼、折扣…" oninput="renderSettings()"/>
+            <input class="input" id="promo-filter-from" type="date" onchange="renderSettings()"/>
+            <input class="input" id="promo-filter-to" type="date" onchange="renderSettings()"/>
+            <input class="input" id="promo-filter-discount" placeholder="篩選折扣，例如 10%" oninput="renderSettings()"/>
+            <button class="btn btn-s" onclick="clearPromoFilters()">清除篩選</button>
+          </div>
+          <table style="font-size:12px"><tr><th>代碼</th><th>狀態</th><th>折扣</th><th>已用</th><th>開始日</th><th>到期日</th><th></th></tr>
             <tbody id="promo-table-body"></tbody>
           </table>
         </div>
@@ -482,15 +531,31 @@ textarea.input{resize:vertical}
               <div class="fg"><div class="fl">事故日期</div><input class="input" id="incident-date" type="date"/></div>
               <div class="fg"><div class="fl">事故類型</div><select class="input" id="incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
             </div>
-            <div class="fg"><div class="fl">事故地點</div><input class="input" id="incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
-            <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="incident-desc" rows="4" placeholder="描述事故經過、現場情況與對方資訊（若有）…"></textarea></div>
             <div class="fr">
-              <div class="fg"><div class="fl">對方姓名</div><input class="input" id="counterparty-name" placeholder="若已知請填寫"/></div>
-              <div class="fg"><div class="fl">對方電話</div><input class="input" id="counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
+              <div class="fg"><div class="fl">郵遞區號 <span style="font-weight:400;color:var(--t3)">例 106</span></div><input class="input" id="incident-zip"/></div>
+              <div class="fg"><div class="fl">縣市 <span style="font-weight:400;color:var(--t3)">例 台北市</span></div><input class="input" id="incident-city"/></div>
+            </div>
+            <div class="fr">
+              <div class="fg"><div class="fl">行政區 <span style="font-weight:400;color:var(--t3)">例 大安區</span></div><input class="input" id="incident-area"/></div>
+              <div class="fg"><div class="fl">詳細地址 <span style="font-weight:400;color:var(--t3)">例 和平東路二段 118 號前</span></div><input class="input" id="incident-address"/></div>
+            </div>
+            <div class="fg"><div class="fl">地點描述 <span style="font-weight:400;color:var(--t3)">請描述事故經過、現場情況與位置補充</span></div><textarea class="input" id="incident-location-description" rows="3"></textarea></div>
+            <div class="sec-label">事故當事人</div>
+            <div class="fr">
+              <div class="fg"><div class="fl">我方車牌 <span style="font-weight:400;color:var(--t3)">例 ABC-1234</span></div><input class="input" id="incident-creator-plate"/></div>
+              <div class="fg"><div class="fl">我方是否受傷</div><select class="input" id="incident-creator-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
+            </div>
+            <div class="fr">
+              <div class="fg"><div class="fl">對方姓名 <span style="font-weight:400;color:var(--t3)">若已知請填寫</span></div><input class="input" id="counterparty-name"/></div>
+              <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">用來檢查是否也是會員</span></div><input class="input" id="counterparty-phone"/></div>
+            </div>
+            <div class="fr">
+              <div class="fg"><div class="fl">對方車牌 <span style="font-weight:400;color:var(--t3)">例 XYZ-5678</span></div><input class="input" id="incident-opposite-plate"/></div>
+              <div class="fg"><div class="fl">對方是否受傷</div><select class="input" id="incident-opposite-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
             </div>
             <div class="fr">
               <div class="fg"><div class="fl">聯絡電話</div><input class="input" id="incident-phone" value="0912-345-678"/></div>
-              <div class="fg"><div class="fl">方便聯絡時段</div><input class="input" id="incident-slot" placeholder="例：平日 14–18 時"/></div>
+              <div class="fg"><div class="fl">方便聯絡時段 <span style="font-weight:400;color:var(--t3)">例 平日 14–18 時</span></div><input class="input" id="incident-slot"/></div>
             </div>
             <div id="conflict-box" style="display:none;padding:10px 12px;background:var(--red-bg);border-radius:var(--r);font-size:12px;color:var(--red-t);margin-bottom:14px;border:1px solid #F09595">
               對方也是 PAMO 會員，屬於利益衝突案件，系統將停止付款並提示改由其他管道處理。
@@ -630,13 +695,7 @@ textarea.input{resize:vertical}
       </div>
 
       <div class="page" id="page-m-settlement">
-        <div class="card" style="max-width:720px">
-          <div class="card-title">和解書製作</div>
-          <div class="fr"><div class="fg"><div class="fl">甲方姓名</div><input class="input" value="陳小明"/></div><div class="fg"><div class="fl">乙方姓名</div><input class="input" placeholder="對方姓名"/></div></div>
-          <div class="fr"><div class="fg"><div class="fl">事故日期</div><input class="input" type="date"/></div><div class="fg"><div class="fl">和解金額</div><input class="input" placeholder="NT$ 0"/></div></div>
-          <div class="fg"><div class="fl">和解內容</div><textarea class="input" rows="5" placeholder="雙方協議內容、付款方式、簽署條件"></textarea></div>
-          <div style="display:flex;gap:8px"><button class="btn btn-p">下載 PDF</button><button class="btn" onclick="showToast('和解書草稿已儲存')">儲存草稿</button></div>
-        </div>
+        <div id="settlement-root"></div>
       </div>
 
       <!-- ADMIN: 使用者管理 -->
@@ -748,7 +807,7 @@ textarea.input{resize:vertical}
     </div>
     <div class="sec-label" style="margin:8px 0">使用權限</div>
     <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;font-size:12px" id="admin-user-permissions">
-      <label><input type="checkbox" value="dashboard"/> 儀表板</label>
+      <label><input type="checkbox" value="dashboard"/> 資料報表</label>
       <label><input type="checkbox" value="incidents"/> 事故管理</label>
       <label><input type="checkbox" value="members"/> 會員管理</label>
       <label><input type="checkbox" value="transactions"/> 交易列表</label>
@@ -768,15 +827,30 @@ textarea.input{resize:vertical}
       <div class="fg"><div class="fl">事故日期</div><input class="input" id="create-incident-date" type="date"/></div>
       <div class="fg"><div class="fl">事故類型</div><select class="input" id="create-incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
     </div>
-    <div class="fg"><div class="fl">事故地點</div><input class="input" id="create-incident-loc" placeholder="例：台北市忠孝東路四段 220 號前"/></div>
-    <div class="fg"><div class="fl">事故說明</div><textarea class="input" id="create-incident-desc" rows="4" placeholder="描述事故經過、現場情況與對方資訊（若有）…"></textarea></div>
     <div class="fr">
-      <div class="fg"><div class="fl">對方姓名</div><input class="input" id="create-counterparty-name" placeholder="若已知請填寫"/></div>
-      <div class="fg"><div class="fl">對方電話</div><input class="input" id="create-counterparty-phone" placeholder="用來檢查是否也是會員"/></div>
+      <div class="fg"><div class="fl">郵遞區號 <span style="font-weight:400;color:var(--t3)">例 106</span></div><input class="input" id="create-incident-zip"/></div>
+      <div class="fg"><div class="fl">縣市 <span style="font-weight:400;color:var(--t3)">例 台北市</span></div><input class="input" id="create-incident-city"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">行政區 <span style="font-weight:400;color:var(--t3)">例 大安區</span></div><input class="input" id="create-incident-area"/></div>
+      <div class="fg"><div class="fl">詳細地址 <span style="font-weight:400;color:var(--t3)">例 和平東路二段 118 號前</span></div><input class="input" id="create-incident-address"/></div>
+    </div>
+    <div class="fg"><div class="fl">地點描述 <span style="font-weight:400;color:var(--t3)">請描述事故經過、現場情況與位置補充</span></div><textarea class="input" id="create-incident-location-description" rows="3"></textarea></div>
+    <div class="fr">
+      <div class="fg"><div class="fl">我方車牌 <span style="font-weight:400;color:var(--t3)">例 ABC-1234</span></div><input class="input" id="create-incident-creator-plate"/></div>
+      <div class="fg"><div class="fl">我方是否受傷</div><select class="input" id="create-incident-creator-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">對方姓名 <span style="font-weight:400;color:var(--t3)">若已知請填寫</span></div><input class="input" id="create-counterparty-name"/></div>
+      <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">用來檢查是否也是會員</span></div><input class="input" id="create-counterparty-phone"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><div class="fl">對方車牌 <span style="font-weight:400;color:var(--t3)">例 XYZ-5678</span></div><input class="input" id="create-incident-opposite-plate"/></div>
+      <div class="fg"><div class="fl">對方是否受傷</div><select class="input" id="create-incident-opposite-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
     </div>
     <div class="fr">
       <div class="fg"><div class="fl">聯絡電話</div><input class="input" id="create-incident-phone"/></div>
-      <div class="fg"><div class="fl">方便聯絡時段</div><input class="input" id="create-incident-slot" placeholder="例：平日 14–18 時"/></div>
+      <div class="fg"><div class="fl">方便聯絡時段 <span style="font-weight:400;color:var(--t3)">例 平日 14–18 時</span></div><input class="input" id="create-incident-slot"/></div>
     </div>
     <div id="create-incident-conflict" style="display:none;padding:10px 12px;background:var(--red-bg);border-radius:var(--r);font-size:12px;color:var(--red-t);margin-top:10px;border:1px solid #F09595">
       對方也是 PAMO 會員，屬於利益衝突案件，系統將停止建立並提示改由其他管道處理。
@@ -786,6 +860,9 @@ textarea.input{resize:vertical}
       <button class="btn btn-p" onclick="submitAdminMemberIncident()">建立事故</button>
     </div>
   </div>
+</div>
+<div class="modal" id="settlement-pdf-modal" onclick="closeSettlementPdfModal(event)">
+  <div class="modal-card" id="settlement-pdf-card"></div>
 </div>
 <div class="remote-ui" id="remote-ui">
   <div class="remote-head">
@@ -869,6 +946,19 @@ const INC=[
     {a:'陳客服',tp:'通話',tc:'bb',t:'2024-03-11 10:30',b:'初次聯繫，確認細節，對方已承認過失。通話時長 6 分 48 秒。'},
     {a:'系統',tp:'系統',tc:'bgr',t:'2024-03-10 11:00',b:'會員提交事故申請，類型：車輛碰撞'}
   ]},
+  {id:'#A2024-040',name:'陳小明',phone:'0912-345-678',type:'車輛碰撞',loc:'台北市大安區和平東路二段 118 號前',date:'2024-04-18 17:40',status:'處理中',sc:'bb',
+   desc:'路口擦撞，雙方皆無受傷，已口頭同意不走保險，待製作正式和解書。',steps:[1,1,1,0],slot:'待雙方確認和解條件',
+   media:[
+    {id:'M-040-1',type:'image',name:'事故現場照片.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23ede9fe%22/%3E%3Crect x=%2234%22 y=%22112%22 width=%22252%22 height=%2236%22 rx=%2210%22 fill=%22%23534ab7%22/%3E%3Ccircle cx=%2288%22 cy=%22156%22 r=%2220%22 fill=%22%233c3489%22/%3E%3Ccircle cx=%22234%22 cy=%22156%22 r=%2220%22 fill=%22%233c3489%22/%3E%3Ctext x=%22160%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%233c3489%22 font-family=%22Arial%22%3E%E5%92%8C%E8%A7%A3%E6%9B%B8%E5%80%99%E9%81%B8%E4%BA%8B%E6%95%85%3C/text%3E%3C/svg%3E',uploadedAt:'2024-04-18 17:45'}
+   ],
+   recordings:[
+    {id:'REC-040-1',at:'2024-04-19 11:20',agent:'陳客服',duration:'07:12',summary:'與會員確認對方願意賠償修車與現金補貼，可直接進行和解書建立。',tone:590}
+   ],
+   notes:[
+    {a:'陳客服',tp:'筆記',tc:'bp',t:'2024-04-19 11:25',b:'雙方均無受傷，適合直接走線上和解書流程。'},
+    {a:'系統',tp:'系統',tc:'bgr',t:'2024-04-18 17:40',b:'會員提交事故申請，類型：車輛碰撞'},
+    {a:'系統',tp:'系統',tc:'bgr',t:'2024-04-18 17:41',b:'對方資訊：林先生 / 0988-123-456'}
+  ]},
   {id:'#A2024-029',name:'蔡○○',phone:'0956-789-012',type:'車輛竊盜',loc:'大安區復興南路二段',date:'2024-03-05 08:00',status:'逾期',sc:'br',
    desc:'路邊停放機車遭竊，警察備案號 1130305001。',steps:[1,1,0,0],slot:'待會員回覆',
    media:[],
@@ -905,8 +995,9 @@ const TXNS=[
 ];
 
 const PROMOS=[
-  {code:'NEW1200',discount:'10%',used:14,expiry:'2026-12-31'},
-  {code:'SPRING',discount:'15%',used:8,expiry:'2026-06-30'}
+  {code:'NEW1200',discount:'10%',used:14,limit:100,start:'2026-01-01',expiry:'2026-12-31'},
+  {code:'SPRING',discount:'15%',used:8,limit:80,start:'2026-05-01',expiry:'2026-06-30'},
+  {code:'OLDVIP',discount:'200',used:4,limit:20,start:'2025-11-01',expiry:'2026-03-31'}
 ];
 
 const ADMIN_USERS=[
@@ -922,7 +1013,6 @@ const POINTS=[
 ];
 
 const STEP_LABELS=['申請提交','首次聯繫','協商處理','結案'];
-const MEMBER_FILTERS=['all','訂閱中','待啟動','已過期','黑名單'];
 let selIncidentId=INC[0].id;
 let callOn=false,callSec=0,callTick=null,dTab='notes';
 let curPlan='single',curPayTab='credit',memberFilter='all',incidentFilter='all';
@@ -953,6 +1043,50 @@ const memberProfile={
   cancelReported:false,
   promoCode:'NEW1200',
   joined:'2023-06-12'
+};
+const SETTLEMENTS=[
+  {
+    id:'CT-031',
+    accidentRecordId:'#A2024-031',
+    createdTime:'2024-03-15 16:00',
+    status:'SIGNED',
+    previewedPdf:'',
+    signedPdf:'',
+    validationCode:'482913',
+    challengeMobile:'0987-654-321',
+    payer:'OTHERS',
+    compensationType:'REPAIRMENT_FIXED_AMOUNT',
+    compensationAmount:15000,
+    paymentType:'TRANSFER',
+    transferDays:5,
+    repairShopDecisionSide:'CREATOR',
+    isOemOnly:false,
+    partyList:[
+      {creator:true,name:'陳小明',mobile:'0912-345-678'},
+      {creator:false,name:'王先生',mobile:'0987-654-321'}
+    ]
+  }
+];
+const settlementState={
+  tab:'drafts',
+  currentRecordId:'',
+  currentContractId:'',
+  composerOpen:false,
+  step:0,
+  form:{
+    payer:'CREATOR',
+    compensationType:'FIXED_AMOUNT',
+    compensationAmount:'',
+    paymentType:'CASH',
+    transferDays:'',
+    repairShopDecisionSide:'CREATOR',
+    isOemOnly:false,
+    creatorName:'',
+    creatorMobile:'',
+    oppositeName:'',
+    oppositeMobile:'',
+    validationCode:''
+  }
 };
 
 function p2(n){return String(n).padStart(2,'0')}
@@ -998,6 +1132,43 @@ function latestDataDate(){
   const dates=[...TXNS.map(tx=>dateOnly(tx.date)),...INC.map(inc=>dateOnly(inc.date))].filter(Boolean).sort();
   return dates[dates.length-1]||todayStr();
 }
+function promoStatusMeta(promo){
+  const today=dateOnly(todayStr());
+  if(promo.start && today<promo.start) return {label:'未開始',sc:'ba'};
+  if(promo.expiry && today>promo.expiry) return {label:'已過期',sc:'br'};
+  return {label:'使用中',sc:'bg'};
+}
+function promoMatchesRange(promo,from,to){
+  if(!from && !to) return true;
+  const start=promo.start||promo.expiry||'';
+  const end=promo.expiry||promo.start||'';
+  if(from && end && end<from) return false;
+  if(to && start && start>to) return false;
+  return true;
+}
+function activePromoByCode(code){
+  const normalized=(code||'').trim().toUpperCase();
+  if(!normalized) return null;
+  const promo=PROMOS.find(p=>p.code===normalized);
+  if(!promo) return null;
+  return promoStatusMeta(promo).label==='使用中'?promo:null;
+}
+function parseDiscountValue(discount){
+  const raw=String(discount||'').trim().toUpperCase().replace(/^NT\$/,'');
+  if(!raw) return null;
+  if(raw.endsWith('%')){
+    const value=parseInt(raw,10);
+    return Number.isFinite(value)?{type:'percent',value}:null;
+  }
+  const value=parseInt(raw.replace(/[^\d-]/g,''),10);
+  return Number.isFinite(value)?{type:'amount',value}:null;
+}
+function applyPromoDiscount(amount,promo){
+  const parsed=parseDiscountValue(promo?.discount);
+  if(!parsed) return amount;
+  if(parsed.type==='percent') return Math.max(0,Math.round(amount*(100-parsed.value)/100));
+  return Math.max(0,amount-parsed.value);
+}
 function downloadCsv(filename, rows){
   const csv=rows.map(row=>row.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
@@ -1027,8 +1198,8 @@ function needsPayment(){return ['logged_in_unpaid','nonmember'].includes(memberA
 function currentAmount(){
   let amount=1200;
   const code=(document.getElementById('pay-promo')||{}).value?.trim().toUpperCase();
-  const promo=PROMOS.find(p=>p.code===code);
-  if(promo&&promo.discount.endsWith('%')) amount=Math.round(amount*(100-parseInt(promo.discount,10))/100);
+  const promo=activePromoByCode(code);
+  if(promo) amount=applyPromoDiscount(amount,promo);
   return amount;
 }
 function memberDataset(){
@@ -1044,6 +1215,91 @@ function incidentConflict(phone){
   if(!phone) return false;
   return memberDataset().some(m=>m.phone===phone);
 }
+function areaFromLocation(loc=''){
+  const area=(String(loc).match(/([\u4e00-\u9fa5]{1,4}[市區鄉鎮])/g)||[]).find(part=>/區|鄉|鎮/.test(part));
+  return area||'未分區';
+}
+function cityFromLocation(loc=''){
+  const match=String(loc).match(/([\u4e00-\u9fa5]{1,6}市)/);
+  return match?.[1]||'台北市';
+}
+function incidentLocationLabel(inc){
+  return [inc.city,inc.area,inc.address].filter(Boolean).join('');
+}
+function incidentOccurredLabel(inc){
+  return inc.date || String(inc.occuredTime||'').replace('T',' ').slice(0,16);
+}
+function normalizeIncidentRecord(inc){
+  inc.zipCode=inc.zipCode||'106';
+  inc.city=inc.city||cityFromLocation(inc.loc||'');
+  inc.area=inc.area||areaFromLocation(inc.loc||'');
+  inc.address=inc.address||inc.loc||'';
+  inc.locationDescription=inc.locationDescription||inc.desc||'';
+  inc.occuredTime=inc.occuredTime||String((inc.date||todayStr()) ).replace(' ','T')+((inc.date||'').includes(' ')?':00':'T09:00:00');
+  inc.accidentParties=inc.accidentParties||accidentPartiesFromNotes(inc);
+  inc.loc=incidentLocationLabel(inc);
+  inc.desc=inc.locationDescription;
+  inc.date=incidentOccurredLabel(inc);
+  return inc;
+}
+function accidentPartiesFromNotes(inc){
+  const counterpartyNote=(inc.notes||[]).find(note=>String(note.b).includes('對方資訊：'))?.b||'';
+  const injured=/(受傷|傷)/.test(`${inc.desc} ${counterpartyNote}`);
+  return [
+    {identity:'DRIVER',plateNumber:'ABC-1234',injured:false},
+    {identity:'DRIVER',plateNumber:'XYZ-5678',injured}
+  ];
+}
+function settlementRecordFromIncident(inc){
+  normalizeIncidentRecord(inc);
+  return {
+    id:inc.id,
+    occuredTime:inc.occuredTime,
+    zipCode:inc.zipCode,
+    city:inc.city,
+    area:inc.area,
+    address:inc.address,
+    locationDescription:inc.locationDescription,
+    accidentParties:inc.accidentParties,
+    incident:inc
+  };
+}
+function buildSettlementDocument(contract,type='preview'){
+  const record=getSettlementRecordById(contract.accidentRecordId);
+  const payerLabel=contract.payer==='CREATOR'?'我方賠償':contract.payer==='OTHERS'?'對方賠償':'互不賠償';
+  const compensationLabel={
+    FIXED_AMOUNT:'僅金錢賠償',
+    REPAIRMENT:'僅修車',
+    REPAIRMENT_FIXED_AMOUNT:'金錢賠償 + 修車'
+  }[contract.compensationType]||'未指定';
+  const creator=contract.partyList.find(p=>p.creator);
+  const opposite=contract.partyList.find(p=>!p.creator);
+  const lines=[
+    'PAMO 和解書',
+    `文件型態：${type==='signed'?'正式簽署版':'預覽版'}`,
+    `事故紀錄：${record?.id||contract.accidentRecordId}`,
+    `事故地點：${record?.city||''}${record?.area||''} ${record?.address||''}`.trim(),
+    `建立時間：${contract.createdTime}`,
+    `賠償者：${payerLabel}`,
+    `賠償方式：${compensationLabel}`,
+    creator?`甲方：${creator.name} / ${creator.mobile}`:'',
+    opposite?`乙方：${opposite.name} / ${opposite.mobile}`:'',
+    contract.compensationAmount?`金額：NT$${Number(contract.compensationAmount).toLocaleString('zh-TW')}`:'',
+    contract.paymentType?`付款方式：${contract.paymentType==='CASH'?'現金':'轉帳'}`:'',
+    contract.transferDays?`轉帳期限：${contract.transferDays} 天內`:'',
+    contract.compensationType!=='FIXED_AMOUNT'?`修車決定方：${contract.repairShopDecisionSide==='CREATOR'?'我方':'對方'}`:'',
+    contract.compensationType!=='FIXED_AMOUNT'?`原廠零件限定：${contract.isOemOnly?'是':'否'}`:'',
+    type==='signed'?'狀態：雙方確認完成，可下載正式 PDF。':'狀態：已送出給對方，待輸入 6 位數同意碼。'
+  ].filter(Boolean).join('\n');
+  return URL.createObjectURL(new Blob([lines],{type:'text/plain;charset=utf-8'}));
+}
+function hydrateSettlementDocuments(contract){
+  if(!contract.previewedPdf) contract.previewedPdf=buildSettlementDocument(contract,'preview');
+  if(contract.status==='SIGNED' && !contract.signedPdf) contract.signedPdf=buildSettlementDocument(contract,'signed');
+  return contract;
+}
+SETTLEMENTS.forEach(hydrateSettlementDocuments);
+INC.forEach(normalizeIncidentRecord);
 function showToast(msg,type='success'){
   const wrap=document.getElementById('toast-wrap');
   const el=document.createElement('div');
@@ -1147,6 +1403,9 @@ function renderDetail(){
     document.getElementById('inc-detail').innerHTML='<div class="empty">請先建立第一筆案件</div>';
     return;
   }
+  normalizeIncidentRecord(inc);
+  const contract=settlementForIncident(inc.id);
+  const settlementMeta=settlementStatusMeta(contract);
   inc.media=inc.media||[];
   inc.recordings=inc.recordings||[];
   const stepsHtml=STEP_LABELS.map((lbl,i)=>{
@@ -1236,7 +1495,12 @@ function renderDetail(){
               <tr><td style="color:var(--t3);padding:4px 0;width:72px">姓名</td><td>${esc(inc.name)}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">電話</td><td>${esc(inc.phone)}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">類型</td><td>${esc(inc.type)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${esc(inc.loc)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">事故時間</td><td>${esc(inc.occuredTime.replace('T',' ').slice(0,16))}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">郵遞區號</td><td>${esc(inc.zipCode)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${esc(inc.city)}${esc(inc.area)} ${esc(inc.address)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">地點描述</td><td>${esc(inc.locationDescription)}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">我方</td><td>${esc(inc.accidentParties[0]?.identity||'DRIVER')} / ${esc(inc.accidentParties[0]?.plateNumber||'—')} / ${esc(inc.accidentParties[0]?.injured?'受傷':'未受傷')}</td></tr>
+              <tr><td style="color:var(--t3);padding:4px 0">對方</td><td>${esc(inc.accidentParties[1]?.identity||'DRIVER')} / ${esc(inc.accidentParties[1]?.plateNumber||'—')} / ${esc(inc.accidentParties[1]?.injured?'受傷':'未受傷')}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">聯絡時段</td><td>${esc(inc.slot||'未提供')}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">申請</td><td>${esc(inc.date)}</td></tr>
               <tr><td style="color:var(--t3);padding:4px 0">媒體</td><td>${inc.media.length} 個檔案</td></tr>
@@ -1274,7 +1538,27 @@ function renderDetail(){
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('已結案')">設為 已結案</button>
           </div>
           <div class="divider"></div>
-          <div style="font-size:12px;color:var(--t3);line-height:1.6">和解書改由前台會員自行製作，後台僅保留案件紀錄與聯繫處理。</div>
+          <div style="font-size:12px;color:var(--t3);line-height:1.6">和解書改由前台會員自行製作，後台同步掌握雙方是否已完成和解。</div>
+        </div>
+        <div class="card" style="padding:13px 15px">
+          <div class="sec-label" style="margin-bottom:8px">和解狀態</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+            <span class="badge ${esc(settlementMeta.sc)}">${esc(settlementMeta.label)}</span>
+            ${contract?.createdTime?`<span style="font-size:11px;color:var(--t3)">${esc(contract.createdTime)}</span>`:''}
+          </div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px">${esc(settlementMeta.text)}</div>
+          ${contract?`
+            <div style="font-size:11px;color:var(--t3);line-height:1.7;margin-bottom:10px">
+              賠償者：${esc(settlementPayerLabel(contract.payer))}<br>
+              賠償方式：${esc(settlementCompensationLabel(contract.compensationType))}
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              ${contract.previewedPdf?`<button class="btn btn-s" onclick="openSettlementPdf('preview','${esc(contract.id)}')">查看預覽版</button>`:''}
+              ${contract.status==='SIGNED'&&contract.signedPdf?`<a class="btn btn-s" href="${contract.signedPdf}" download="settlement-signed.txt">下載正式 PDF</a>`:''}
+            </div>
+          `:`
+            <button class="btn btn-s" onclick="openSettlementFromAdmin('${esc(inc.id)}')">幫會員建立和解書</button>
+          `}
         </div>
         <div class="card" style="padding:13px 15px">
           <div class="sec-label" style="margin-bottom:8px">會員資料</div>
@@ -1454,7 +1738,14 @@ function submitPayment(){
     }
   }
   const methodMap={credit:'信用卡',cvs:'超商代碼',linepay:'LINE Pay'};
-  const promoCode=(document.getElementById('pay-promo').value||'').trim().toUpperCase();
+  const promoInput=(document.getElementById('pay-promo').value||'').trim().toUpperCase();
+  const activePromo=promoInput?activePromoByCode(promoInput):null;
+  if(promoInput && !activePromo){
+    showToast('優惠碼不存在、尚未開始或已過期','warn');
+    return;
+  }
+  const promoCode=activePromo?.code||'';
+  if(activePromo) activePromo.used+=1;
   TXNS.unshift({id:nextTxnId(),member:memberProfile.name,amount:`NT$${amount.toLocaleString('zh-TW')}`,method:methodMap[curPayTab],promoCode,date:todayStr(),status:curPayTab==='cvs'?'待付款':'成功',sc:curPayTab==='cvs'?'ba':'bg'});
   memberProfile.plan='年費會員';
   memberProfile.expiry='2027-04-16';
@@ -1468,6 +1759,7 @@ function submitPayment(){
   renderPoints();
   renderMemberHome();
   renderDashboard();
+  renderSettings();
   registrationPaymentPending=false;
   if(needsPayment()&&pendingIncidentDraft){
     createIncidentFromDraft(pendingIncidentDraft);
@@ -1482,29 +1774,44 @@ function submitPayment(){
 function buildIncidentDraft(){
   const date=document.getElementById('incident-date').value;
   const type=document.getElementById('incident-type').value;
-  const loc=document.getElementById('incident-loc').value.trim();
-  const desc=document.getElementById('incident-desc').value.trim();
+  const zipCode=document.getElementById('incident-zip').value.trim();
+  const city=document.getElementById('incident-city').value.trim();
+  const area=document.getElementById('incident-area').value.trim();
+  const address=document.getElementById('incident-address').value.trim();
+  const locationDescription=document.getElementById('incident-location-description').value.trim();
+  const creatorPlate=document.getElementById('incident-creator-plate').value.trim().toUpperCase();
+  const creatorInjured=document.getElementById('incident-creator-injured').value==='true';
   const phone=document.getElementById('incident-phone').value.trim();
   const slot=document.getElementById('incident-slot').value.trim();
   const counterpartyName=document.getElementById('counterparty-name').value.trim();
   const counterpartyPhone=document.getElementById('counterparty-phone').value.trim();
-  if(!date||!loc||!desc||!phone){
-    showToast('請完整填寫事故日期、地點、說明與電話','warn');
+  const oppositePlate=document.getElementById('incident-opposite-plate').value.trim().toUpperCase();
+  const oppositeInjured=document.getElementById('incident-opposite-injured').value==='true';
+  if(!date||!zipCode||!city||!area||!address||!locationDescription||!creatorPlate||!oppositePlate||!phone){
+    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與聯絡電話','warn');
     return null;
   }
-  return {date,type,loc,desc,phone,slot:slot||'24 小時內皆可',counterpartyName,counterpartyPhone};
+  return {
+    date,type,zipCode,city,area,address,locationDescription,phone,slot:slot||'24 小時內皆可',counterpartyName,counterpartyPhone,
+    accidentParties:[
+      {identity:'DRIVER',plateNumber:creatorPlate,injured:creatorInjured},
+      {identity:'DRIVER',plateNumber:oppositePlate,injured:oppositeInjured}
+    ]
+  };
 }
 function createIncidentFromDraft(draft){
   const id=nextIncidentId();
   const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
-  const inc={id,name:memberProfile.name,phone:draft.phone,type:draft.type,loc:draft.loc,date:dateTime,status:'待回電',sc:'ba',desc:draft.desc,steps:[1,0,0,0],slot:draft.slot,
+  const inc={id,name:memberProfile.name,phone:draft.phone,type:draft.type,zipCode:draft.zipCode,city:draft.city,area:draft.area,address:draft.address,locationDescription:draft.locationDescription,occuredTime:`${draft.date}T${p2(new Date().getHours())}:${p2(new Date().getMinutes())}:00`,accidentParties:draft.accidentParties,loc:`${draft.city}${draft.area}${draft.address}`,date:dateTime,status:'待回電',sc:'ba',desc:draft.locationDescription,steps:[1,0,0,0],slot:draft.slot,
     media:[],
     recordings:[],
     notes:[
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`會員提交事故申請，類型：${draft.type}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot||'未指定'}`},
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
     ]};
+  normalizeIncidentRecord(inc);
   INC.unshift(inc);
   selIncidentId=id;
   document.getElementById('waiting-summary').innerHTML=`客服將於 <strong>24 小時內</strong>致電 <strong>${esc(draft.phone)}</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">${esc(id)}</span>`;
@@ -1536,13 +1843,22 @@ function submitIncident(){
   swMember('m-waiting');
 }
 
-function renderMembers(){
+function getFilteredMembers(){
   const search=(document.getElementById('member-search')||{}).value?.trim().toLowerCase()||'';
-  document.getElementById('member-filter-label').textContent=memberFilter==='all'?'全部':memberFilter;
-  const rows=memberDataset().filter(row=>{
+  const promoFilter=(document.getElementById('member-filter-promo')||{}).value?.trim().toLowerCase()||'';
+  const pointsMinRaw=(document.getElementById('member-filter-points-min')||{}).value;
+  const pointsMaxRaw=(document.getElementById('member-filter-points-max')||{}).value;
+  const joinedFrom=(document.getElementById('member-filter-joined-from')||{}).value||'';
+  const joinedTo=(document.getElementById('member-filter-joined-to')||{}).value||'';
+  const pointsMin=pointsMinRaw===''?null:Number(pointsMinRaw);
+  const pointsMax=pointsMaxRaw===''?null:Number(pointsMaxRaw);
+  return memberDataset().filter(row=>{
     const hit=memberFilter==='all'||row.status===memberFilter||(memberFilter==='續約成功'&&row.renewal==='success')||(memberFilter==='續約失敗'&&row.renewal==='failed');
-    const text=`${row.name} ${row.phone} ${row.email}`.toLowerCase();
-    return hit&&(!search||text.includes(search));
+    const text=`${row.name} ${row.phone} ${row.email} ${row.promoCode||''}`.toLowerCase();
+    const promoHit=!promoFilter||String(row.promoCode||'').toLowerCase().includes(promoFilter);
+    const pointsHit=(pointsMin===null||Number(row.points)>=pointsMin)&&(pointsMax===null||Number(row.points)<=pointsMax);
+    const joinedHit=(!joinedFrom||String(row.joined||'')>=joinedFrom)&&(!joinedTo||String(row.joined||'')<=joinedTo);
+    return hit&&(!search||text.includes(search))&&promoHit&&pointsHit&&joinedHit;
   }).sort((a,b)=>{
     const av=a[memberSortKey] ?? '';
     const bv=b[memberSortKey] ?? '';
@@ -1551,6 +1867,9 @@ function renderMembers(){
       : String(av).localeCompare(String(bv),'zh-Hant');
     return memberSortDir==='asc'?base:-base;
   });
+}
+function renderMembers(){
+  const rows=getFilteredMembers();
   document.getElementById('member-table-body').innerHTML=rows.length?rows.map(row=>`
     <tr>
       <td><div class="row"><div class="av av-s" style="background:${row.tone||'var(--blue-bg)'};color:${row.toneText||'var(--blue-t)'}">${esc(initials(row.name))}</div><div><div style="font-weight:500">${esc(row.name)}</div><div style="font-size:10px;color:var(--t3)">${esc(row.email)}</div></div></div></td>
@@ -1569,17 +1888,11 @@ function setMemberFilter(filter,el){
   if(el)el.classList.add('on');
   renderMembers();
 }
-function cycleMemberFilter(){
-  const idx=(MEMBER_FILTERS.indexOf(memberFilter)+1)%MEMBER_FILTERS.length;
-  memberFilter=MEMBER_FILTERS[idx];
-  const tabs=document.querySelectorAll('#member-tabs .tab');
-  tabs.forEach((tab,i)=>tab.classList.toggle('on',i===idx));
-  renderMembers();
-}
 function exportMembers(){
+  const rows=getFilteredMembers();
   downloadCsv('members.csv',[
-    ['姓名','電話','方案','折扣碼','點數','狀態','加入日期'],
-    ...memberDataset().map(m=>[m.name,m.phone,m.plan,m.promoCode||'',m.points,m.status,m.joined])
+    ['姓名','電話','方案','優惠碼','點數','狀態','加入日期'],
+    ...rows.map(m=>[m.name,m.phone,m.plan,m.promoCode||'',m.points,m.status,m.joined])
   ]);
   showToast('已匯出會員名單 CSV');
 }
@@ -1669,7 +1982,7 @@ function renderMemberDetail(){
   const incidents=memberIncidents(member);
   box.innerHTML=`<div>
     <div class="card-title">會員查看：${esc(member.name)}</div>
-    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">電話：${esc(member.phone)} · 折扣：${esc(member.promoCode||'—')} · 自動續約：${member.reportedCancel?'已申報取消':'正常'}</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:12px">電話：${esc(member.phone)} · 優惠碼：${esc(member.promoCode||'—')} · 自動續約：${member.reportedCancel?'已申報取消':'正常'}</div>
     <div class="tabs" style="margin-bottom:12px">
       <div class="tab ${memberDetailTab==='profile'?'on':''}" onclick="setMemberDetailTab('profile')">會員資料</div>
       <div class="tab ${memberDetailTab==='incidents'?'on':''}" onclick="setMemberDetailTab('incidents')">事故紀錄</div>
@@ -1695,11 +2008,16 @@ function renderMemberDetail(){
     <div class="fg"><div class="fl">地址</div><input class="input" id="member-edit-address" value="${esc(member.address||'')}"/></div>
     <div class="fg"><div class="fl">Email</div><input class="input" id="member-edit-email" value="${esc(member.email)}"/></div>
     <div class="fr">
-      <div class="fg"><div class="fl">折扣碼</div><input class="input" id="member-edit-promo" value="${esc(member.promoCode||'')}"/></div>
+      <div class="fg"><div class="fl">優惠碼</div><input class="input" id="member-edit-promo" value="${esc(member.promoCode||'')}"/></div>
       <div class="fg"></div>
     </div>
     <div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-s" onclick="memberAction('edit')">儲存修改</button></div>
     <div class="divider"></div>
+    <div class="sec-label">目前點數</div>
+    <div style="display:flex;align-items:center;gap:10px;margin:4px 0 12px">
+      <div style="font-size:28px;font-weight:800;color:#17324d">${esc(String(member.points ?? 0))}</div>
+      <span class="badge ok">可用點數</span>
+    </div>
     <div class="sec-label">點數調整</div>
     <div class="fr">
       <div class="fg"><div class="fl">調整數字</div><input class="input" id="point-adjust-value" type="number" value="0"/></div>
@@ -1929,20 +2247,56 @@ function renderDashboard(){
 }
 
 function renderSettings(){
-  document.getElementById('promo-table-body').innerHTML=PROMOS.map(p=>`<tr><td>${esc(p.code)}</td><td>${esc(p.discount)}</td><td>${esc(p.used)}</td><td>${esc(p.expiry)}</td></tr>`).join('');
+  const q=(document.getElementById('promo-search')||{}).value?.trim().toLowerCase()||'';
+  const from=(document.getElementById('promo-filter-from')||{}).value||'';
+  const to=(document.getElementById('promo-filter-to')||{}).value||'';
+  const discountFilter=(document.getElementById('promo-filter-discount')||{}).value?.trim().toLowerCase()||'';
+  const rows=PROMOS.filter(promo=>{
+    const meta=promoStatusMeta(promo);
+    const text=`${promo.code} ${promo.discount} ${meta.label}`.toLowerCase();
+    if(q && !text.includes(q)) return false;
+    if(discountFilter && !String(promo.discount).toLowerCase().includes(discountFilter)) return false;
+    if(!promoMatchesRange(promo,from,to)) return false;
+    return true;
+  }).sort((a,b)=>(b.start||'').localeCompare(a.start||'') || (b.expiry||'').localeCompare(a.expiry||''));
+  document.getElementById('promo-table-body').innerHTML=rows.length?rows.map(p=>{
+    const meta=promoStatusMeta(p);
+    return `<tr><td style="font-family:var(--mono);font-size:11px">${esc(p.code)}</td><td><span class="badge ${esc(meta.sc)}">${esc(meta.label)}</span></td><td>${esc(p.discount)}</td><td>${esc(p.used)}</td><td>${esc(p.start||'—')}</td><td>${esc(p.expiry||'—')}</td><td><button class="btn btn-d btn-s" onclick="deletePromo('${esc(p.code)}')">刪除</button></td></tr>`;
+  }).join(''):'<tr><td colspan="7"><div class="empty">目前沒有符合條件的優惠碼</div></td></tr>';
 }
 function addPromo(){
   const code=document.getElementById('promo-code').value.trim().toUpperCase();
   const discount=document.getElementById('promo-discount').value.trim();
+  const start=document.getElementById('promo-start').value;
   const expiry=document.getElementById('promo-expiry').value;
-  if(!code||!discount||!expiry){showToast('請完整填寫優惠碼資料','warn');return;}
-  PROMOS.unshift({code,discount,used:0,expiry});
+  const limitValue=document.getElementById('promo-limit').value.trim();
+  if(!code||!discount||!start||!expiry){showToast('請完整填寫優惠碼資料','warn');return;}
+  if(start>expiry){showToast('開始日不能晚於到期日','warn');return;}
+  if(!parseDiscountValue(discount)){showToast('折扣請填百分比或金額，例如 20% 或 200','warn');return;}
+  const limit=parseInt(limitValue,10);
+  if(limitValue && !Number.isFinite(limit)){showToast('使用人數上限請輸入數字','warn');return;}
+  if(PROMOS.some(p=>p.code===code)){showToast('優惠碼已存在','warn');return;}
+  PROMOS.unshift({code,discount,used:0,limit:Number.isFinite(limit)?limit:0,start,expiry});
   renderSettings();
   showToast(`優惠碼 ${code} 已新增`);
 }
+function deletePromo(code){
+  const idx=PROMOS.findIndex(p=>p.code===code);
+  if(idx<0) return;
+  PROMOS.splice(idx,1);
+  renderSettings();
+  showToast(`優惠碼 ${code} 已刪除`);
+}
+function clearPromoFilters(){
+  document.getElementById('promo-search').value='';
+  document.getElementById('promo-filter-from').value='';
+  document.getElementById('promo-filter-to').value='';
+  document.getElementById('promo-filter-discount').value='';
+  renderSettings();
+}
 function permissionLabel(key){
   return {
-    dashboard:'儀表板',
+    dashboard:'資料報表',
     incidents:'事故管理',
     members:'會員管理',
     transactions:'交易列表',
@@ -2007,10 +2361,17 @@ function openCreateIncidentModal(){
   }
   document.getElementById('create-incident-date').value=todayStr();
   document.getElementById('create-incident-type').value='車輛碰撞';
-  document.getElementById('create-incident-loc').value='';
-  document.getElementById('create-incident-desc').value='';
+  document.getElementById('create-incident-zip').value='106';
+  document.getElementById('create-incident-city').value='台北市';
+  document.getElementById('create-incident-area').value='';
+  document.getElementById('create-incident-address').value='';
+  document.getElementById('create-incident-location-description').value='';
+  document.getElementById('create-incident-creator-plate').value='';
+  document.getElementById('create-incident-creator-injured').value='false';
   document.getElementById('create-counterparty-name').value='';
   document.getElementById('create-counterparty-phone').value='';
+  document.getElementById('create-incident-opposite-plate').value='';
+  document.getElementById('create-incident-opposite-injured').value='false';
   document.getElementById('create-incident-phone').value=target.phone||'';
   document.getElementById('create-incident-slot').value='';
   document.getElementById('create-incident-conflict').style.display='none';
@@ -2028,15 +2389,22 @@ function submitAdminMemberIncident(){
   const draft={
     date:document.getElementById('create-incident-date').value,
     type:document.getElementById('create-incident-type').value,
-    loc:document.getElementById('create-incident-loc').value.trim(),
-    desc:document.getElementById('create-incident-desc').value.trim(),
+    zipCode:document.getElementById('create-incident-zip').value.trim(),
+    city:document.getElementById('create-incident-city').value.trim(),
+    area:document.getElementById('create-incident-area').value.trim(),
+    address:document.getElementById('create-incident-address').value.trim(),
+    locationDescription:document.getElementById('create-incident-location-description').value.trim(),
+    creatorPlate:document.getElementById('create-incident-creator-plate').value.trim().toUpperCase(),
+    creatorInjured:document.getElementById('create-incident-creator-injured').value==='true',
     phone:document.getElementById('create-incident-phone').value.trim(),
     slot:document.getElementById('create-incident-slot').value.trim()||'24 小時內皆可',
     counterpartyName:document.getElementById('create-counterparty-name').value.trim(),
-    counterpartyPhone:document.getElementById('create-counterparty-phone').value.trim()
+    counterpartyPhone:document.getElementById('create-counterparty-phone').value.trim(),
+    oppositePlate:document.getElementById('create-incident-opposite-plate').value.trim().toUpperCase(),
+    oppositeInjured:document.getElementById('create-incident-opposite-injured').value==='true'
   };
-  if(!draft.date||!draft.loc||!draft.desc||!draft.phone){
-    showToast('請完整填寫事故日期、地點、說明與電話','warn');
+  if(!draft.date||!draft.zipCode||!draft.city||!draft.area||!draft.address||!draft.locationDescription||!draft.creatorPlate||!draft.oppositePlate||!draft.phone){
+    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與電話','warn');
     return;
   }
   const conflict=incidentConflict(draft.counterpartyPhone);
@@ -2052,21 +2420,33 @@ function submitAdminMemberIncident(){
     name:target.name,
     phone:draft.phone,
     type:draft.type,
-    loc:draft.loc,
+    zipCode:draft.zipCode,
+    city:draft.city,
+    area:draft.area,
+    address:draft.address,
+    locationDescription:draft.locationDescription,
+    occuredTime:`${draft.date}T${p2(new Date().getHours())}:${p2(new Date().getMinutes())}:00`,
+    accidentParties:[
+      {identity:'DRIVER',plateNumber:draft.creatorPlate,injured:draft.creatorInjured},
+      {identity:'DRIVER',plateNumber:draft.oppositePlate,injured:draft.oppositeInjured}
+    ],
+    loc:`${draft.city}${draft.area}${draft.address}`,
     date:dateTime,
     status:'待回電',
     sc:'ba',
-    desc:draft.desc,
+    desc:draft.locationDescription,
     steps:[1,0,0,0],
     slot:draft.slot,
     media:[],
     recordings:[],
     notes:[
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`後台由會員管理建立事故案件。會員：${target.name}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot}`},
       {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
     ]
   });
+  normalizeIncidentRecord(INC[0]);
   selIncidentId=id;
   document.getElementById('create-incident-modal').classList.remove('show');
   document.getElementById('member-modal').classList.remove('show');
@@ -2150,6 +2530,421 @@ function renderMemberHome(){
     </div>`).join(''):'<div class="card"><div class="empty">目前沒有案件，發生事故時可立即提交申請。</div></div>';
 }
 
+function settlementRecords(){
+  const signedIds=new Set(SETTLEMENTS.filter(item=>item.status==='SIGNED').map(item=>item.accidentRecordId));
+  return INC.filter(inc=>(inc.phone===memberProfile.phone||inc.name===memberProfile.name) && inc.status!=='已撤回' && !signedIds.has(inc.id)).map(settlementRecordFromIncident);
+}
+function signedSettlements(){
+  return SETTLEMENTS.filter(item=>item.status==='SIGNED').map(hydrateSettlementDocuments).sort((a,b)=>parseDateTime(b.createdTime)-parseDateTime(a.createdTime));
+}
+function settlementForIncident(incidentId){
+  return SETTLEMENTS.find(item=>item.accidentRecordId===incidentId)||null;
+}
+function settlementStatusMeta(contract){
+  if(!contract) return {label:'未和解',sc:'bgr',text:'尚未建立和解書'};
+  if(contract.status==='SIGNED') return {label:'已和解',sc:'bg',text:'雙方已完成和解，可下載正式 PDF'};
+  return {label:'和解確認中',sc:'ba',text:'和解書已送出，等待對方確認'};
+}
+function getSettlementRecordById(id){
+  return settlementRecords().find(item=>item.id===id)||settlementRecordFromIncident(INC.find(inc=>inc.id===id)||{id,loc:'',desc:'',date:todayStr(),notes:[]});
+}
+function currentSettlementContract(){
+  return SETTLEMENTS.find(item=>item.id===settlementState.currentContractId)||null;
+}
+function initSettlementForm(record){
+  settlementState.form={
+    payer:'CREATOR',
+    compensationType:'FIXED_AMOUNT',
+    compensationAmount:'',
+    paymentType:'CASH',
+    transferDays:'',
+    repairShopDecisionSide:'CREATOR',
+    isOemOnly:false,
+    creatorName:memberProfile.name,
+    creatorMobile:memberProfile.phone,
+    oppositeName:record?.incident?.notes?.find(note=>String(note.b).includes('對方資訊：'))?.b.split('：')[1]?.split('/')[0]?.trim()||'',
+    oppositeMobile:record?.incident?.notes?.find(note=>String(note.b).includes('對方資訊：'))?.b.split('/')[1]?.trim()||'',
+    validationCode:''
+  };
+}
+function ensureSettlementSelection(){
+  const records=settlementRecords();
+  const completed=signedSettlements();
+  if(settlementState.tab==='drafts'){
+    if(!records.some(item=>item.id===settlementState.currentRecordId)) settlementState.currentRecordId=records[0]?.id||'';
+    if(!settlementState.currentContractId || currentSettlementContract()?.accidentRecordId!==settlementState.currentRecordId){
+      settlementState.currentContractId='';
+      if(settlementState.composerOpen){
+        settlementState.step=0;
+        if(settlementState.currentRecordId) initSettlementForm(getSettlementRecordById(settlementState.currentRecordId));
+      }
+    }
+  } else {
+    if(!completed.some(item=>item.id===settlementState.currentContractId)) settlementState.currentContractId=completed[0]?.id||'';
+  }
+}
+function settlementCompensationLabel(type){
+  return {FIXED_AMOUNT:'只賠錢',REPAIRMENT:'只修車',REPAIRMENT_FIXED_AMOUNT:'賠錢 + 修車'}[type]||'未指定';
+}
+function settlementPayerLabel(payer){
+  return payer==='CREATOR'?'我方' : payer==='OTHERS'?'對方' : '互不賠償';
+}
+function settlementPaymentLabel(type){
+  return type==='TRANSFER'?'轉帳':'現金';
+}
+function selectSettlementTab(tab){
+  settlementState.tab=tab;
+  if(tab==='completed') settlementState.composerOpen=false;
+  ensureSettlementSelection();
+  renderSettlementPage();
+}
+function startNewSettlement(){
+  const records=settlementRecords();
+  if(!records.length){
+    settlementState.tab='drafts';
+    settlementState.composerOpen=false;
+    settlementState.currentContractId='';
+    settlementState.currentRecordId='';
+    renderSettlementPage();
+    showToast('目前沒有可建立和解書的未完成事故紀錄','warn');
+    return;
+  }
+  settlementState.tab='drafts';
+  settlementState.composerOpen=true;
+  settlementState.currentContractId='';
+  settlementState.step=0;
+  settlementState.currentRecordId=records[0]?.id||'';
+  if(settlementState.currentRecordId) initSettlementForm(getSettlementRecordById(settlementState.currentRecordId));
+  renderSettlementPage();
+}
+function openSettlementFromAdmin(incidentId){
+  const incident=INC.find(item=>item.id===incidentId);
+  if(!incident){
+    showToast('找不到要建立和解書的事故紀錄','warn');
+    return;
+  }
+  setMemberAuthState('logged_in_paid');
+  settlementState.tab='drafts';
+  settlementState.composerOpen=true;
+  settlementState.currentRecordId=incidentId;
+  settlementState.currentContractId='';
+  settlementState.step=0;
+  initSettlementForm(getSettlementRecordById(incidentId));
+  switchMode('member');
+  swMember('m-settlement');
+  showToast('已代會員開啟和解書建立流程');
+}
+function selectSettlementRecord(id){
+  settlementState.tab='drafts';
+  settlementState.composerOpen=true;
+  settlementState.currentRecordId=id;
+  settlementState.currentContractId='';
+  settlementState.step=0;
+  initSettlementForm(getSettlementRecordById(id));
+  renderSettlementPage();
+}
+function selectSettlementCompleted(id){
+  settlementState.tab='completed';
+  settlementState.currentContractId=id;
+  renderSettlementPage();
+}
+function updateSettlementField(field,value){
+  settlementState.form[field]=value;
+  if(field==='compensationType'){
+    if(value==='FIXED_AMOUNT'){
+      settlementState.form.repairShopDecisionSide='CREATOR';
+      settlementState.form.isOemOnly=false;
+    }
+    if(value==='REPAIRMENT'){
+      settlementState.form.compensationAmount='';
+      settlementState.form.paymentType='CASH';
+      settlementState.form.transferDays='';
+    }
+  }
+  if(field==='paymentType' && value!=='TRANSFER') settlementState.form.transferDays='';
+  renderSettlementPage();
+}
+function settlementNeedsMoneyFields(){
+  return ['FIXED_AMOUNT','REPAIRMENT_FIXED_AMOUNT'].includes(settlementState.form.compensationType);
+}
+function settlementNeedsRepairFields(){
+  return ['REPAIRMENT','REPAIRMENT_FIXED_AMOUNT'].includes(settlementState.form.compensationType);
+}
+function validateSettlementForm(){
+  const f=settlementState.form;
+  if(!f.creatorName.trim()||!f.creatorMobile.trim()||!f.oppositeName.trim()||!f.oppositeMobile.trim()){
+    showToast('請完整填寫雙方姓名與手機','warn');
+    return false;
+  }
+  if(settlementNeedsMoneyFields() && !String(f.compensationAmount).trim()){
+    showToast('此賠償方式需填寫金錢賠償金額','warn');
+    return false;
+  }
+  if(settlementNeedsMoneyFields() && f.paymentType==='TRANSFER' && !String(f.transferDays).trim()){
+    showToast('選擇轉帳時需填寫轉帳期限','warn');
+    return false;
+  }
+  return true;
+}
+function createSettlementContract(){
+  if(!validateSettlementForm()) return;
+  const record=getSettlementRecordById(settlementState.currentRecordId);
+  const f=settlementState.form;
+  const contract=hydrateSettlementDocuments({
+    id:`CT-${String(SETTLEMENTS.length+31).padStart(3,'0')}`,
+    accidentRecordId:record.id,
+    createdTime:nowStr(),
+    status:'PENDING',
+    previewedPdf:'',
+    signedPdf:'',
+    validationCode:String(Math.floor(100000+Math.random()*900000)),
+    challengeMobile:f.oppositeMobile,
+    payer:f.payer==='NONE'?null:f.payer,
+    compensationType:f.compensationType,
+    compensationAmount:settlementNeedsMoneyFields()?Number(f.compensationAmount):null,
+    paymentType:settlementNeedsMoneyFields()?f.paymentType:null,
+    transferDays:settlementNeedsMoneyFields()&&f.paymentType==='TRANSFER'?Number(f.transferDays):null,
+    repairShopDecisionSide:settlementNeedsRepairFields()?f.repairShopDecisionSide:null,
+    isOemOnly:settlementNeedsRepairFields()?Boolean(f.isOemOnly):false,
+    partyList:[
+      {creator:true,name:f.creatorName,mobile:f.creatorMobile},
+      {creator:false,name:f.oppositeName,mobile:f.oppositeMobile}
+    ]
+  });
+  SETTLEMENTS.unshift(contract);
+  settlementState.composerOpen=true;
+  settlementState.currentContractId=contract.id;
+  settlementState.step=1;
+  settlementState.form.validationCode='';
+  showToast(`預覽版已建立，Demo 同意碼：${contract.validationCode}`);
+  renderSettlementPage();
+}
+function resendSettlementChallenge(){
+  const contract=currentSettlementContract();
+  if(!contract) return;
+  contract.validationCode=String(Math.floor(100000+Math.random()*900000));
+  contract.challengeMobile=settlementState.form.oppositeMobile||contract.challengeMobile;
+  showToast(`簡訊已重新發送，Demo 同意碼：${contract.validationCode}`);
+  renderSettlementPage();
+}
+function verifySettlementCode(){
+  const contract=currentSettlementContract();
+  if(!contract) return;
+  const code=String(settlementState.form.validationCode||'').trim();
+  if(code.length!==6){
+    showToast('請輸入 6 位數同意碼','warn');
+    return;
+  }
+  if(code!==contract.validationCode){
+    showToast('同意碼不正確，請再次確認','error');
+    return;
+  }
+  contract.status='SIGNED';
+  hydrateSettlementDocuments(contract);
+  settlementState.tab='completed';
+  settlementState.composerOpen=false;
+  settlementState.currentContractId=contract.id;
+  settlementState.step=2;
+  showToast('和解完成，已產生正式 PDF');
+  renderSettlementPage();
+  renderMemberHome();
+}
+function settlementPreviewHtml(contract,type='preview'){
+  const record=getSettlementRecordById(contract.accidentRecordId);
+  const creator=contract.partyList.find(p=>p.creator);
+  const opposite=contract.partyList.find(p=>!p.creator);
+  return `
+    <div class="card-title" style="margin-bottom:14px">和解書${type==='signed'?'正式版':'預覽版'} PDF</div>
+    <div class="pdf-preview">
+      <h3>PAMO 事故和解書</h3>
+      <p>${type==='signed'?'雙方確認完成，可作為正式簽署版下載。':'此為送給對方確認的預覽版內容。'}</p>
+      <p>事故紀錄：${esc(record.id)}<br>事故地點：${esc(`${record.city}${record.area} ${record.address}`.trim())}<br>建立時間：${esc(contract.createdTime)}</p>
+      <ul>
+        <li>賠償者：${esc(settlementPayerLabel(contract.payer))}</li>
+        <li>賠償方式：${esc(settlementCompensationLabel(contract.compensationType))}</li>
+        ${contract.compensationAmount?`<li>金額：NT$${esc(Number(contract.compensationAmount).toLocaleString('zh-TW'))}</li>`:''}
+        ${contract.paymentType?`<li>付款方式：${esc(settlementPaymentLabel(contract.paymentType))}</li>`:''}
+        ${contract.transferDays?`<li>轉帳期限：${esc(contract.transferDays)} 天內</li>`:''}
+        ${contract.repairShopDecisionSide?`<li>修車廠決定方：${esc(contract.repairShopDecisionSide==='CREATOR'?'我方':'對方')}</li>`:''}
+        ${contract.compensationType!=='FIXED_AMOUNT'?`<li>原廠零件限定：${esc(contract.isOemOnly?'是':'否')}</li>`:''}
+      </ul>
+      <p>甲方：${esc(creator?.name||'')} / ${esc(creator?.mobile||'')}<br>乙方：${esc(opposite?.name||'')} / ${esc(opposite?.mobile||'')}</p>
+    </div>
+    <div class="settlement-actions">
+      <a class="btn btn-p" href="${type==='signed'?contract.signedPdf:contract.previewedPdf}" download="${type==='signed'?'settlement-signed':'settlement-preview'}.txt">下載${type==='signed'?'正式':'預覽'}版</a>
+      <button class="btn" onclick="document.getElementById('settlement-pdf-modal').classList.remove('show')">關閉</button>
+    </div>`;
+}
+function openSettlementPdf(type='preview',id=''){
+  const contract=id?SETTLEMENTS.find(item=>item.id===id):currentSettlementContract();
+  if(!contract) return;
+  hydrateSettlementDocuments(contract);
+  document.getElementById('settlement-pdf-card').innerHTML=settlementPreviewHtml(contract,type);
+  document.getElementById('settlement-pdf-modal').classList.add('show');
+}
+function closeSettlementPdfModal(e){
+  if(e.target.id==='settlement-pdf-modal') document.getElementById('settlement-pdf-modal').classList.remove('show');
+}
+function renderSettlementIntro(records){
+  return `
+    <div class="settlement-panel">
+      <div class="card-title" style="margin-bottom:10px">製作新的和解書</div>
+      <div class="settlement-alert info" style="margin-bottom:14px">請先確認事故事件已經建立完成，再從左側選取該筆事故開始製作和解書。</div>
+      <div class="settlement-flow" style="margin-bottom:18px">
+        <span class="chip on">1 紀錄事件</span>
+        <span class="chip">2 選擇事故</span>
+        <span class="chip">3 填寫合約</span>
+        <span class="chip">4 完成簽署</span>
+      </div>
+      <div class="settlement-helper" style="margin-bottom:16px">${records.length?`目前有 ${records.length} 筆已紀錄的事故可建立和解書。`: '目前沒有可建立和解書的事故，請先回到事故申請建立事件紀錄。'}</div>
+      <div class="settlement-actions">
+        <button class="btn btn-p" onclick="startNewSettlement()" ${records.length?'':'disabled'}>開始製作</button>
+        <button class="btn" onclick="swMember('m-incident-form')">先紀錄事件</button>
+        <button class="btn" onclick="selectSettlementTab('completed')">查看已完成和解書</button>
+      </div>
+    </div>`;
+}
+function renderSettlementDraftDetail(record){
+  const contract=currentSettlementContract();
+  const f=settlementState.form;
+  const hasMoney=settlementNeedsMoneyFields();
+  const hasRepair=settlementNeedsRepairFields();
+  const steps=['撰寫合約','雙方確認','完成'];
+  return `
+    <div class="settlement-panel">
+      <div class="settlement-head">
+        <div>
+          <div class="card-title" style="margin-bottom:6px">事故預覽與和解書製作</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7">${esc(record.id)} · ${esc(record.city)}${esc(record.area)} · ${esc(dateOnly(record.occuredTime))}</div>
+          <div class="settlement-meta">
+            <span class="badge bb">未完成事故</span>
+            <span class="badge bgr">${esc(record.incident.type||'事故')}</span>
+            ${record.accidentParties.some(p=>p.injured)?'<span class="badge br">含受傷資訊</span>':'<span class="badge bg">無人受傷</span>'}
+          </div>
+        </div>
+      </div>
+      <div class="settlement-kv" style="margin-bottom:14px">
+        <div class="settlement-box"><strong>事故地點</strong>${esc(record.address)}</div>
+        <div class="settlement-box"><strong>事故時間</strong>${esc(record.occuredTime.replace('T',' ').slice(0,16))}</div>
+      </div>
+      <div class="settlement-alert info" style="margin-bottom:14px">流程會先使用這筆事故事件資料，接著填寫和解條件、通知對方確認，最後完成正式文件。</div>
+      <div class="settlement-helper" style="margin-bottom:14px">${esc(record.locationDescription||'尚未填寫事故說明')}</div>
+      <div class="settlement-flow">${steps.map((label,index)=>`<span class="chip ${(settlementState.step===index||(settlementState.step>index))?'on':''}">${settlementState.step>index?'✓ ':''}${label}</span>`).join('')}</div>
+      ${settlementState.step===0?`
+      <div class="sec-label">Step 0：撰寫合約</div>
+      <div class="fr">
+        <div class="fg"><div class="fl">賠償者</div><select class="input" onchange="updateSettlementField('payer',this.value)"><option value="CREATOR"${f.payer==='CREATOR'?' selected':''}>我方</option><option value="OTHERS"${f.payer==='OTHERS'?' selected':''}>對方</option><option value="NONE"${f.payer==='NONE'?' selected':''}>互不賠償</option></select></div>
+        <div class="fg"><div class="fl">賠償方式</div><select class="input" onchange="updateSettlementField('compensationType',this.value)"><option value="FIXED_AMOUNT"${f.compensationType==='FIXED_AMOUNT'?' selected':''}>只賠錢</option><option value="REPAIRMENT"${f.compensationType==='REPAIRMENT'?' selected':''}>只修車</option><option value="REPAIRMENT_FIXED_AMOUNT"${f.compensationType==='REPAIRMENT_FIXED_AMOUNT'?' selected':''}>賠錢 + 修車</option></select></div>
+      </div>
+      ${hasMoney?`<div class="fr">
+        <div class="fg"><div class="fl">金錢賠償</div><input class="input" type="number" min="0" value="${esc(f.compensationAmount)}" placeholder="例如 10000" oninput="updateSettlementField('compensationAmount',this.value)"/></div>
+        <div class="fg"><div class="fl">付款方式</div><select class="input" onchange="updateSettlementField('paymentType',this.value)"><option value="CASH"${f.paymentType==='CASH'?' selected':''}>現金</option><option value="TRANSFER"${f.paymentType==='TRANSFER'?' selected':''}>轉帳</option></select></div>
+      </div>`:''}
+      ${hasMoney&&f.paymentType==='TRANSFER'?`<div class="fg" style="max-width:240px"><div class="fl">轉帳期限（天）</div><input class="input" type="number" min="1" value="${esc(f.transferDays)}" oninput="updateSettlementField('transferDays',this.value)"/></div>`:''}
+      ${hasRepair?`<div class="fr">
+        <div class="fg"><div class="fl">修車廠決定方</div><select class="input" onchange="updateSettlementField('repairShopDecisionSide',this.value)"><option value="CREATOR"${f.repairShopDecisionSide==='CREATOR'?' selected':''}>我方</option><option value="OTHERS"${f.repairShopDecisionSide==='OTHERS'?' selected':''}>對方</option></select></div>
+        <div class="fg"><div class="fl">是否限定原廠零件</div><select class="input" onchange="updateSettlementField('isOemOnly',this.value==='true')"><option value="false"${!f.isOemOnly?' selected':''}>否</option><option value="true"${f.isOemOnly?' selected':''}>是</option></select></div>
+      </div>`:''}
+      <div class="divider"></div>
+      <div class="sec-label">雙方聯絡資訊</div>
+      <div class="fr">
+        <div class="fg"><div class="fl">我方姓名</div><input class="input" value="${esc(f.creatorName)}" oninput="updateSettlementField('creatorName',this.value)"/></div>
+        <div class="fg"><div class="fl">我方手機</div><input class="input" value="${esc(f.creatorMobile)}" oninput="updateSettlementField('creatorMobile',this.value)"/></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><div class="fl">對方姓名</div><input class="input" value="${esc(f.oppositeName)}" placeholder="請輸入對方姓名" oninput="updateSettlementField('oppositeName',this.value)"/></div>
+        <div class="fg"><div class="fl">對方手機</div><input class="input" value="${esc(f.oppositeMobile)}" placeholder="0987654321" oninput="updateSettlementField('oppositeMobile',this.value)"/></div>
+      </div>
+      <div class="settlement-actions">
+        <button class="btn btn-p" onclick="createSettlementContract()">製作和解書</button>
+      </div>`:''}
+      ${settlementState.step===1&&contract?`
+      <div class="sec-label">Step 1：雙方確認</div>
+      <div class="settlement-alert info" style="margin-bottom:12px">已發送至對方手機 ${esc(contract.challengeMobile)}。對方會收到預覽版 PDF 與 6 位數同意碼。</div>
+      <div class="settlement-code">
+        <button class="btn" onclick="openSettlementPdf('preview')">預覽 PDF</button>
+        <a class="btn" href="tel:${esc(contract.challengeMobile)}">撥號給對方</a>
+        <button class="btn" onclick="resendSettlementChallenge()">重新發送簡訊</button>
+      </div>
+      <div class="fg" style="margin-top:14px;max-width:220px"><div class="fl">輸入 6 位數同意碼</div><input class="input" maxlength="6" value="${esc(f.validationCode)}" oninput="updateSettlementField('validationCode',this.value.replace(/[^\\d]/g,'').slice(0,6))" placeholder="123456"/></div>
+      <div class="settlement-alert warn">Demo 模式提示：目前同意碼為 <strong>${esc(contract.validationCode)}</strong></div>
+      <div class="settlement-actions">
+        <button class="btn btn-p" onclick="verifySettlementCode()">驗證並完成</button>
+      </div>`:''}
+      ${settlementState.step===2&&contract?`
+      <div class="sec-label">Step 2：完成頁</div>
+      <div class="settlement-alert success">和解已完成，正式簽署版文件已可查看與下載。</div>
+      <div class="settlement-actions">
+        <button class="btn btn-p" onclick="openSettlementPdf('signed')">開啟正式 PDF</button>
+        <a class="btn" href="${contract.signedPdf}" download="settlement-signed.txt">下載正式版</a>
+        <button class="btn" onclick="selectSettlementTab('completed')">查看已完成列表</button>
+      </div>`:''}
+    </div>`;
+}
+function renderSettlementCompletedDetail(contract){
+  const record=getSettlementRecordById(contract.accidentRecordId);
+  return `
+    <div class="settlement-panel">
+      <div class="settlement-head">
+        <div>
+          <div class="card-title" style="margin-bottom:6px">已完成和解書</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7">${esc(record.city)}${esc(record.area)} · ${esc(contract.createdTime)}</div>
+          <div class="settlement-meta">
+            <span class="badge bg">正式簽署</span>
+            <span class="badge bb">${esc(settlementCompensationLabel(contract.compensationType))}</span>
+          </div>
+        </div>
+      </div>
+      <div class="settlement-kv" style="margin-bottom:14px">
+        <div class="settlement-box"><strong>地點</strong>${esc(record.city)}${esc(record.area)}</div>
+        <div class="settlement-box"><strong>正式 PDF</strong>${contract.signedPdf?'已產生':'尚未產生'}</div>
+      </div>
+      <div class="settlement-helper">賠償者：${esc(settlementPayerLabel(contract.payer))}；付款方式：${esc(contract.paymentType?settlementPaymentLabel(contract.paymentType):'無')}；建立日期：${esc(contract.createdTime)}</div>
+      <div class="settlement-actions">
+        <button class="btn btn-p" onclick="openSettlementPdf('signed','${esc(contract.id)}')">開啟正式 PDF</button>
+        <a class="btn" href="${contract.signedPdf}" download="settlement-signed.txt">下載</a>
+      </div>
+    </div>`;
+}
+function renderSettlementPage(){
+  const root=document.getElementById('settlement-root');
+  if(!root) return;
+  ensureSettlementSelection();
+  const records=settlementRecords();
+  const completed=signedSettlements();
+  const currentRecord=settlementState.currentRecordId?getSettlementRecordById(settlementState.currentRecordId):records[0]||null;
+  const completedContract=SETTLEMENTS.find(item=>item.id===settlementState.currentContractId) || completed[0] || null;
+  root.innerHTML=`
+    <div class="settlement-shell">
+      <div class="settlement-side">
+        <div class="settlement-panel">
+          <div class="card-title">和解書</div>
+          <div class="settlement-actions" style="margin-top:0;margin-bottom:10px">
+            <button class="btn btn-p btn-s" onclick="startNewSettlement()">+ 製作新的和解書</button>
+          </div>
+          <div class="tabs" style="margin-bottom:10px">
+            <div class="tab ${settlementState.tab==='drafts'?'on':''}" onclick="selectSettlementTab('drafts')">未完成事故</div>
+            <div class="tab ${settlementState.tab==='completed'?'on':''}" onclick="selectSettlementTab('completed')">已完成和解書</div>
+          </div>
+          <div class="settlement-list">
+            ${(settlementState.tab==='drafts'?records:completed).length
+              ?(settlementState.tab==='drafts'
+                ?records.map(record=>`<div class="settlement-item ${record.id===settlementState.currentRecordId?'on':''}" onclick="selectSettlementRecord('${esc(record.id)}')"><div class="settlement-item-title">${esc(record.city)}${esc(record.area)}</div><div class="settlement-item-sub">${esc(dateOnly(record.occuredTime))}<br>${esc(record.id)}</div></div>`).join('')
+                :completed.map(contract=>{const record=getSettlementRecordById(contract.accidentRecordId);return `<div class="settlement-item ${contract.id===settlementState.currentContractId?'on':''}" onclick="selectSettlementCompleted('${esc(contract.id)}')"><div class="settlement-item-title">${esc(record.city)}${esc(record.area)}</div><div class="settlement-item-sub">${esc(contract.createdTime)}<br>signedPdf</div></div>`;}).join(''))
+              :`<div class="empty">${settlementState.tab==='drafts'?'目前沒有可製作和解書的事故紀錄':'目前尚無已完成和解書'}</div>`}
+          </div>
+        </div>
+      </div>
+      <div class="settlement-main">
+        ${settlementState.tab==='drafts'
+          ?(!settlementState.composerOpen
+              ?renderSettlementIntro(records)
+              :(currentRecord?renderSettlementDraftDetail(currentRecord):'<div class="settlement-panel"><div class="empty">目前沒有未完成事故，完成的和解書會顯示在已完成列表。</div><div class="settlement-actions" style="justify-content:center"><button class="btn btn-p" onclick="startNewSettlement()">製作新的和解書</button></div></div>'))
+          :(completedContract?renderSettlementCompletedDetail(completedContract):'<div class="settlement-panel"><div class="empty">尚未完成任何和解書。</div><div class="settlement-actions" style="justify-content:center"><button class="btn btn-p" onclick="startNewSettlement()">製作新的和解書</button></div></div>')}
+      </div>
+    </div>`;
+}
+
 function submitRegistration(){
   const name=document.getElementById('register-name').value.trim();
   const idNo=document.getElementById('register-idno').value.trim().toUpperCase();
@@ -2213,7 +3008,7 @@ function syncRegisterForm(){
 
 /* ── Navigation ── */
 const ANAV=[
-  {id:'dashboard',lbl:'儀表板',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
+  {id:'dashboard',lbl:'資料報表',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
   {id:'incidents',lbl:'事故管理',ic:'M8 2L2 14h12L8 2z M8 6v3M8 11h.01'},
   {id:'members',lbl:'會員管理',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
   {id:'transactions',lbl:'交易列表',ic:'M2 5h12M2 9h8M2 13h5'},
@@ -2228,7 +3023,7 @@ const MNAV=[
   {id:'m-profile',lbl:'個人資料',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
 ];
 const PG_TITLE={
-  dashboard:'儀表板',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼管理',
+  dashboard:'資料報表',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理',settings:'優惠碼管理',
   'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
   'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
   'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
@@ -2309,7 +3104,8 @@ function toggleRemoteUI(){
   const box=document.getElementById('remote-ui');
   const btn=document.getElementById('remote-toggle');
   box.classList.toggle('collapsed',remoteCollapsed);
-  btn.textContent=remoteCollapsed?'展開':'收合';
+  btn.textContent=remoteCollapsed?'↑':'收合';
+  btn.setAttribute('aria-label',remoteCollapsed?'展開 Demo 遙控 UI':'收合 Demo 遙控 UI');
 }
 function syncRemoteControls(){
   document.getElementById('remote-mode').value=mode;
@@ -2478,6 +3274,7 @@ function swMember(id,options={}){
   if(id==='m-points'){renderPoints();}
   if(id==='m-profile'){syncProfileForm();}
   if(id==='m-register'){syncRegisterForm();}
+  if(id==='m-settlement'){renderSettlementPage();}
   if(id==='m-payment'){
     document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
     renderPaymentActions();
@@ -2508,6 +3305,7 @@ renderAdminUsers();
 renderSettings();
 renderPoints();
 renderMemberHome();
+renderSettlementPage();
 syncProfileForm();
 setDashboardRange(30);
 setTransactionRange(30);
