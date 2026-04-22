@@ -29,6 +29,7 @@ body{font-family:var(--f);background:var(--bg3);color:var(--t);font-size:14px;li
 .topbar{height:52px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--bd);z-index:2}
 .topbar-title{font-size:15px;font-weight:600;flex:1}
 .topbar-back{display:none}
+.topbar-actions{display:flex;align-items:center;gap:8px}
 #scroll-content{flex:1;overflow-y:auto;padding:20px}
 .page{display:none}
 .page.active{display:block}
@@ -171,6 +172,42 @@ textarea.input{resize:vertical}
 .note-author{font-size:11px;font-weight:600}
 .note-time{font-size:11px;color:var(--t3)}
 .note-body{font-size:13px;color:var(--t2);line-height:1.5}
+.timeline-tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:14px}
+.timeline-tab{padding:8px 14px;font-size:13px;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.timeline-tab.on{color:var(--t);font-weight:600;border-bottom-color:var(--t)}
+.timeline-empty{padding:24px 16px;text-align:center;color:var(--t3);font-size:12px;background:var(--bg);border:1px dashed var(--bd);border-radius:var(--r)}
+.timeline-entry{position:relative;padding:0 0 14px 18px;border-left:1px solid var(--bd);margin-left:6px}
+.timeline-entry:last-child{padding-bottom:0}
+.timeline-entry::before{content:'';position:absolute;left:-6px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--bd2)}
+.timeline-entry[data-tone="call"]::before{border-color:var(--blue);background:var(--blue-bg)}
+.timeline-entry[data-tone="note"]::before{border-color:var(--purple);background:var(--purple-bg)}
+.timeline-entry[data-tone="system"]::before{border-color:var(--bd2);background:var(--gray-bg)}
+.timeline-entry[data-tone="status"]::before{border-color:var(--amber);background:var(--amber-bg)}
+.timeline-entry[data-tone="media"]::before{border-color:var(--green);background:var(--green-bg)}
+.timeline-entry[data-tone="member"]::before{border-color:var(--amber);background:var(--amber-bg)}
+.timeline-head{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px}
+.timeline-title{font-size:12px;font-weight:600}
+.timeline-sub{font-size:11px;color:var(--t3)}
+.timeline-body{font-size:13px;color:var(--t2);line-height:1.6}
+.timeline-attachment{margin-top:10px;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg)}
+.timeline-attachment audio,.timeline-attachment video{width:100%}
+.timeline-attachment img{width:100%;display:block;border-radius:8px;border:1px solid var(--bd)}
+.info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.info-box{padding:12px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg2)}
+.info-box strong{display:block;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.alert-stack{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.alert-box{padding:11px 13px;border-radius:var(--r);font-size:12px;line-height:1.7;border:1px solid var(--bd)}
+.alert-box.warn{background:var(--amber-bg);color:var(--amber-t);border-color:#ecd3ac}
+.alert-box.error{background:var(--red-bg);color:var(--red-t);border-color:#f2b3b3}
+.alert-box.info{background:var(--blue-bg);color:var(--blue-t);border-color:#bdd8f5}
+.alert-box.success{background:var(--green-bg);color:var(--green-t);border-color:#cbdcb7}
+.mini-help{font-size:11px;color:var(--t3);line-height:1.6;margin-top:6px}
+.status-log{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.status-log-item{font-size:11px;color:var(--t3);line-height:1.5;padding-top:6px;border-top:1px dashed var(--bd)}
+.status-log-item:first-child{padding-top:0;border-top:none}
+.inline-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:12px}
+.inline-check input{margin-top:2px}
+.unread-dot{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:10px;font-weight:700}
 
 /* Member */
 .hero{background:var(--blue);border-radius:var(--rl);padding:18px 22px;margin-bottom:18px;color:#fff}
@@ -180,6 +217,8 @@ textarea.input{resize:vertical}
 .hero-tag{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:2px 10px;font-size:11px}
 .qa{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg);cursor:pointer;margin-bottom:8px;transition:all .1s}
 .qa:hover{border-color:var(--bd2);background:var(--bg2)}
+.qa.disabled,.card.disabled{opacity:.55;cursor:not-allowed;background:var(--bg2);border-style:dashed}
+.qa.disabled:hover,.card.disabled:hover{border-color:var(--bd);background:var(--bg2)}
 .qa-icon{width:30px;height:30px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .qa-title{font-size:13px;font-weight:500}
 .qa-sub{font-size:11px;color:var(--t3)}
@@ -281,6 +320,7 @@ textarea.input{resize:vertical}
   .remote-ui{position:static;left:auto;bottom:auto;transform:none;width:auto;margin:14px}
   .settlement-shell{grid-template-columns:1fr}
   .settlement-kv{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -307,6 +347,9 @@ textarea.input{resize:vertical}
     <div class="topbar">
       <button class="btn btn-s topbar-back" onclick="memberBack()">← 返回</button>
       <div class="topbar-title" id="pg-title">資料報表</div>
+      <div class="topbar-actions">
+        <button class="btn btn-s" id="member-logout-btn" style="display:none" onclick="logoutMember()">登出</button>
+      </div>
     </div>
 
     <!-- normal pages scroll here -->
@@ -527,6 +570,14 @@ textarea.input{resize:vertical}
         <div class="splash" style="max-width:500px">
           <div class="card">
             <div class="card-title">事故資料</div>
+            <div class="alert-stack">
+              <div class="alert-box warn">
+                僅受理 <strong>事故發生當下已在有效會籍內</strong> 的車禍案件。若事故時間早於會員加入時間，或當下不是有效會員，PAMO 不提供本服務。
+              </div>
+              <div class="alert-box info">
+                首次通報送出後，系統會立即通知後台客服；客服收到通知後才會安排第一次回電。
+              </div>
+            </div>
             <div class="fr">
               <div class="fg"><div class="fl">事故日期</div><input class="input" id="incident-date" type="date"/></div>
               <div class="fg"><div class="fl">事故類型</div><select class="input" id="incident-type"><option>車輛碰撞</option><option>刮傷</option><option>竊盜</option><option>其他</option></select></div>
@@ -547,8 +598,9 @@ textarea.input{resize:vertical}
             </div>
             <div class="fr">
               <div class="fg"><div class="fl">對方姓名 <span style="font-weight:400;color:var(--t3)">若已知請填寫</span></div><input class="input" id="counterparty-name"/></div>
-              <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">用來檢查是否也是會員</span></div><input class="input" id="counterparty-phone"/></div>
+              <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">必填，送出前立即檢查是否也是會員</span></div><input class="input" id="counterparty-phone" oninput="updateCounterpartyCheck('member')"/></div>
             </div>
+            <div id="counterparty-check-box" class="alert-box success" style="display:none;margin-top:-2px;margin-bottom:12px"></div>
             <div class="fr">
               <div class="fg"><div class="fl">對方車牌 <span style="font-weight:400;color:var(--t3)">例 XYZ-5678</span></div><input class="input" id="incident-opposite-plate"/></div>
               <div class="fg"><div class="fl">對方是否受傷</div><select class="input" id="incident-opposite-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
@@ -560,6 +612,10 @@ textarea.input{resize:vertical}
             <div id="conflict-box" style="display:none;padding:10px 12px;background:var(--red-bg);border-radius:var(--r);font-size:12px;color:var(--red-t);margin-bottom:14px;border:1px solid #F09595">
               對方也是 PAMO 會員，屬於利益衝突案件，系統將停止付款並提示改由其他管道處理。
             </div>
+            <label class="inline-check">
+              <input type="checkbox" id="incident-scope-confirm"/>
+              <span>我確認這起事故發生時我已在 PAMO 有效會籍內，且本案不是雙方皆為 PAMO 會員。</span>
+            </label>
             <div style="padding:10px 12px;background:var(--bg2);border-radius:var(--r);font-size:12px;color:var(--t2);margin-bottom:14px;border:1px solid var(--bd)">
               提交後客服將於 <strong>24 小時內</strong>致電，並寄確認信。緊急請致電 <strong>0800-XXX-XXX</strong>。
             </div>
@@ -576,6 +632,9 @@ textarea.input{resize:vertical}
           <div style="width:56px;height:56px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:22px;color:var(--green)">✓</div>
           <div style="font-size:18px;font-weight:600;margin-bottom:6px">申請已提交</div>
           <div id="waiting-summary" style="font-size:13px;color:var(--t2);margin-bottom:20px;line-height:1.7">客服將於 <strong>24 小時內</strong>致電 <strong>0912-345-678</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">#A2024-039</span></div>
+          <div id="waiting-notify" class="alert-box info" style="text-align:left;margin:0 auto 18px;max-width:420px">
+            已通知後台客服中心，客服收到案件通知後會安排第一次回電。
+          </div>
           <div class="si-bar" style="justify-content:center;margin-bottom:22px">
             <div class="si-dot done">✓</div><div class="si-step done">已提交</div>
             <div class="si-line" style="max-width:36px"></div>
@@ -637,11 +696,23 @@ textarea.input{resize:vertical}
               <div><div class="qa-title">個人資料</div><div class="qa-sub">編輯、付款方式</div></div>
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
             </div>
+            <div class="qa" onclick="swMember('m-closed-incidents')">
+              <div class="qa-icon" style="background:var(--green-bg)"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l3 3 7-7"/></svg></div>
+              <div><div class="qa-title">已結案的事故</div><div class="qa-sub">查看歷史案件與結案紀錄</div></div>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--t3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M6 12l4-4-4-4"/></svg>
+            </div>
           </div>
           <div>
             <div class="sec-label">進行中案件</div>
             <div id="member-cases"></div>
           </div>
+        </div>
+      </div>
+
+      <div class="page" id="page-m-closed-incidents">
+        <div class="card">
+          <div class="card-title">已結案的事故</div>
+          <div id="closed-incidents-page-list"></div>
         </div>
       </div>
 
@@ -906,8 +977,9 @@ textarea.input{resize:vertical}
     </div>
     <div class="fr">
       <div class="fg"><div class="fl">對方姓名 <span style="font-weight:400;color:var(--t3)">若已知請填寫</span></div><input class="input" id="create-counterparty-name"/></div>
-      <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">用來檢查是否也是會員</span></div><input class="input" id="create-counterparty-phone"/></div>
+      <div class="fg"><div class="fl">對方電話 <span style="font-weight:400;color:var(--t3)">必填，建立前立即檢查是否也是會員</span></div><input class="input" id="create-counterparty-phone" oninput="updateCounterpartyCheck('admin')"/></div>
     </div>
+    <div id="create-counterparty-check-box" class="alert-box success" style="display:none;margin-top:-2px;margin-bottom:12px"></div>
     <div class="fr">
       <div class="fg"><div class="fl">對方車牌 <span style="font-weight:400;color:var(--t3)">例 XYZ-5678</span></div><input class="input" id="create-incident-opposite-plate"/></div>
       <div class="fg"><div class="fl">對方是否受傷</div><select class="input" id="create-incident-opposite-injured"><option value="false" selected>否</option><option value="true">是</option></select></div>
@@ -927,6 +999,9 @@ textarea.input{resize:vertical}
 </div>
 <div class="modal" id="settlement-pdf-modal" onclick="closeSettlementPdfModal(event)">
   <div class="modal-card" id="settlement-pdf-card"></div>
+</div>
+<div class="modal" id="member-progress-modal" onclick="closeMemberProgressModal(event)">
+  <div class="modal-card" id="member-progress-card"></div>
 </div>
 <div class="remote-ui" id="remote-ui">
   <div class="remote-head">
@@ -953,9 +1028,9 @@ textarea.input{resize:vertical}
       <div class="fl">前台狀態</div>
       <select class="input" id="remote-auth" onchange="applyRemoteState()">
         <option value="logged_out">未登入</option>
-        <option value="logged_in_paid">已登入已付費</option>
-        <option value="logged_in_unpaid">已登入未付費</option>
-        <option value="nonmember">非會員申請中</option>
+        <option value="pending_new">待啟動（新註冊）</option>
+        <option value="member_active">會員</option>
+        <option value="pending_renewal_failed">待啟動（續約失效）</option>
       </select>
     </div>
     <div class="fg">
@@ -974,6 +1049,8 @@ textarea.input{resize:vertical}
 const INC=[
   {id:'#A2024-038',name:'林小安',phone:'0923-456-789',type:'車輛碰撞',loc:'忠孝東路四段 220 號前',date:'2024-04-02 09:14',status:'待回電',sc:'ba',
    desc:'騎車途中遭對向車輛擦撞，對方車牌 ABC-1234，當事人已離開現場，右側車身受損。',steps:[1,0,0,0],slot:'今日 18:00 前',
+   notificationSentAt:'2024-04-02 09:14',notificationAcknowledgedAt:'2024-04-02 09:20',followUp:{enabled:true,intervalDays:30,nextAt:'2024-05-02 09:20'},unreadMemberUpdates:1,
+   statusHistory:[{status:'待回電',actor:'系統',at:'2024-04-02 09:14'}],
    media:[
     {id:'M-038-1',type:'image',name:'現場照-右側車身.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23dbeafe%22/%3E%3Crect x=%2228%22 y=%22116%22 width=%22264%22 height=%2238%22 rx=%2210%22 fill=%22%233b82f6%22/%3E%3Ccircle cx=%2290%22 cy=%22158%22 r=%2220%22 fill=%22%231e293b%22/%3E%3Ccircle cx=%22238%22 cy=%22158%22 r=%2220%22 fill=%22%231e293b%22/%3E%3Ctext x=%22160%22 y=%2258%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%231e3a8a%22 font-family=%22Arial%22%3E%E7%8F%BE%E5%A0%B4%E7%85%A7%E7%89%87%3C/text%3E%3Ctext x=%22160%22 y=%2286%22 text-anchor=%22middle%22 font-size=%2214%22 fill=%22%231e40af%22 font-family=%22Arial%22%3E%E8%BB%8A%E8%BA%AB%E5%8F%B3%E5%81%B4%E5%8F%97%E6%90%8D%3C/text%3E%3C/svg%3E',uploadedAt:'2024-04-02 09:16'}
    ],
@@ -983,6 +1060,8 @@ const INC=[
    notes:[{a:'系統',tp:'系統',tc:'bgr',t:'2024-04-02 09:14',b:'會員提交事故申請，類型：車輛碰撞'}]},
   {id:'#A2024-035',name:'黃大華',phone:'0934-111-222',type:'刮傷',loc:'信義區松壽路停車場 B2',date:'2024-03-28 14:30',status:'處理中',sc:'bb',
    desc:'停車場遭刮傷，監視器有存檔可能，車輛左後方明顯刮痕。',steps:[1,1,1,0],slot:'已完成首次聯繫',
+   notificationSentAt:'2024-03-28 14:30',notificationAcknowledgedAt:'2024-03-28 14:43',followUp:{enabled:true,intervalDays:14,nextAt:'2024-04-11 14:43'},unreadMemberUpdates:0,
+   statusHistory:[{status:'處理中',actor:'陳客服',at:'2024-03-28 15:10'},{status:'待回電',actor:'系統',at:'2024-03-28 14:30'}],
    media:[
     {id:'M-035-1',type:'image',name:'停車場監視器截圖.png',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23e5e7eb%22/%3E%3Crect x=%2238%22 y=%2238%22 width=%22244%22 height=%22124%22 rx=%2210%22 fill=%22%239ca3af%22/%3E%3Crect x=%2266%22 y=%2294%22 width=%22188%22 height=%2232%22 rx=%228%22 fill=%22%234b5563%22/%3E%3Ctext x=%22160%22 y=%2270%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23111827%22 font-family=%22Arial%22%3E%E5%81%9C%E8%BB%8A%E5%A0%B4%E7%9B%A3%E8%A6%96%E5%99%A8%E6%88%AA%E5%9C%96%3C/text%3E%3C/svg%3E',uploadedAt:'2024-03-28 16:02'},
     {id:'M-035-2',type:'video',name:'停車場動線影片.mp4',url:'',uploadedAt:'2024-03-29 10:08'}
@@ -997,6 +1076,8 @@ const INC=[
   ]},
   {id:'#A2024-031',name:'陳小明',phone:'0912-345-678',type:'車輛碰撞',loc:'民生西路 100 號前',date:'2024-03-10 11:00',status:'已結案',sc:'bg',
    desc:'路口碰撞，雙方協議和解，和解金 NT$15,000，和解書已簽署。',steps:[1,1,1,1],slot:'已結案',
+   notificationSentAt:'2024-03-10 11:00',notificationAcknowledgedAt:'2024-03-10 11:18',followUp:{enabled:false,intervalDays:30,nextAt:''},unreadMemberUpdates:0,
+   statusHistory:[{status:'已結案',actor:'陳客服',at:'2024-03-15 16:00'},{status:'處理中',actor:'陳客服',at:'2024-03-11 10:30'},{status:'待回電',actor:'系統',at:'2024-03-10 11:00'}],
    media:[
     {id:'M-031-1',type:'image',name:'和解前車損照片.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23dcfce7%22/%3E%3Crect x=%2236%22 y=%22108%22 width=%22248%22 height=%2238%22 rx=%2210%22 fill=%22%2316a34a%22/%3E%3Ccircle cx=%2290%22 cy=%22156%22 r=%2220%22 fill=%22%23145532%22/%3E%3Ccircle cx=%22234%22 cy=%22156%22 r=%2220%22 fill=%22%23145532%22/%3E%3Ctext x=%22160%22 y=%2262%22 text-anchor=%22middle%22 font-size=%2220%22 fill=%22%23166534%22 font-family=%22Arial%22%3E%E8%BB%8A%E6%90%8D%E7%85%A7%E7%89%87%3C/text%3E%3C/svg%3E',uploadedAt:'2024-03-10 11:08'}
    ],
@@ -1012,6 +1093,8 @@ const INC=[
   ]},
   {id:'#A2024-040',name:'陳小明',phone:'0912-345-678',type:'車輛碰撞',loc:'台北市大安區和平東路二段 118 號前',date:'2024-04-18 17:40',status:'處理中',sc:'bb',
    desc:'路口擦撞，雙方皆無受傷，已口頭同意不走保險，待製作正式和解書。',steps:[1,1,1,0],slot:'待雙方確認和解條件',
+   notificationSentAt:'2024-04-18 17:40',notificationAcknowledgedAt:'2024-04-18 17:55',followUp:{enabled:true,intervalDays:30,nextAt:'2024-05-18 17:55'},unreadMemberUpdates:2,
+   statusHistory:[{status:'處理中',actor:'陳客服',at:'2024-04-19 11:20'},{status:'待回電',actor:'系統',at:'2024-04-18 17:40'}],
    media:[
     {id:'M-040-1',type:'image',name:'事故現場照片.jpg',url:'data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22200%22 viewBox=%220 0 320 200%22%3E%3Crect width=%22320%22 height=%22200%22 fill=%22%23ede9fe%22/%3E%3Crect x=%2234%22 y=%22112%22 width=%22252%22 height=%2236%22 rx=%2210%22 fill=%22%23534ab7%22/%3E%3Ccircle cx=%2288%22 cy=%22156%22 r=%2220%22 fill=%22%233c3489%22/%3E%3Ccircle cx=%22234%22 cy=%22156%22 r=%2220%22 fill=%22%233c3489%22/%3E%3Ctext x=%22160%22 y=%2260%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%233c3489%22 font-family=%22Arial%22%3E%E5%92%8C%E8%A7%A3%E6%9B%B8%E5%80%99%E9%81%B8%E4%BA%8B%E6%95%85%3C/text%3E%3C/svg%3E',uploadedAt:'2024-04-18 17:45'}
    ],
@@ -1025,6 +1108,8 @@ const INC=[
   ]},
   {id:'#A2024-029',name:'蔡○○',phone:'0956-789-012',type:'車輛竊盜',loc:'大安區復興南路二段',date:'2024-03-05 08:00',status:'逾期',sc:'br',
    desc:'路邊停放機車遭竊，警察備案號 1130305001。',steps:[1,1,0,0],slot:'待會員回覆',
+   notificationSentAt:'2024-03-05 08:00',notificationAcknowledgedAt:'2024-03-05 08:12',followUp:{enabled:true,intervalDays:30,nextAt:'2024-04-05 08:12'},unreadMemberUpdates:0,
+   statusHistory:[{status:'逾期',actor:'陳客服',at:'2024-03-10 09:00'},{status:'待回電',actor:'系統',at:'2024-03-05 08:00'}],
    media:[],
    recordings:[],
    notes:[
@@ -1034,10 +1119,10 @@ const INC=[
 ];
 
 const MEMBER_ROWS=[
-  {name:'陳小明',idNo:'A123456789',email:'ming@email.com',phone:'0912-345-678',birthday:'1990-01-15',address:'台北市大安區仁愛路四段 100 號',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
-  {name:'林小安',idNo:'B223456789',email:'an@email.com',phone:'0923-456-789',birthday:'1993-07-21',address:'新北市板橋區文化路一段 88 號',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
-  {name:'王大偉',idNo:'C323456789',email:'wei@email.com',phone:'0934-567-890',birthday:'1988-11-02',address:'桃園市中壢區中美路二段 16 號',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
-  {name:'張小不',idNo:'D423456789',email:'bu@email.com',phone:'0945-678-901',birthday:'1995-03-18',address:'台中市西屯區台灣大道三段 200 號',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
+  {name:'陳小明',idNo:'A123456789',email:'ming@email.com',phone:'0912-345-678',birthday:'1990-01-15',address:'台北市大安區仁愛路四段 100 號',plan:'年費',points:320,status:'訂閱中',sc:'bg',joined:'2023-06-12 09:15',tone:'var(--blue-bg)',toneText:'var(--blue-t)',renewal:'success',renewalLabel:'續約成功',promoCode:'NEW1200',reportedCancel:false,notes:[]},
+  {name:'林小安',idNo:'B223456789',email:'an@email.com',phone:'0923-456-789',birthday:'1993-07-21',address:'新北市板橋區文化路一段 88 號',plan:'年費',points:0,status:'待啟動',sc:'ba',joined:'2024-01-03 14:20',tone:'var(--amber-bg)',toneText:'var(--amber-t)',renewal:'none',renewalLabel:'—',promoCode:'SPRING',reportedCancel:false,notes:[]},
+  {name:'王大偉',idNo:'C323456789',email:'wei@email.com',phone:'0934-567-890',birthday:'1988-11-02',address:'桃園市中壢區中美路二段 16 號',plan:'年費',points:150,status:'已過期',sc:'bgr',joined:'2022-11-20 10:10',tone:'var(--green-bg)',toneText:'var(--green-t)',renewal:'failed',renewalLabel:'續約失敗',promoCode:'',reportedCancel:true,notes:['2026-04-10 已回報想取消自動續約']},
+  {name:'張小不',idNo:'D423456789',email:'bu@email.com',phone:'0945-678-901',birthday:'1995-03-18',address:'台中市西屯區台灣大道三段 200 號',plan:'年費',points:0,status:'黑名單',sc:'br',joined:'2023-03-08 16:40',tone:'var(--red-bg)',toneText:'var(--red-t)',renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,notes:[]}
 ];
 
 const TXNS=[
@@ -1088,12 +1173,11 @@ const POINTS=[
 
 const STEP_LABELS=['申請提交','首次聯繫','協商處理','結案'];
 let selIncidentId=INC[0].id;
-let callOn=false,callSec=0,callTick=null,dTab='notes';
+let callOn=false,callSec=0,callTick=null,dTab='all';
 let curPlan='single',curPayTab='credit',memberFilter='all',incidentFilter='all';
 let memberSortKey='joined',memberSortDir='desc';
 let mode='admin',aPg='dashboard',mPg='m-login';
 let pendingIncidentDraft=null;
-let memberFlowSource='member';
 let memberAuthState='logged_out';
 let memberHistory=[];
 let remoteCollapsed=false;
@@ -1117,8 +1201,58 @@ const memberProfile={
   autoRenew:true,
   cancelReported:false,
   promoCode:'NEW1200',
-  joined:'2023-06-12'
+  joined:'2023-06-12 09:15'
 };
+const MEMBER_AUTH={
+  LOGGED_OUT:'logged_out',
+  PENDING_NEW:'pending_new',
+  ACTIVE:'member_active',
+  PENDING_RENEWAL_FAILED:'pending_renewal_failed'
+};
+function isLoggedOut(){return memberAuthState===MEMBER_AUTH.LOGGED_OUT}
+function isPendingNew(){return memberAuthState===MEMBER_AUTH.PENDING_NEW}
+function isActiveMember(){return memberAuthState===MEMBER_AUTH.ACTIVE}
+function isRenewalFailed(){return memberAuthState===MEMBER_AUTH.PENDING_RENEWAL_FAILED}
+function needsPayment(){return isPendingNew()||isRenewalFailed()}
+function memberFrontStatusLabel(){
+  if(isLoggedOut()) return '未登入';
+  if(isPendingNew()) return '待啟動（新註冊）';
+  if(isRenewalFailed()) return '待啟動（續約失效）';
+  return '會員';
+}
+function memberPlanLabel(){
+  return isActiveMember()?'年費會員':'待啟動會員';
+}
+function memberRenewalLabel(){
+  return isRenewalFailed()?'續約失敗':'續約成功';
+}
+function memberPointsBalance(){
+  return isRenewalFailed()?0:memberProfile.points;
+}
+function memberStatusDescription(){
+  if(isLoggedOut()) return '請先登入以查看會員資料與服務';
+  if(isPendingNew()) return '已完成註冊，付款後即可啟用會員服務';
+  if(isRenewalFailed()) return '續約扣款失敗，請重新付款以恢復會員資格';
+  return `年費會員 · 到期 ${memberProfile.expiry}`;
+}
+function memberHeroTheme(){
+  if(isActiveMember()){
+    return {
+      bg:'linear-gradient(135deg, #9a6a12 0%, #c9982f 55%, #e7c56a 100%)',
+      sub:'年費會員 · 到期 2027-04-16',
+      tagBg:'rgba(255, 247, 214, 0.22)',
+      tagBd:'rgba(255, 244, 204, 0.35)',
+      tags:['年費會員','1200點','2件紀錄']
+    };
+  }
+  return {
+    bg:'linear-gradient(135deg, #5f6368 0%, #7b8087 100%)',
+    sub:isRenewalFailed()?'待啟動會員 · 續約扣款失敗':'待啟動會員 · 完成付款後啟用',
+    tagBg:'rgba(255, 255, 255, 0.14)',
+    tagBd:'rgba(255, 255, 255, 0.2)',
+    tags:['待啟動','0點']
+  };
+}
 const SETTLEMENTS=[
   {
     id:'CT-031',
@@ -1175,6 +1309,8 @@ function nextTxnId(){return `#T${todayStr().replaceAll('-','').slice(2)}-${Strin
 function parseDate(str){return new Date(`${str}T00:00:00`)}
 function dateOnly(str){return (str||'').slice(0,10)}
 function parseDateTime(str){return new Date(String(str).replace(' ','T'))}
+function currentOperator(){return document.getElementById('user-name')?.textContent||'系統'}
+function formatDateTime(value){return String(value||'').replace('T',' ').slice(0,16)||'—'}
 function mediaIcon(type){return type==='video'?'影片':'照片'}
 function nextMemberTone(){const tones=[['var(--blue-bg)','var(--blue-t)'],['var(--green-bg)','var(--green-t)'],['var(--amber-bg)','var(--amber-t)'],['var(--red-bg)','var(--red-t)']];return tones[MEMBER_ROWS.length%tones.length]}
 function nextMediaId(inc){return `M-${String(inc.id).replace(/[^\d]/g,'')}-${(inc.media?.length||0)+1}`}
@@ -1269,7 +1405,6 @@ function currentIncidentMemberTarget(){
   if(inc.phone===memberProfile.phone || inc.name===memberProfile.name) return memberProfile;
   return MEMBER_ROWS.find(m=>m.phone===inc.phone) || null;
 }
-function needsPayment(){return ['logged_in_unpaid','nonmember'].includes(memberAuthState)}
 function currentAmount(){
   let amount=1200;
   const code=(document.getElementById('pay-promo')||{}).value?.trim().toUpperCase();
@@ -1278,17 +1413,48 @@ function currentAmount(){
   return amount;
 }
 function memberDataset(){
-  const currentStatus=memberProfile.plan.includes('年費')?'訂閱中':'待啟動';
+  const currentStatus=isActiveMember()?'訂閱中':'待啟動';
   const currentSc=currentStatus==='訂閱中'?'bg':'ba';
   return [
-    {...MEMBER_ROWS[0],name:memberProfile.name,idNo:memberProfile.idNo,email:memberProfile.email,phone:memberProfile.phone,birthday:memberProfile.birthday,address:memberProfile.address,plan:'年費',points:memberProfile.points,status:currentStatus,sc:currentSc,renewal:'success',renewalLabel:'續約成功',reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
+    {...MEMBER_ROWS[0],name:memberProfile.name,idNo:memberProfile.idNo,email:memberProfile.email,phone:memberProfile.phone,birthday:memberProfile.birthday,address:memberProfile.address,plan:'年費',points:memberPointsBalance(),status:currentStatus,sc:currentSc,renewal:isRenewalFailed()?'failed':'success',renewalLabel:memberRenewalLabel(),reportedCancel:memberProfile.cancelReported,promoCode:memberProfile.promoCode},
     ...MEMBER_ROWS.slice(1)
   ];
 }
-function paidStatusLabel(){return memberAuthState==='logged_in_paid'?'已付費會員':memberAuthState==='logged_in_unpaid'?'未付費會員':''}
+function paidStatusLabel(){return isActiveMember()?'已付費會員':needsPayment()?'待付款':''}
 function incidentConflict(phone){
   if(!phone) return false;
   return memberDataset().some(m=>m.phone===phone);
+}
+function incidentCounterpartyMember(phone){
+  if(!phone) return null;
+  return memberDataset().find(m=>m.phone===phone)||null;
+}
+function joinedTimeForIncident(inc){
+  const member=currentIncidentMemberTarget() || memberDataset().find(m=>m.phone===inc.phone || m.name===inc.name);
+  return member?.joined || '查無會員加入時間';
+}
+function updateCounterpartyCheck(scope='member'){
+  const inputId=scope==='admin'?'create-counterparty-phone':'counterparty-phone';
+  const boxId=scope==='admin'?'create-counterparty-check-box':'counterparty-check-box';
+  const phone=document.getElementById(inputId)?.value.trim()||'';
+  const box=document.getElementById(boxId);
+  if(!box) return false;
+  if(!phone){
+    box.style.display='none';
+    box.className='alert-box success';
+    box.textContent='';
+    return false;
+  }
+  const matched=incidentCounterpartyMember(phone);
+  box.style.display='block';
+  if(matched){
+    box.className='alert-box error';
+    box.innerHTML=`系統已比對出對方 <strong>${esc(matched.name)}</strong> 也是 PAMO 會員，屬於雙方皆為會員案件，本服務不受理。`;
+    return true;
+  }
+  box.className='alert-box success';
+  box.textContent='已完成會員比對：對方不是 PAMO 會員，可以繼續送出。';
+  return false;
 }
 function areaFromLocation(loc=''){
   const area=(String(loc).match(/([\u4e00-\u9fa5]{1,4}[市區鄉鎮])/g)||[]).find(part=>/區|鄉|鎮/.test(part));
@@ -1312,10 +1478,19 @@ function normalizeIncidentRecord(inc){
   inc.locationDescription=inc.locationDescription||inc.desc||'';
   inc.occuredTime=inc.occuredTime||String((inc.date||todayStr()) ).replace(' ','T')+((inc.date||'').includes(' ')?':00':'T09:00:00');
   inc.accidentParties=inc.accidentParties||accidentPartiesFromNotes(inc);
+  inc.statusHistory=inc.statusHistory||[{status:inc.status||'待回電',actor:'系統',at:inc.date||nowStr()}];
+  inc.followUp=inc.followUp||{enabled:false,intervalDays:30,nextAt:''};
+  inc.unreadMemberUpdates=inc.unreadMemberUpdates||0;
+  inc.notificationSentAt=inc.notificationSentAt||inc.date||nowStr();
+  if(!('notificationAcknowledgedAt' in inc)) inc.notificationAcknowledgedAt='';
   inc.loc=incidentLocationLabel(inc);
   inc.desc=inc.locationDescription;
   inc.date=incidentOccurredLabel(inc);
   return inc;
+}
+function markIncidentRead(inc){
+  if(!inc) return;
+  inc.unreadMemberUpdates=0;
 }
 function accidentPartiesFromNotes(inc){
   const counterpartyNote=(inc.notes||[]).find(note=>String(note.b).includes('對方資訊：'))?.b||'';
@@ -1389,7 +1564,7 @@ function showToast(msg,type='success'){
 }
 function renderSingleFlowSteps(){
   const needPay=needsPayment();
-  const payBeforeIncident=memberAuthState==='logged_in_unpaid';
+  const payBeforeIncident=needPay;
   const nonmemberBar=document.getElementById('nonmember-step-bar');
   if(nonmemberBar){
     nonmemberBar.innerHTML=payBeforeIncident
@@ -1417,15 +1592,17 @@ function renderPaymentActions(){
   if(!helper||!skipBtn) return;
   helper.textContent=registrationPaymentPending
     ?'帳號已建立，你可以先完成付款，或先跳過回到我的帳戶。'
-    :'完成付款後即可啟用年費會員服務。';
+    :isRenewalFailed()
+      ?'續約扣款失敗後會籍已失效，請重新付款以恢復會員資格。'
+      :'完成付款後即可啟用年費會員服務。';
   skipBtn.style.display=registrationPaymentPending?'inline-flex':'none';
 }
 function backFromIncident(){
-  swMember(needsPayment()&&pendingIncidentDraft?'m-nonmember':'m-home');
+  swMember(needsPayment()&&pendingIncidentDraft?'m-payment':'m-home');
 }
 function returnToAccount(){
   registrationPaymentPending=false;
-  if(memberAuthState==='nonmember') swMember('m-login');
+  if(isLoggedOut()) swMember('m-login');
   else swMember('m-home');
 }
 
@@ -1452,7 +1629,7 @@ function renderList(){
     <div class="inc-row${inc.id===selIncidentId?' on':''}" onclick="selInc('${inc.id}')">
       <div class="inc-sum">
         <div class="inc-id">${esc(inc.id)}</div>
-        <div class="inc-name">${esc(inc.name)}</div>
+        <div class="inc-name">${esc(inc.name)} ${inc.unreadMemberUpdates?`<span class="unread-dot">${inc.unreadMemberUpdates}</span>`:''}</div>
         <div class="inc-desc">${esc(inc.type)} — ${esc(inc.loc)}</div>
       </div>
       <div class="inc-meta">
@@ -1479,55 +1656,98 @@ function renderDetail(){
     return;
   }
   normalizeIncidentRecord(inc);
+  if(mode==='admin') markIncidentRead(inc);
   const contract=settlementForIncident(inc.id);
   const settlementMeta=settlementStatusMeta(contract);
   inc.media=inc.media||[];
   inc.recordings=inc.recordings||[];
-  const stepsHtml=STEP_LABELS.map((lbl,i)=>{
-    const done=inc.steps[i]===1;
-    const cur=!done&&(i===0||inc.steps[i-1]===1);
-    return `<div class="step"><div class="step-dot ${done?'done':cur?'cur':''}">${done?'✓':i+1}</div><div class="step-lbl ${done?'done':cur?'cur':''}">${lbl}</div></div>`;
-  }).join('');
-  const notesHtml=inc.notes.map(n=>`
-    <div class="note-entry">
-      <div class="note-meta">
-        <span class="note-author">${esc(n.a)}</span>
-        <span class="badge ${esc(n.tc)}" style="font-size:10px;padding:1px 6px">${esc(n.tp)}</span>
-        <span class="note-time">${esc(n.t)}</span>
+  const joinedAt=joinedTimeForIncident(inc);
+  const noteEntries=(inc.notes||[]).map(n=>({
+    kind:(n.tp==='通話'?'call':n.tp==='筆記'?'note':n.tp==='留言'?'member':'system'),
+    tone:(n.tp==='通話'?'call':n.tp==='筆記'?'note':n.tp==='留言'?'member':'system'),
+    time:n.t,
+    actor:n.a,
+    label:n.tp,
+    body:n.b
+  }));
+  const statusEntries=(inc.statusHistory||[]).map(item=>({
+    kind:'status',
+    tone:'status',
+    time:item.at,
+    actor:item.actor,
+    label:'狀態切換',
+    body:`${item.actor} 於 ${item.at} 將案件切換為「${item.status}」`
+  }));
+  const mediaEntries=(inc.media||[]).map(item=>({
+    kind:'media',
+    tone:'media',
+    time:item.uploadedAt,
+    actor:'媒體檔案',
+    label:mediaIcon(item.type),
+    body:`已上傳 ${item.name}`,
+    item
+  }));
+  const recordingEntries=(inc.recordings||[]).map(item=>({
+    kind:'recording',
+    tone:'media',
+    time:item.at,
+    actor:item.agent||'客服',
+    label:'錄音',
+    body:`已建立通話錄音，長度 ${item.duration||'00:00'}`,
+    item
+  }));
+  const timelineAll=[...noteEntries,...statusEntries,...mediaEntries,...recordingEntries].sort((a,b)=>parseDateTime(b.time)-parseDateTime(a.time));
+  const timelineFiltered=timelineAll.filter(item=>{
+    if(dTab==='all') return true;
+    if(dTab==='calls') return (item.kind==='call' || item.kind==='note') && item.actor!=='會員';
+    return item.kind==='media' || item.kind==='recording';
+  });
+  const timelineHtml=timelineFiltered.length?timelineFiltered.map(item=>`
+    <div class="timeline-entry" data-tone="${esc(item.tone)}">
+      <div class="timeline-head">
+        <div class="timeline-title">${esc(item.actor)}</div>
+        <span class="badge ${item.kind==='status'?'ba':item.kind==='media'||item.kind==='recording'?'bg':item.kind==='call'?'bb':item.kind==='note'?'bp':item.kind==='member'?'ba':'bgr'}" style="font-size:10px;padding:1px 6px">${esc(item.label)}</span>
+        <div class="timeline-sub">${esc(item.time)}</div>
       </div>
-      <div class="note-body">${esc(n.b)}</div>
-    </div>`).join('');
+      <div class="timeline-body">${esc(item.body)}</div>
+      ${item.kind==='media'&&item.item?`
+        <div class="timeline-attachment">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:600">${esc(item.item.name)}</div>
+            <button class="btn btn-s" onclick="removeIncidentMedia('${esc(item.item.id)}')">移除</button>
+          </div>
+          ${item.item.type==='image'
+            ?`<img src="${esc(item.item.url)}" alt="${esc(item.item.name)}">`
+            :item.item.url
+              ?`<video controls src="${esc(item.item.url)}"></video>`
+              :`<div style="padding:12px;border:1px dashed var(--bd2);border-radius:8px;background:var(--bg2);font-size:12px;color:var(--t2)">已建立影片檔案紀錄，可在 demo 中替換成實際影片後播放。</div>`
+          }
+        </div>`:''}
+      ${item.kind==='recording'&&item.item?`
+        <div class="timeline-attachment">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-size:12px;font-weight:600">${esc(item.item.agent||'客服')} · ${esc(item.item.at)}</div>
+              <div style="font-size:11px;color:var(--t3)">通話長度 ${esc(item.item.duration||'00:00')}</div>
+            </div>
+            <button class="btn btn-s" onclick="removeIncidentRecording('${esc(item.item.id)}')">移除</button>
+          </div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">${esc(item.item.summary||'通話錄音')}</div>
+          <audio controls src="${recordingAudioUrl(item.item,0)}"></audio>
+        </div>`:''}
+    </div>`).join(''):'<div class="timeline-empty">目前沒有符合這個分類的時間軸紀錄</div>';
   const callBtns=callOn
     ?`<button class="cbtn r" onclick="endCall()">掛斷</button><button class="cbtn" onclick="showToast('已靜音通話')">靜音</button><button class="cbtn" onclick="showToast('已保留通話','warn')">保留</button>`
-    :`<button class="cbtn g" onclick="startCall()">撥打</button><button class="cbtn" onclick="showToast('已開啟 LINE 聯繫')">LINE</button><button class="cbtn" onclick="showToast('已建立簡訊範本')">簡訊</button>`;
-  const mediaHtml=inc.media.length?inc.media.map(item=>`
-    <div class="card" style="padding:12px 14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:10px">
-        <div>
-          <div style="font-size:12px;font-weight:600">${esc(item.name)}</div>
-          <div style="font-size:11px;color:var(--t3)">${esc(mediaIcon(item.type))} · ${esc(item.uploadedAt||'')}</div>
-        </div>
-        <button class="btn btn-s" onclick="removeIncidentMedia('${esc(item.id)}')">移除</button>
-      </div>
-      ${item.type==='image'
-        ?`<img src="${esc(item.url)}" alt="${esc(item.name)}" style="width:100%;border-radius:10px;border:1px solid var(--bd);display:block;background:var(--bg2)">`
-        :item.url
-          ?`<video controls src="${esc(item.url)}" style="width:100%;border-radius:10px;border:1px solid var(--bd);background:var(--bg2)"></video>`
-          :`<div style="padding:14px;border:1px dashed var(--bd2);border-radius:10px;background:var(--bg2);font-size:12px;color:var(--t2)">已建立影片檔案紀錄，可在 demo 中替換成實際上傳影片後播放。</div>`
-      }
-    </div>`).join(''):'<div class="card"><div class="empty">目前尚未上傳照片或影片</div></div>';
-  const recordingsHtml=inc.recordings.length?inc.recordings.map((rec,idx)=>`
-    <div class="card" style="padding:12px 14px;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:8px">
-        <div>
-          <div style="font-size:12px;font-weight:600">${esc(rec.agent||'客服')} · ${esc(rec.at)}</div>
-          <div style="font-size:11px;color:var(--t3)">通話長度 ${esc(rec.duration||'00:00')}</div>
-        </div>
-        <button class="btn btn-s" onclick="removeIncidentRecording('${esc(rec.id)}')">移除</button>
-      </div>
-      <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:8px">${esc(rec.summary||'通話錄音')}</div>
-      <audio controls style="width:100%" src="${recordingAudioUrl(rec,idx)}"></audio>
-    </div>`).join(''):'<div class="card"><div class="empty">目前沒有通話錄音</div></div>';
+    :`<button class="cbtn g" onclick="startCall()">撥打</button>`;
+  const statusLogHtml=(inc.statusHistory||[]).slice(0,5).map(item=>`
+    <div class="status-log-item">${esc(item.actor)} 在 ${esc(item.at)} 切換為 <strong>${esc(item.status)}</strong></div>
+  `).join('');
+  const notifyState=inc.notificationAcknowledgedAt
+    ?`<div class="alert-box success" style="margin-top:10px">客服中心已於 ${esc(inc.notificationAcknowledgedAt)} 收到通知並進入回電流程。</div>`
+    :`<div class="alert-box warn" style="margin-top:10px">案件通知已送出，尚待客服接收後回電。</div>`;
+  const followUpSummary=inc.followUp?.enabled
+    ?`每 ${inc.followUp.intervalDays} 天提醒一次<br>下次提醒：${esc(inc.followUp.nextAt||'尚未排定')}`
+    :'目前未設定追蹤提醒';
 
   document.getElementById('inc-detail').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px">
@@ -1539,61 +1759,38 @@ function renderDetail(){
       <span class="badge ${esc(inc.sc)}" style="font-size:11px;padding:3px 10px;align-self:flex-start">${esc(inc.status)}</span>
     </div>
     <div class="card" style="padding:12px 15px;margin-bottom:14px">
-      <div class="sec-label" style="margin-bottom:9px">申請進度</div>
-      <div class="steps">${stepsHtml}</div>
+      <div class="sec-label" style="margin-bottom:9px">案件資訊</div>
+      <div class="info-grid">
+        <div class="info-box"><strong>事故時間</strong>${esc(formatDateTime(inc.occuredTime))}</div>
+        <div class="info-box"><strong>會員加入時間</strong>${esc(joinedAt)}</div>
+        <div class="info-box"><strong>案件摘要</strong>${esc(inc.desc)}</div>
+        <div class="info-box"><strong>聯絡與進度</strong>${esc(inc.phone)}<br>${esc(inc.slot||'未提供')}</div>
+        <div class="info-box"><strong>事故地點</strong>${esc(inc.zipCode)} ${esc(inc.city)}${esc(inc.area)} ${esc(inc.address)}</div>
+        <div class="info-box"><strong>事故當事人</strong>我方 ${esc(inc.accidentParties[0]?.plateNumber||'—')} / ${esc(inc.accidentParties[0]?.injured?'受傷':'未受傷')}<br>對方 ${esc(inc.accidentParties[1]?.plateNumber||'—')} / ${esc(inc.accidentParties[1]?.injured?'受傷':'未受傷')}</div>
+      </div>
     </div>
     <div class="detail-body">
       <div class="detail-main">
-        <div class="tabs" id="dtabs">
-          <div class="tab ${dTab==='notes'?'on':''}" onclick="swDTab('notes')">通話 &amp; 筆記</div>
-          <div class="tab ${dTab==='info'?'on':''}" onclick="swDTab('info')">案件資訊</div>
-          <div class="tab ${dTab==='media'?'on':''}" onclick="swDTab('media')">媒體 &amp; 錄音</div>
-        </div>
-        <div class="tc ${dTab==='notes'?'on':''}" id="tc-notes">
-          <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
-            <textarea class="note-in" rows="3" id="note-in" placeholder="新增通話紀錄或筆記…"></textarea>
-            <div style="display:flex;gap:6px;align-items:center">
-              <select class="input" id="note-type" style="width:auto;flex:0 0 auto;font-size:12px;padding:4px 8px">
-                <option>筆記</option><option>通話</option><option>系統備註</option>
-              </select>
-              <button class="btn btn-p btn-s" onclick="addNote()">新增</button>
-            </div>
-          </div>
-          <div id="notes-list">${notesHtml}</div>
-        </div>
-        <div class="tc ${dTab==='info'?'on':''}" id="tc-info">
-          <div class="card">
-            <div class="sec-label" style="margin-bottom:8px">事故說明</div>
-            <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px">${esc(inc.desc)}</div>
-            <div class="divider"></div>
-            <table style="font-size:12px;margin-top:10px">
-              <tr><td style="color:var(--t3);padding:4px 0;width:72px">姓名</td><td>${esc(inc.name)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">電話</td><td>${esc(inc.phone)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">類型</td><td>${esc(inc.type)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">事故時間</td><td>${esc(inc.occuredTime.replace('T',' ').slice(0,16))}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">郵遞區號</td><td>${esc(inc.zipCode)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">地點</td><td>${esc(inc.city)}${esc(inc.area)} ${esc(inc.address)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">地點描述</td><td>${esc(inc.locationDescription)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">我方</td><td>${esc(inc.accidentParties[0]?.identity||'DRIVER')} / ${esc(inc.accidentParties[0]?.plateNumber||'—')} / ${esc(inc.accidentParties[0]?.injured?'受傷':'未受傷')}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">對方</td><td>${esc(inc.accidentParties[1]?.identity||'DRIVER')} / ${esc(inc.accidentParties[1]?.plateNumber||'—')} / ${esc(inc.accidentParties[1]?.injured?'受傷':'未受傷')}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">聯絡時段</td><td>${esc(inc.slot||'未提供')}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">申請</td><td>${esc(inc.date)}</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">媒體</td><td>${inc.media.length} 個檔案</td></tr>
-              <tr><td style="color:var(--t3);padding:4px 0">錄音</td><td>${inc.recordings.length} 筆</td></tr>
-            </table>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px">
+          <textarea class="note-in" rows="3" id="note-in" placeholder="新增通話紀錄或筆記…"></textarea>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="input" id="note-type" style="width:auto;flex:0 0 auto;font-size:12px;padding:4px 8px">
+              <option>筆記</option><option>通話</option><option>系統備註</option>
+            </select>
+            <button class="btn btn-p btn-s" onclick="addNote()">新增</button>
           </div>
         </div>
-        <div class="tc ${dTab==='media'?'on':''}" id="tc-media">
-          <div class="card">
-            <div class="sec-label" style="margin-bottom:8px">上傳事故照片 / 影片</div>
-            <input class="input" type="file" accept="image/*,video/*" multiple onchange="uploadIncidentMedia(this.files); this.value='';"/>
-            <div style="font-size:12px;color:var(--t3);line-height:1.6;margin-top:8px">可將現場照片與影片直接掛到案件，方便後台整理證據與後續追蹤。</div>
-          </div>
-          <div class="sec-label" style="margin:14px 0 8px">媒體檔案</div>
-          ${mediaHtml}
-          <div class="sec-label" style="margin:14px 0 8px">通話錄音回放</div>
-          ${recordingsHtml}
+        <div class="card" style="margin-bottom:12px">
+          <div class="sec-label" style="margin-bottom:8px">上傳事故照片 / 影片</div>
+          <input class="input" type="file" accept="image/*,video/*" multiple onchange="uploadIncidentMedia(this.files); this.value='';"/>
+          <div style="font-size:12px;color:var(--t3);line-height:1.6;margin-top:8px">可將現場照片與影片直接掛到案件，相關內容會直接出現在時間軸。</div>
         </div>
+        <div class="timeline-tabs" id="dtabs">
+          <div class="timeline-tab ${dTab==='all'?'on':''}" onclick="swDTab('all')">全部</div>
+          <div class="timeline-tab ${dTab==='calls'?'on':''}" onclick="swDTab('calls')">客服通話筆記</div>
+          <div class="timeline-tab ${dTab==='media'?'on':''}" onclick="swDTab('media')">媒體與錄音</div>
+        </div>
+        <div id="timeline-list">${timelineHtml}</div>
       </div>
       <div class="detail-side">
         <div class="call-panel">
@@ -1606,12 +1803,27 @@ function renderDetail(){
           <div class="call-btns">${callBtns}</div>
         </div>
         <div class="card" style="padding:13px 15px">
+          <div class="sec-label" style="margin-bottom:8px">追蹤提醒</div>
+          <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:10px">${followUpSummary}</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <select class="input" id="followup-interval" style="font-size:12px;padding:5px 8px">
+              <option value="7">每 7 天</option>
+              <option value="14">每 14 天</option>
+              <option value="30" selected>每 30 天</option>
+              <option value="45">每 45 天</option>
+            </select>
+            <button class="btn btn-s" onclick="saveFollowUpReminder()">儲存</button>
+          </div>
+          <div class="mini-help">客服可自行設定追蹤通知期間；若會員未再提交通報，可依此節奏主動追蹤。</div>
+        </div>
+        <div class="card" style="padding:13px 15px">
           <div class="sec-label" style="margin-bottom:8px">更新狀態</div>
           <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:11px">
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('待回電')">設為 待回電</button>
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('處理中')">設為 處理中</button>
             <button class="btn btn-s" style="justify-content:flex-start" onclick="upStatus('已結案')">設為 已結案</button>
           </div>
+          <div class="status-log">${statusLogHtml||'<div class="status-log-item">目前沒有狀態切換紀錄</div>'}</div>
           <div class="divider"></div>
           <div style="font-size:12px;color:var(--t3);line-height:1.6">和解書改由前台會員自行製作，後台同步掌握雙方是否已完成和解。</div>
         </div>
@@ -1649,10 +1861,18 @@ function renderDetail(){
         </div>
       </div>
     </div>`;
+  const followUpSelect=document.getElementById('followup-interval');
+  if(followUpSelect) followUpSelect.value=String(inc.followUp?.intervalDays||30);
   if(callOn)startTick();
 }
 
-function selInc(id){selIncidentId=id;dTab='notes';renderList();renderDetail();}
+function selInc(id){
+  selIncidentId=id;
+  dTab='all';
+  if(mode==='admin') markIncidentRead(currentIncident());
+  renderList();
+  renderDetail();
+}
 function setIncidentFilter(status,el){
   incidentFilter=status;
   document.querySelectorAll('#inc-filters .chip').forEach(chip=>chip.classList.remove('on'));
@@ -1662,9 +1882,7 @@ function setIncidentFilter(status,el){
 }
 function swDTab(t){
   dTab=t;
-  document.querySelectorAll('#dtabs .tab').forEach((el,i)=>el.classList.toggle('on',['notes','info','media'][i]===t));
-  document.querySelectorAll('.tc').forEach(el=>el.classList.remove('on'));
-  document.getElementById('tc-'+t).classList.add('on');
+  renderDetail();
 }
 function addNote(){
   const inp=document.getElementById('note-in');
@@ -1706,13 +1924,36 @@ function endCall(){
 function upStatus(status){
   const meta=getStatusMeta(status);
   const inc=currentIncident();
+  inc.statusHistory=inc.statusHistory||[];
+  inc.statusHistory.unshift({status,actor:currentOperator(),at:nowStr()});
   inc.status=status;
   inc.sc=meta.sc;
   inc.steps=[...meta.steps];
+  inc.notes.unshift({a:'系統',tp:'系統備註',tc:'bgr',t:nowStr(),b:`${currentOperator()} 將案件狀態切換為 ${status}`});
   renderList();
   renderDetail();
   renderMemberHome();
   showToast(`案件已更新為「${status}」`);
+}
+function acknowledgeIncidentNotification(){
+  const inc=currentIncident();
+  if(!inc) return;
+  inc.notificationAcknowledgedAt=nowStr();
+  inc.notes.unshift({a:'系統',tp:'系統備註',tc:'bgr',t:inc.notificationAcknowledgedAt,b:`客服 ${currentOperator()} 已接收案件通知，準備安排第一次回電。`});
+  renderDetail();
+  showToast('已標記為客服收到通知');
+}
+function saveFollowUpReminder(){
+  const inc=currentIncident();
+  const interval=Number(document.getElementById('followup-interval')?.value||30);
+  if(!inc) return;
+  const next=new Date();
+  next.setDate(next.getDate()+interval);
+  const nextAt=`${next.getFullYear()}-${p2(next.getMonth()+1)}-${p2(next.getDate())} ${p2(next.getHours())}:${p2(next.getMinutes())}`;
+  inc.followUp={enabled:true,intervalDays:interval,nextAt};
+  inc.notes.unshift({a:'系統',tp:'系統備註',tc:'bgr',t:nowStr(),b:`${currentOperator()} 設定案件追蹤提醒為每 ${interval} 天一次；下次提醒時間 ${nextAt}。`});
+  renderDetail();
+  showToast('追蹤提醒已更新');
 }
 function saveIncidentMemberProfile(){
   const inc=currentIncident();
@@ -1786,16 +2027,16 @@ function startApplicationFlow(){
   document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
   pendingIncidentDraft=null;
   registrationPaymentPending=false;
-  swMember(memberAuthState==='logged_in_unpaid'?'m-payment':'m-incident-form');
+  swMember('m-payment');
 }
 function startAccidentEntry(){
   registrationPaymentPending=false;
-  if(memberAuthState==='logged_in_paid') swMember('m-incident-form');
+  if(isActiveMember()) swMember('m-incident-form');
   else { pendingIncidentDraft=null; document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`; showToast('請先完成年費付款，再使用事故申請'); swMember('m-payment'); }
 }
 function startSettlementEntry(){
   registrationPaymentPending=false;
-  if(memberAuthState==='logged_in_paid') swMember('m-settlement');
+  if(isActiveMember()) swMember('m-settlement');
   else { pendingIncidentDraft=null; document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`; showToast('請先完成年費付款，再使用和解書製作'); swMember('m-payment'); }
 }
 function swPayTab(el,t){
@@ -1826,9 +2067,9 @@ function submitPayment(){
   memberProfile.expiry='2027-04-16';
   memberProfile.autoRenew=true;
   memberProfile.promoCode=promoCode;
-  memberProfile.points+=100;
+  memberProfile.points=memberPointsBalance()+100;
   POINTS.unshift({date:todayStr().slice(5).replace('-','/'),desc:'購買年費會員',value:100});
-  if(memberAuthState==='logged_in_unpaid'||memberAuthState==='nonmember') setMemberAuthState('logged_in_paid');
+  if(needsPayment()) setMemberAuthState(MEMBER_AUTH.ACTIVE);
   renderTransactions();
   renderMembers();
   renderPoints();
@@ -1836,7 +2077,7 @@ function submitPayment(){
   renderDashboard();
   renderSettings();
   registrationPaymentPending=false;
-  if(needsPayment()&&pendingIncidentDraft){
+  if(pendingIncidentDraft){
     createIncidentFromDraft(pendingIncidentDraft);
     pendingIncidentDraft=null;
     showToast('付款成功，案件已送出');
@@ -1860,10 +2101,19 @@ function buildIncidentDraft(){
   const slot=document.getElementById('incident-slot').value.trim();
   const counterpartyName=document.getElementById('counterparty-name').value.trim();
   const counterpartyPhone=document.getElementById('counterparty-phone').value.trim();
+  const scopeConfirmed=document.getElementById('incident-scope-confirm').checked;
   const oppositePlate=document.getElementById('incident-opposite-plate').value.trim().toUpperCase();
   const oppositeInjured=document.getElementById('incident-opposite-injured').value==='true';
-  if(!date||!zipCode||!city||!area||!address||!locationDescription||!creatorPlate||!oppositePlate||!phone){
-    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與聯絡電話','warn');
+  if(!date||!zipCode||!city||!area||!address||!locationDescription||!creatorPlate||!oppositePlate||!phone||!counterpartyPhone){
+    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與雙方聯絡電話','warn');
+    return null;
+  }
+  if(dateOnly(date)<dateOnly(memberProfile.joined)){
+    showToast('事故時間早於會員加入時間，此案不在會籍服務範圍內','error');
+    return null;
+  }
+  if(!scopeConfirmed){
+    showToast('請先確認事故發生時已在有效會籍內，且非雙方皆為會員','warn');
     return null;
   }
   return {
@@ -1876,20 +2126,24 @@ function buildIncidentDraft(){
 }
 function createIncidentFromDraft(draft){
   const id=nextIncidentId();
+  const createdAt=nowStr();
   const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
   const inc={id,name:memberProfile.name,phone:draft.phone,type:draft.type,zipCode:draft.zipCode,city:draft.city,area:draft.area,address:draft.address,locationDescription:draft.locationDescription,occuredTime:`${draft.date}T${p2(new Date().getHours())}:${p2(new Date().getMinutes())}:00`,accidentParties:draft.accidentParties,loc:`${draft.city}${draft.area}${draft.address}`,date:dateTime,status:'待回電',sc:'ba',desc:draft.locationDescription,steps:[1,0,0,0],slot:draft.slot,
+    notificationSentAt:createdAt,notificationAcknowledgedAt:'',followUp:{enabled:false,intervalDays:30,nextAt:''},statusHistory:[{status:'待回電',actor:'系統',at:createdAt}],
     media:[],
     recordings:[],
     notes:[
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`會員提交事故申請，類型：${draft.type}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot||'未指定'}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`會員提交事故申請，類型：${draft.type}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`偏好聯絡時段：${draft.slot||'未指定'}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:'已通知後台客服中心，待客服收到通知後安排首次回電。'}
     ]};
   normalizeIncidentRecord(inc);
   INC.unshift(inc);
   selIncidentId=id;
   document.getElementById('waiting-summary').innerHTML=`客服將於 <strong>24 小時內</strong>致電 <strong>${esc(draft.phone)}</strong><br>案件編號：<span style="font-family:var(--mono);font-weight:600">${esc(id)}</span>`;
+  document.getElementById('waiting-notify').innerHTML=`已於 <strong>${esc(createdAt)}</strong> 通知後台客服中心，客服收到案件通知後會安排第一次回電。`;
   renderList();
   renderDetail();
   renderMemberHome();
@@ -1899,13 +2153,13 @@ function createIncidentFromDraft(draft){
 function submitIncident(){
   const draft=buildIncidentDraft();
   if(!draft) return;
-  const conflict=incidentConflict(draft.counterpartyPhone);
+  const conflict=updateCounterpartyCheck('member');
   document.getElementById('conflict-box').style.display=conflict?'block':'none';
   if(conflict){
     showToast('偵測到雙方皆為會員，案件不可處理','error');
     return;
   }
-  if(memberAuthState==='nonmember'){
+  if(needsPayment()){
     registrationPaymentPending=false;
     pendingIncidentDraft=draft;
     document.getElementById('pay-amount').textContent=`NT$${currentAmount().toLocaleString('zh-TW')}`;
@@ -2019,7 +2273,7 @@ function submitNewMember(){
   }
   const [tone,toneText]=nextMemberTone();
   MEMBER_ROWS.push({
-    name,idNo,email,phone,birthday,address,plan:'年費',points,status:'訂閱中',sc:statusStyleOf('訂閱中'),joined:todayStr(),
+    name,idNo,email,phone,birthday,address,plan:'年費',points,status:'訂閱中',sc:statusStyleOf('訂閱中'),joined:nowStr(),
     tone,toneText,renewal:'none',renewalLabel:'—',promoCode:'',reportedCancel:false,
     notes:[`${todayStr()} 後台新增會員資料`]
   });
@@ -2208,11 +2462,29 @@ function uploadMemberCaseMedia(incidentId,fileList){
       url:URL.createObjectURL(file),
       uploadedAt:nowStr()
     });
+    inc.notes.unshift({a:'會員',tp:'系統備註',tc:'bgr',t:nowStr(),b:`會員從前台補充上傳檔案：${file.name}`});
   });
+  inc.unreadMemberUpdates=(inc.unreadMemberUpdates||0)+fileList.length;
   renderMemberHome();
   renderList();
   if(selIncidentId===incidentId) renderDetail();
   showToast(`已附上 ${fileList.length} 個案件檔案，後台已同步收到`);
+}
+function sendMemberCaseMessage(incidentId){
+  const inc=INC.find(item=>item.id===incidentId);
+  const input=document.getElementById(`member-msg-${incidentId.replace(/[^a-zA-Z0-9]/g,'')}`);
+  const body=input?.value.trim()||'';
+  if(!inc||!input||!body){
+    showToast('請先輸入要傳給客服的訊息','warn');
+    return;
+  }
+  inc.notes.unshift({a:'會員',tp:'留言',tc:'ba',t:nowStr(),b:body});
+  inc.unreadMemberUpdates=(inc.unreadMemberUpdates||0)+1;
+  input.value='';
+  renderMemberHome();
+  renderList();
+  if(selIncidentId===incidentId) renderDetail();
+  showToast('訊息已送出，後台客服會在案件時間軸看到');
 }
 function setTransactionFilter(filter,el){
   transactionFilter=filter;
@@ -2542,7 +2814,9 @@ function loginWithPhone(){
   }
   const member=memberDataset().find(item=>item.phone===phone);
   if(member){
-    setMemberAuthState(member.status==='訂閱中'?'logged_in_paid':'logged_in_unpaid');
+    setMemberAuthState(member.status==='訂閱中'
+      ?MEMBER_AUTH.ACTIVE
+      :(member.renewal==='failed'?MEMBER_AUTH.PENDING_RENEWAL_FAILED:MEMBER_AUTH.PENDING_NEW));
     showToast('手機驗證成功，已登入');
     swMember('m-home');
   } else {
@@ -2567,6 +2841,7 @@ function openCreateIncidentModal(){
   document.getElementById('create-incident-creator-injured').value='false';
   document.getElementById('create-counterparty-name').value='';
   document.getElementById('create-counterparty-phone').value='';
+  updateCounterpartyCheck('admin');
   document.getElementById('create-incident-opposite-plate').value='';
   document.getElementById('create-incident-opposite-injured').value='false';
   document.getElementById('create-incident-phone').value=target.phone||'';
@@ -2600,17 +2875,22 @@ function submitAdminMemberIncident(){
     oppositePlate:document.getElementById('create-incident-opposite-plate').value.trim().toUpperCase(),
     oppositeInjured:document.getElementById('create-incident-opposite-injured').value==='true'
   };
-  if(!draft.date||!draft.zipCode||!draft.city||!draft.area||!draft.address||!draft.locationDescription||!draft.creatorPlate||!draft.oppositePlate||!draft.phone){
-    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與電話','warn');
+  if(!draft.date||!draft.zipCode||!draft.city||!draft.area||!draft.address||!draft.locationDescription||!draft.creatorPlate||!draft.oppositePlate||!draft.phone||!draft.counterpartyPhone){
+    showToast('請完整填寫事故日期、地點欄位、地點描述、雙方車牌與雙方電話','warn');
     return;
   }
-  const conflict=incidentConflict(draft.counterpartyPhone);
+  if(dateOnly(draft.date)<dateOnly(target.joined||'')){
+    showToast('事故日期早於會員加入時間，此案不在會籍服務範圍內','error');
+    return;
+  }
+  const conflict=updateCounterpartyCheck('admin');
   document.getElementById('create-incident-conflict').style.display=conflict?'block':'none';
   if(conflict){
     showToast('偵測到雙方皆為會員，案件不可處理','error');
     return;
   }
   const id=nextIncidentId();
+  const createdAt=nowStr();
   const dateTime=`${draft.date} ${p2(new Date().getHours())}:${p2(new Date().getMinutes())}`;
   INC.unshift({
     id,
@@ -2634,13 +2914,18 @@ function submitAdminMemberIncident(){
     desc:draft.locationDescription,
     steps:[1,0,0,0],
     slot:draft.slot,
+    notificationSentAt:createdAt,
+    notificationAcknowledgedAt:createdAt,
+    followUp:{enabled:false,intervalDays:30,nextAt:''},
+    statusHistory:[{status:'待回電',actor:'系統',at:createdAt}],
     media:[],
     recordings:[],
     notes:[
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`後台由會員管理建立事故案件。會員：${target.name}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`偏好聯絡時段：${draft.slot}`},
-      {a:'系統',tp:'系統',tc:'bgr',t:nowStr(),b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`}
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`後台由會員管理建立事故案件。會員：${target.name}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`事故地點：${draft.zipCode} ${draft.city}${draft.area}${draft.address}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`偏好聯絡時段：${draft.slot}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:`對方資訊：${draft.counterpartyName||'未提供'} / ${draft.counterpartyPhone||'未提供'}`},
+      {a:'系統',tp:'系統',tc:'bgr',t:createdAt,b:'案件已直接通知客服，並標記為已接收通知。'}
     ]
   });
   normalizeIncidentRecord(INC[0]);
@@ -2706,33 +2991,38 @@ function saveAdminUser(){
 }
 
 function renderPoints(){
-  document.getElementById('points-balance').textContent=memberProfile.points;
+  document.getElementById('points-balance').textContent=memberPointsBalance();
   document.getElementById('points-table-body').innerHTML=POINTS.map(item=>`
     <tr><td>${esc(item.date)}</td><td>${esc(item.desc)}</td><td style="text-align:right;color:${item.value>=0?'var(--green-t)':'var(--red-t)'};font-weight:600">${item.value>=0?'+':''}${esc(item.value)}</td></tr>
   `).join('');
 }
 
 function renderMemberHome(){
+  const activeCases=isPendingNew()
+    ?[]
+    :INC.filter(inc=>(inc.phone===memberProfile.phone||inc.name===memberProfile.name) && !['已結案','已撤回'].includes(inc.status));
+  const shouldDisableCases=isRenewalFailed()&&activeCases.length>0;
+  const heroTheme=memberHeroTheme();
+  const heroEl=document.querySelector('#page-m-home .hero');
   document.getElementById('hero-name').textContent=`你好，${memberProfile.name}`;
-  document.getElementById('hero-sub').textContent=`${memberProfile.plan} · 到期 ${memberProfile.expiry}`;
-  document.getElementById('hero-tags').innerHTML=`
-    <span class="hero-tag">${memberProfile.points} 點</span>
-    <span class="hero-tag">${INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).length} 件紀錄</span>
-    <span class="hero-tag">${memberProfile.autoRenew?'自動續費開啟':'自動續費關閉'}</span>
-    ${memberProfile.cancelReported?'<span class="hero-tag">已申報取消續約</span>':''}`;
-  const cases=INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name).slice(0,3);
-  document.getElementById('member-cases').innerHTML=cases.length?cases.map(inc=>`
-    <div class="card">
+  document.getElementById('hero-sub').textContent=heroTheme.sub;
+  if(heroEl) heroEl.style.background=heroTheme.bg;
+  document.getElementById('hero-tags').innerHTML=heroTheme.tags.map(tag=>`
+    <span class="hero-tag" style="background:${heroTheme.tagBg};border-color:${heroTheme.tagBd}">${tag}</span>
+  `).join('');
+  document.getElementById('member-cases').innerHTML=activeCases.length?activeCases.slice(0,3).map(inc=>`
+    <div class="card ${shouldDisableCases?'disabled':''}">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <div><div style="font-size:10px;color:var(--t3)">${esc(inc.id)}</div><div style="font-weight:500;font-size:13px;margin-top:1px">${esc(inc.type)} — ${esc(inc.loc)}</div></div>
         <span class="badge ${esc(inc.sc)}">${esc(inc.status)}</span>
       </div>
-      <div style="display:flex;gap:3px;align-items:center;font-size:11px;flex-wrap:wrap">
-        ${STEP_LABELS.map((lbl,i)=>`<span style="${inc.steps[i]?'background:var(--green-bg);color:var(--green-t);font-weight:600':'color:var(--t3)'};padding:2px 7px;border-radius:4px">${inc.steps[i]?'✓ ':''}${lbl}</span>`).join('<span style="color:var(--bd2)">—</span>')}
-      </div>
       <div style="font-size:11px;color:var(--t3);margin-top:7px">客服更新：${esc(inc.slot||'待聯繫')}</div>
-      ${inc.status!=='已結案'
+      <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-s" ${shouldDisableCases?'disabled':''} onclick="${shouldDisableCases?'showToast(\'續約失效期間無法操作進行中的案件\',\'warn\')':`openMemberProgressModal('${esc(inc.id)}')`}">查看處理進度</button></div>
+      ${!shouldDisableCases
         ?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--bd)">
+            <div style="font-size:11px;color:var(--t3);margin-bottom:6px">傳訊息給客服</div>
+            <textarea class="input" id="member-msg-${esc(inc.id).replace(/[^a-zA-Z0-9]/g,'')}" rows="3" placeholder="補充事故進度、和解狀況或想請客服追蹤的事項"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn btn-s" onclick="sendMemberCaseMessage('${esc(inc.id)}')">送出訊息</button></div>
             <div style="font-size:11px;color:var(--t3);margin-bottom:6px">補充照片 / 影片給客服</div>
             <input class="input" type="file" accept="image/*,video/*" multiple onchange="uploadMemberCaseMedia('${esc(inc.id)}', this.files); this.value='';"/>
             <div style="font-size:11px;color:var(--t3);margin-top:6px">目前已附上 ${(inc.media||[]).length} 個檔案</div>
@@ -2741,12 +3031,74 @@ function renderMemberHome(){
               :''}
           </div>`
         :''}
-    </div>`).join(''):'<div class="card"><div class="empty">目前沒有案件，發生事故時可立即提交申請。</div></div>';
+    </div>`).join(''):'<div class="card"><div class="empty">目前沒有進行中的案件，若要查看歷史案件可從「已結案的事故」進入。</div></div>';
 }
 
 function settlementRecords(){
   const signedIds=new Set(SETTLEMENTS.filter(item=>item.status==='SIGNED').map(item=>item.accidentRecordId));
   return INC.filter(inc=>(inc.phone===memberProfile.phone||inc.name===memberProfile.name) && inc.status!=='已撤回' && !signedIds.has(inc.id)).map(settlementRecordFromIncident);
+}
+function memberHomeIncidents(){
+  return INC.filter(inc=>inc.phone===memberProfile.phone||inc.name===memberProfile.name);
+}
+function closedMemberIncidents(){
+  return memberHomeIncidents().filter(inc=>inc.status==='已結案').sort((a,b)=>parseDateTime(b.date)-parseDateTime(a.date));
+}
+function renderClosedIncidentsPage(){
+  const cases=closedMemberIncidents();
+  const box=document.getElementById('closed-incidents-page-list');
+  if(!box) return;
+  box.innerHTML=cases.length?cases.map(inc=>`
+    <div class="card" style="margin:0 0 10px;padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div>
+          <div style="font-size:10px;color:var(--t3)">${esc(inc.id)}</div>
+          <div style="font-size:13px;font-weight:600">${esc(inc.type)} — ${esc(inc.loc)}</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:4px">${esc(inc.date)}</div>
+        </div>
+        <span class="badge ${esc(inc.sc)}">${esc(inc.status)}</span>
+      </div>
+      <div style="font-size:12px;color:var(--t2);line-height:1.7">${esc(inc.desc||'')}</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn btn-s" onclick="openMemberProgressModal('${esc(inc.id)}')">查看處理進度</button></div>
+    </div>
+  `).join(''):'<div class="empty">目前沒有已結案事故</div>';
+}
+function memberProgressEntries(inc){
+  const notes=(inc.notes||[]).map(n=>({
+    time:n.t,
+    label:n.tp,
+    actor:n.a,
+    body:n.b
+  }));
+  const statuses=(inc.statusHistory||[]).map(item=>({
+    time:item.at,
+    label:'狀態',
+    actor:item.actor,
+    body:`切換為「${item.status}」`
+  }));
+  return [...notes,...statuses].sort((a,b)=>parseDateTime(b.time)-parseDateTime(a.time));
+}
+function openMemberProgressModal(incidentId){
+  const inc=INC.find(item=>item.id===incidentId);
+  if(!inc) return;
+  const entries=memberProgressEntries(inc);
+  document.getElementById('member-progress-card').innerHTML=`
+    <div class="card-title">查看處理進度</div>
+    <div style="font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:14px">${esc(inc.id)} · ${esc(inc.type)} · ${esc(inc.loc)}</div>
+    <div class="tl">
+      ${entries.length?entries.map(entry=>`
+        <div class="tl-item">
+          <div class="tl-dot ${entry.label==='狀態'?'a':entry.label==='通話'?'b':'g'}"></div>
+          <div class="tl-t"><strong>${esc(entry.actor)}</strong> · ${esc(entry.label)}<br>${esc(entry.body)}</div>
+          <div class="tl-time">${esc(entry.time)}</div>
+        </div>
+      `).join(''):'<div class="empty">目前沒有可顯示的處理進度</div>'}
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn" onclick="document.getElementById('member-progress-modal').classList.remove('show')">關閉</button></div>`;
+  document.getElementById('member-progress-modal').classList.add('show');
+}
+function closeMemberProgressModal(e){
+  if(e.target.id==='member-progress-modal') document.getElementById('member-progress-modal').classList.remove('show');
 }
 function signedSettlements(){
   return SETTLEMENTS.filter(item=>item.status==='SIGNED').map(hydrateSettlementDocuments).sort((a,b)=>parseDateTime(b.createdTime)-parseDateTime(a.createdTime));
@@ -2842,7 +3194,7 @@ function openSettlementFromAdmin(incidentId){
     showToast('找不到要建立和解書的事故紀錄','warn');
     return;
   }
-  setMemberAuthState('logged_in_paid');
+  setMemberAuthState(MEMBER_AUTH.ACTIVE);
   settlementState.tab='drafts';
   settlementState.composerOpen=true;
   settlementState.currentRecordId=incidentId;
@@ -3157,7 +3509,8 @@ function submitRegistration(){
   memberProfile.birthday=birthday;
   memberProfile.address=address;
   memberProfile.email=email;
-  setMemberAuthState('logged_in_unpaid');
+  memberProfile.plan='待啟動會員';
+  setMemberAuthState(MEMBER_AUTH.PENDING_NEW);
   registrationPaymentPending=true;
   syncProfileForm();
   renderMemberHome();
@@ -3175,7 +3528,7 @@ function saveProfile(){
   memberProfile.address=document.getElementById('profile-address').value.trim()||memberProfile.address;
   memberProfile.email=document.getElementById('profile-email').value.trim()||memberProfile.email;
   document.getElementById('profile-title').textContent=memberProfile.name;
-  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
+  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberFrontStatusLabel()}`;
   renderMembers();
   renderMemberHome();
   renderList();
@@ -3190,7 +3543,7 @@ function syncProfileForm(){
   document.getElementById('profile-address').value=memberProfile.address;
   document.getElementById('profile-email').value=memberProfile.email;
   document.getElementById('profile-title').textContent=memberProfile.name;
-  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberProfile.plan}`;
+  document.getElementById('profile-sub').textContent=`${memberProfile.email} · ${memberFrontStatusLabel()}`;
 }
 function syncRegisterForm(){
   document.getElementById('register-name').value=memberProfile.name;
@@ -3213,68 +3566,51 @@ const ANAV=[
 ];
 const MNAV=[
   {id:'m-login',lbl:'登入 / 入口',ic:'M2 13V6l6-4 6 4v7H2z M6 13V9h4v4'},
-  {id:'m-nonmember',lbl:'非會員申請',ic:'M8 2L2 14h12L8 2z M8 6v3M8 11h.01'},
+  {id:'m-nonmember',lbl:'啟用會員',ic:'M8 2L2 14h12L8 2z M8 6v3M8 11h.01'},
   {id:'m-home',lbl:'我的帳戶',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
+  {id:'m-closed-incidents',lbl:'已結案事故',ic:'M3 8l3 3 7-7'},
   {id:'m-points',lbl:'點數',ic:'M8 2l1.5 4.5H14l-3.5 3 1.5 4.5L8 11.5l-4 2.5 1.5-4.5L2 6.5h4.5z'},
   {id:'m-profile',lbl:'個人資料',ic:'M8 7a3 3 0 100-6 3 3 0 000 6zm-4.5 6a4.5 4.5 0 019 0'},
 ];
 const PG_TITLE={
   dashboard:'資料報表',incidents:'事故管理',members:'會員管理',transactions:'交易列表','admin-users':'使用者管理','audit-logs':'後台稽核與操作紀錄',settings:'優惠碼管理',
-  'm-login':'登入','m-nonmember':'非會員申請','m-payment':'付款',
+  'm-login':'登入','m-nonmember':'啟用會員','m-payment':'付款',
   'm-payment-success':'付款成功','m-incident-form':'事故資料','m-waiting':'申請完成','m-register':'建立帳號','m-settlement':'和解書製作',
-  'm-home':'我的帳戶','m-points':'點數','m-profile':'個人資料'
+  'm-home':'我的帳戶','m-closed-incidents':'已結案的事故','m-points':'點數','m-profile':'個人資料'
 };
 const REMOTE_MEMBER_PAGES={
-  logged_out:[
+  [MEMBER_AUTH.LOGGED_OUT]:[
     {id:'m-login',label:'登入 / 入口'},
     {id:'m-register',label:'建立帳號'}
   ],
-  logged_in_paid:[
+  [MEMBER_AUTH.PENDING_NEW]:[
     {id:'m-home',label:'我的帳戶'},
-    {id:'m-nonmember',label:'選擇方案'},
+    {id:'m-nonmember',label:'啟用會員'},
+    {id:'m-payment',label:'付款'},
+    {id:'m-payment-success',label:'付款成功'},
+    {id:'m-profile',label:'個人資料'}
+  ],
+  [MEMBER_AUTH.ACTIVE]:[
+    {id:'m-home',label:'我的帳戶'},
     {id:'m-incident-form',label:'事故資料'},
     {id:'m-settlement',label:'和解書製作'},
-    {id:'m-payment-success',label:'付款成功'},
-    {id:'m-waiting',label:'申請完成'},
+    {id:'m-closed-incidents',label:'已結案的事故'},
     {id:'m-points',label:'點數'},
     {id:'m-profile',label:'個人資料'}
   ],
-  logged_in_unpaid:[
+  [MEMBER_AUTH.PENDING_RENEWAL_FAILED]:[
     {id:'m-home',label:'我的帳戶'},
-    {id:'m-nonmember',label:'選擇方案'},
-    {id:'m-incident-form',label:'事故資料'},
-    {id:'m-settlement',label:'和解書製作'},
+    {id:'m-nonmember',label:'重新啟用會員'},
     {id:'m-payment',label:'付款'},
-    {id:'m-payment-success',label:'付款成功'},
-    {id:'m-waiting',label:'申請完成'},
-    {id:'m-points',label:'點數'},
+    {id:'m-closed-incidents',label:'已結案的事故'},
     {id:'m-profile',label:'個人資料'}
-  ],
-  nonmember:[
-    {id:'m-nonmember',label:'非會員申請'},
-    {id:'m-incident-form',label:'事故資料'},
-    {id:'m-payment',label:'付款'},
-    {id:'m-payment-success',label:'付款成功'},
-    {id:'m-waiting',label:'申請完成'}
   ]
 };
-const MEMBER_BACK_MAP={
-  'm-login':'m-login',
-  'm-register':'m-login',
-  'm-nonmember':'m-login',
-  'm-payment':'m-nonmember',
-  'm-payment-success':'m-home',
-  'm-incident-form':'m-home',
-  'm-waiting':'m-home',
-  'm-home':'m-login',
-  'm-points':'m-home',
-  'm-profile':'m-home'
-};
 const MEMBER_ROOT_PAGES={
-  logged_out:['m-login'],
-  logged_in_paid:['m-home'],
-  logged_in_unpaid:['m-home'],
-  nonmember:['m-nonmember']
+  [MEMBER_AUTH.LOGGED_OUT]:['m-login'],
+  [MEMBER_AUTH.PENDING_NEW]:['m-home'],
+  [MEMBER_AUTH.ACTIVE]:['m-home'],
+  [MEMBER_AUTH.PENDING_RENEWAL_FAILED]:['m-home']
 };
 
 function populateRemoteOptions(){
@@ -3282,16 +3618,15 @@ function populateRemoteOptions(){
   renderRemoteMemberPages();
 }
 function inferRemoteAuth(){
-  if(memberFlowSource==='nonmember'||['m-nonmember','m-payment'].includes(mPg)) return 'nonmember';
-  if(['m-login','m-register'].includes(mPg)) return 'logged_out';
   return memberAuthState;
 }
 function renderRemoteMemberPages(){
   const auth=document.getElementById('remote-auth').value;
   const select=document.getElementById('remote-member-page');
   const current=select.value;
-  const pages=REMOTE_MEMBER_PAGES[auth];
+  const pages=REMOTE_MEMBER_PAGES[auth]||[];
   select.innerHTML=pages.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  if(!pages.length) return;
   if(pages.some(p=>p.id===current)) select.value=current;
   else select.value=pages[0].id;
 }
@@ -3306,10 +3641,10 @@ function toggleRemoteUI(){
 function syncRemoteControls(){
   document.getElementById('remote-mode').value=mode;
   document.getElementById('remote-admin-page').value=aPg;
-  const auth=memberAuthState;
+  const auth=inferRemoteAuth();
   document.getElementById('remote-auth').value=auth;
   renderRemoteMemberPages();
-  if(REMOTE_MEMBER_PAGES[auth].some(p=>p.id===mPg)) document.getElementById('remote-member-page').value=mPg;
+  if((REMOTE_MEMBER_PAGES[auth]||[]).some(p=>p.id===mPg)) document.getElementById('remote-member-page').value=mPg;
   toggleRemoteGroups();
 }
 function toggleRemoteGroups(){
@@ -3326,15 +3661,13 @@ function applyRemoteState(){
     const auth=document.getElementById('remote-auth').value;
     renderRemoteMemberPages();
     setMemberAuthState(auth);
-    memberFlowSource=auth==='nonmember'?'nonmember':'member';
     switchMode('member');
     swMember(document.getElementById('remote-member-page').value);
   }
   toggleRemoteGroups();
 }
 function resetRemoteState(){
-  setMemberAuthState('logged_out');
-  memberFlowSource='member';
+  setMemberAuthState(MEMBER_AUTH.LOGGED_OUT);
   memberHistory=[];
   pendingIncidentDraft=null;
   registrationPaymentPending=false;
@@ -3358,10 +3691,20 @@ function memberBack(){
   if(!prev) return;
   swMember(prev,{pushHistory:false});
 }
+function logoutMember(){
+  if(mode!=='member') return;
+  memberHistory=[];
+  pendingIncidentDraft=null;
+  registrationPaymentPending=false;
+  setMemberAuthState(MEMBER_AUTH.LOGGED_OUT);
+  swMember('m-login',{pushHistory:false});
+  showToast('已登出');
+}
 
 function getMemberNav(){
-  if(memberAuthState==='logged_out') return MNAV.filter(item=>['m-login'].includes(item.id));
-  if(memberAuthState==='nonmember') return MNAV.filter(item=>['m-login','m-nonmember'].includes(item.id));
+  if(isLoggedOut()) return MNAV.filter(item=>['m-login'].includes(item.id));
+  if(isPendingNew()) return MNAV.filter(item=>['m-home','m-nonmember','m-profile'].includes(item.id));
+  if(isRenewalFailed()) return MNAV.filter(item=>['m-home','m-nonmember','m-profile','m-closed-incidents'].includes(item.id));
   return MNAV;
 }
 function applyMemberChrome(){
@@ -3369,22 +3712,24 @@ function applyMemberChrome(){
   const nameEl=document.getElementById('user-name');
   const roleEl=document.getElementById('user-role');
   const avatar=document.querySelector('.sidebar-foot .av');
-  if(memberAuthState==='logged_out'){
+  const logoutBtn=document.getElementById('member-logout-btn');
+  if(logoutBtn) logoutBtn.style.display=isLoggedOut()?'none':'inline-flex';
+  if(isLoggedOut()){
     nameEl.textContent='訪客模式';
     roleEl.textContent='尚未登入';
     avatar.textContent='訪';
-  } else if(memberAuthState==='nonmember'){
-    nameEl.textContent='非會員流程';
-    roleEl.textContent='單次服務申請中';
-    avatar.textContent='客';
-  } else if(memberAuthState==='logged_in_unpaid'){
-    nameEl.textContent='陳小明';
-    roleEl.textContent='會員未付費';
-    avatar.textContent='陳';
+  } else if(isPendingNew()){
+    nameEl.textContent=memberProfile.name;
+    roleEl.textContent='待啟動（新註冊）';
+    avatar.textContent=initials(memberProfile.name);
+  } else if(isRenewalFailed()){
+    nameEl.textContent=memberProfile.name;
+    roleEl.textContent='待啟動（續約失效）';
+    avatar.textContent=initials(memberProfile.name);
   } else {
-    nameEl.textContent='陳小明';
-    roleEl.textContent='會員已付費';
-    avatar.textContent='陳';
+    nameEl.textContent=memberProfile.name;
+    roleEl.textContent='會員';
+    avatar.textContent=initials(memberProfile.name);
   }
 }
 function updateShellMode(){
@@ -3392,22 +3737,27 @@ function updateShellMode(){
 }
 function setMemberAuthState(auth){
   memberAuthState=auth;
-  if(auth==='logged_out'){
-    memberFlowSource='member';
+  if(isLoggedOut()){
     if(!['m-login','m-register'].includes(mPg)){ mPg='m-login'; memberHistory=[]; }
-  }
-  if(auth==='nonmember'){
-    memberFlowSource='nonmember';
-    if(!['m-nonmember','m-incident-form','m-payment','m-waiting'].includes(mPg)){ mPg='m-nonmember'; memberHistory=[]; }
-  }
-  if(['logged_in_paid','logged_in_unpaid'].includes(auth)){
-    memberFlowSource='member';
-    if(['m-login','m-register','m-nonmember'].includes(mPg)){ mPg='m-home'; memberHistory=[]; }
+  } else if(isPendingNew()){
+    memberProfile.plan='待啟動會員';
+    if(!['m-home','m-nonmember','m-payment','m-payment-success','m-profile'].includes(mPg)){ mPg='m-home'; memberHistory=[]; }
+  } else if(isRenewalFailed()){
+    memberProfile.plan='待啟動會員';
+    memberProfile.points=0;
+    if(!['m-home','m-nonmember','m-payment','m-payment-success','m-profile','m-closed-incidents'].includes(mPg)){ mPg='m-home'; memberHistory=[]; }
+  } else {
+    memberProfile.plan='年費會員';
+    if(['m-login','m-register','m-nonmember','m-payment'].includes(mPg)){ mPg='m-home'; memberHistory=[]; }
   }
   if(mode==='member'){
+    mkNav(getMemberNav(),mPg);
     applyMemberChrome();
     updateTopbarBack();
   }
+  renderMembers();
+  renderPoints();
+  renderMemberHome();
 }
 
 function mkNav(nav,cur){
@@ -3456,18 +3806,17 @@ function swMember(id,options={}){
     if(!roots.includes(id)) memberHistory.push(prev);
     if(roots.includes(id)) memberHistory=[];
   }
-  if(['m-login','m-register'].includes(id)) setMemberAuthState('logged_out');
-  else if(['m-nonmember','m-payment'].includes(id) && memberAuthState==='nonmember') setMemberAuthState('nonmember');
-  else if(['m-home','m-points','m-profile','m-settlement'].includes(id) && !['logged_in_paid','logged_in_unpaid'].includes(memberAuthState)) setMemberAuthState('logged_in_paid');
-  else if(id==='m-waiting'&&memberFlowSource==='nonmember') setMemberAuthState('nonmember');
-  else if(id==='m-waiting'&&memberAuthState==='logged_out') setMemberAuthState('logged_in_unpaid');
+  if(['m-login','m-register'].includes(id)) setMemberAuthState(MEMBER_AUTH.LOGGED_OUT);
   const rootsAfter=MEMBER_ROOT_PAGES[memberAuthState]||[];
   if(rootsAfter.includes(id)) memberHistory=[];
   document.getElementById('pg-title').textContent=PG_TITLE[id]||id;
-  showPg(id);applyMemberChrome();
+  showPg(id);
+  mkNav(getMemberNav(),id);
+  applyMemberChrome();
   updateTopbarBack();
   renderSingleFlowSteps();
   if(id==='m-home'){renderMemberHome();}
+  if(id==='m-closed-incidents'){renderClosedIncidentsPage();}
   if(id==='m-points'){renderPoints();}
   if(id==='m-profile'){syncProfileForm();}
   if(id==='m-register'){syncRegisterForm();}
@@ -3488,9 +3837,10 @@ function switchMode(m){
   updateShellMode();
   updateTopbarBack();
   document.getElementById('mode-label').textContent=m==='admin'?'管理後台':'會員前台';
-  document.getElementById('user-name').textContent=m==='admin'?'陳客服':'陳小明';
-  document.getElementById('user-role').textContent=m==='admin'?'客服專員':'年費會員';
-  document.querySelector('.sidebar-foot .av').textContent=m==='admin'?'陳':'陳';
+  document.getElementById('member-logout-btn').style.display='none';
+  document.getElementById('user-name').textContent=m==='admin'?'陳客服':memberProfile.name;
+  document.getElementById('user-role').textContent=m==='admin'?'客服專員':'會員';
+  document.querySelector('.sidebar-foot .av').textContent=m==='admin'?'陳':initials(memberProfile.name);
   if(m==='admin'){mkNav(ANAV,aPg);swAdmin(aPg);}
   else{applyMemberChrome();swMember(mPg);}
   syncRemoteControls();
